@@ -71,11 +71,11 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .formula-op { color: #505070; margin: 0 0.05em; }
 .formula-exp { font-size: 0.5em; vertical-align: super; }
 
-.vowel-a { background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.vowel-e { background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.vowel-i { background: linear-gradient(135deg, #7c3aed, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.vowel-o { background: linear-gradient(135deg, #6366f1, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.vowel-u { background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.vowel-a { color: #f472b6; background: linear-gradient(135deg, #f472b6, #a78bfa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.vowel-e { color: #a78bfa; background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.vowel-i { color: #7c3aed; background: linear-gradient(135deg, #7c3aed, #6366f1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.vowel-o { color: #6366f1; background: linear-gradient(135deg, #6366f1, #3b82f6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.vowel-u { color: #3b82f6; background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 .tagline {
   font-size: 1.35rem;
@@ -83,7 +83,7 @@ nav ul a:hover { color: #fff; text-decoration: none; }
   color: #c8c8d8;
   margin-bottom: 0.75rem;
 }
-.accent { background: linear-gradient(90deg, #a78bfa, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.accent { color: #a78bfa; background: linear-gradient(90deg, #a78bfa, #60a5fa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 .hero-sub { font-size: 1.05rem; color: #8080a0; margin-bottom: 2rem; max-width: 480px; }
 
