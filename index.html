@@ -3,13 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Primary Vowels</title>
+  <title>Primary Vowels — a·e^(IoU)</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <nav>
-      <span class="logo">Primary Vowels</span>
+      <a href="#" class="logo" aria-label="Primary Vowels home">
+        <!-- Inline SVG logo mark -->
+        <svg class="logo-mark" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="19" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+          <text x="20" y="16" text-anchor="middle" fill="url(#logoGrad)" font-size="11" font-weight="700" font-family="'Georgia','Times New Roman',serif" letter-spacing="0.5">
+            <tspan>a·e</tspan>
+          </text>
+          <text x="26" y="12" text-anchor="middle" fill="#60a5fa" font-size="7" font-weight="700" font-family="'Georgia','Times New Roman',serif">
+            <tspan>(IoU)</tspan>
+          </text>
+          <line x1="8" y1="22" x2="32" y2="22" stroke="url(#logoGrad)" stroke-width="0.75" opacity="0.4"/>
+          <text x="20" y="32" text-anchor="middle" fill="#e8e8f0" font-size="6" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="2.5">VOWELS</text>
+        </svg>
+        <span class="logo-text">Primary Vowels</span>
+      </a>
       <ul>
         <li><a href="#about">About</a></li>
         <li><a href="#work">Work</a></li>
@@ -21,18 +41,57 @@
   <main>
     <section class="hero">
       <div class="hero-content">
-        <h1>AI. <span class="accent">Reimagined.</span></h1>
-        <p>Primary Vowels is where language meets intelligence. We build with AI at the core.</p>
-        <a href="#work" class="btn">See Our Work</a>
+        <div class="formula-badge">The Formula</div>
+        <h1 class="formula-display">
+          <span class="vowel-a">a</span><span class="formula-op">·</span><span class="vowel-e">e</span><sup class="formula-exp">(<span class="vowel-i">I</span><span class="vowel-o">o</span><span class="vowel-u">U</span>)</sup>
+        </h1>
+        <p class="tagline">Five vowels. One equation. <span class="accent">Infinite intelligence.</span></p>
+        <p class="hero-sub">Primary Vowels is an AI company built on a simple truth — the building blocks of language power the future of machine intelligence.</p>
+        <div class="hero-actions">
+          <a href="#work" class="btn">See Our Work</a>
+          <a href="#about" class="btn btn-outline">Learn More</a>
+        </div>
       </div>
       <div class="hero-visual">
         <div class="orb"></div>
+        <!-- Large decorative SVG logo -->
+        <svg class="hero-logo-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <defs>
+            <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="50%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <circle cx="150" cy="150" r="140" fill="none" stroke="url(#heroGrad)" stroke-width="2" opacity="0.3"/>
+          <circle cx="150" cy="150" r="110" fill="none" stroke="url(#heroGrad)" stroke-width="1.5" opacity="0.2"/>
+          <circle cx="150" cy="150" r="80" fill="none" stroke="url(#heroGrad)" stroke-width="1" opacity="0.15"/>
+          <text x="150" y="145" text-anchor="middle" fill="url(#heroGrad)" font-size="64" font-weight="700" font-family="'Georgia','Times New Roman',serif" filter="url(#glow)">
+            a·e
+          </text>
+          <text x="218" y="110" text-anchor="middle" fill="#60a5fa" font-size="32" font-weight="700" font-family="'Georgia','Times New Roman',serif" filter="url(#glow)">
+            (IoU)
+          </text>
+          <text x="150" y="200" text-anchor="middle" fill="#e8e8f0" font-size="18" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="8" opacity="0.6">
+            PRIMARY
+          </text>
+          <text x="150" y="225" text-anchor="middle" fill="#e8e8f0" font-size="18" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="8" opacity="0.6">
+            VOWELS
+          </text>
+        </svg>
       </div>
     </section>
 
     <section id="about" class="section">
       <h2>About</h2>
-      <p>We are a creative studio exploring the intersection of artificial intelligence and human expression. From generative art to language models, we push the boundaries of what AI can create.</p>
+      <p>We are an AI research and product studio exploring the intersection of artificial intelligence and human expression. The formula <strong class="accent">a·e<sup>(IoU)</sup></strong> is our north star — every primary vowel, unified in one elegant expression. From generative art to language models, we push the boundaries of what AI can create.</p>
     </section>
 
     <section id="work" class="section alt">
