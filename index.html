@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primary Vowels — Machine Vision Intelligence</title>
+<meta name="description" content="Primary Vowels is a machine vision and AI company built on the mathematical primitives that power modern intelligence: Ae^(IoU).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════ */
+/*  RESET & BASE                          */
+/* ═══════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #141416;
+  --bg-secondary: #1a1a1e;
+  --bg-card: #1e1e22;
+  --bg-card-hover: #242428;
+  --text-primary: #c8c4be;
+  --text-secondary: #8a8680;
+  --text-muted: #5a5854;
+  --accent-cyan: #6ec8e4;
+  --accent-emerald: #5abf8a;
+  --accent-violet: #8a8cf8;
+  --accent-amber: #d4a84e;
+  --accent-silver: #b0ada6;
+  --border: #2a2a2e;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ═══════════════════════════════════════ */
+/*  HEADER / NAVIGATION                   */
+/* ═══════════════════════════════════════ */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1.25rem 0;
+  transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+}
+
+header.scrolled {
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+}
+
+header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.logo .eye-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 12px;
+}
+
+.logo .eye-icon svg { width: 100%; height: 100%; }
+
+nav { display: flex; align-items: center; gap: 2.5rem; }
+
+nav a {
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+  position: relative;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent-cyan);
+  transition: width 0.3s;
+}
+
+nav a:hover { color: var(--text-primary); }
+nav a:hover::after { width: 100%; }
+
+.nav-cta {
+  padding: 0.55rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary) !important;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.nav-cta:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(110, 200, 228, 0.06);
+}
+
+.nav-cta::after { display: none !important; }
+
+/* Mobile hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+}
+.hamburger span {
+  width: 22px; height: 1.5px;
+  background: var(--text-primary);
+  transition: 0.3s;
+}
+
+/* ═══════════════════════════════════════ */
+/*  HERO SECTION                          */
+/* ═══════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #1e1e24 0%, var(--bg-primary) 70%);
+}
+
+/* Neural network canvas background */
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* The formula: ae^(iou) */
+.formula-mark {
+  font-family: var(--font-serif);
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: 400;
+  color: var(--accent-silver);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+  /* Metallic shimmer */
+  background: linear-gradient(
+    135deg,
+    #7a7670 0%,
+    #c0bdb6 25%,
+    #9a9690 50%,
+    #d0cdc6 75%,
+    #8a8680 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.formula-mark .base { /* ae */ }
+.formula-mark .exponent {
+  font-size: 0.42em;
+  vertical-align: super;
+  position: relative;
+  top: -0.3em;
+  letter-spacing: 0.02em;
+}
+
+.brand-name {
+  font-family: var(--font-sans);
+  font-size: clamp(0.75rem, 1.8vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.brand-name .eye-o {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4em;
+  margin: 0 -0.05em;
+}
+
+.brand-name .eye-o svg {
+  width: 100%;
+  height: auto;
+}
+
+.hero-tagline {
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  font-weight: 300;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  background: transparent;
+  border: 1px solid var(--accent-silver);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s;
+  border-radius: 2px;
+}
+
+.btn-primary:hover {
+  background: rgba(176, 173, 166, 0.08);
+  border-color: var(--text-primary);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s;
+}
+
+.btn-ghost:hover { color: var(--text-primary); }
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+.scroll-hint .line {
+  width: 1px; height: 32px;
+  background: linear-gradient(to bottom, var(--text-muted), transparent);
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.8; transform: translateX(-50%) translateY(4px); }
+}
+
+/* ═══════════════════════════════════════ */
+/*  SECTION SHARED STYLES                 */
+/* ═══════════════════════════════════════ */
+section { padding: 7rem 0; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 1.5rem;
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.8;
+}
+
+.divider {
+  width: 48px; height: 1px;
+  background: var(--border);
+  margin: 3rem 0;
+}
+
+/* ═══════════════════════════════════════ */
+/*  ABOUT SECTION                         */
+/* ═══════════════════════════════════════ */
+.about {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.about-text p {
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.about-text p:first-of-type {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  padding-top: 1rem;
+}
+
+.stat {
+  border-left: 1px solid var(--border);
+  padding-left: 1.5rem;
+}
+
+.stat-value {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════ */
+/*  FORMULA / PHILOSOPHY SECTION          */
+/* ═══════════════════════════════════════ */
+.formula-section {
+  text-align: center;
+  background: var(--bg-primary);
+}
+
+.formula-display {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 400;
+  color: var(--accent-silver);
+  margin: 3rem 0 4rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #7a7670, #c8c4be, #8a8680, #d0cdc6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.formula-display .exp {
+  font-size: 0.45em;
+  vertical-align: super;
+  position: relative;
+  top: -0.25em;
+}
+
+.vowel-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.vowel-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2rem 1.2rem;
+  text-align: center;
+  transition: border-color 0.35s, transform 0.35s, background 0.35s;
+}
+
+.vowel-card:hover {
+  border-color: var(--accent-silver);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+}
+
+.vowel-letter {
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.8rem;
+}
+
+.vowel-card:nth-child(1) .vowel-letter { color: var(--accent-cyan); }
+.vowel-card:nth-child(2) .vowel-letter { color: var(--accent-emerald); font-style: italic; font-weight: 400; }
+.vowel-card:nth-child(3) .vowel-letter { color: var(--accent-violet); }
+.vowel-card:nth-child(4) .vowel-letter { color: var(--text-secondary); font-style: italic; font-size: 2.2rem; }
+.vowel-card:nth-child(5) .vowel-letter { color: var(--accent-amber); }
+
+.vowel-symbol {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+.vowel-meaning {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.vowel-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════ */
+/*  SERVICES / CAPABILITIES               */
+/* ═══════════════════════════════════════ */
+.services {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.services-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 4rem;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.service-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2.5rem 2rem;
+  transition: border-color 0.35s, transform 0.35s;
+  position: relative;
+}
+
+.service-card:hover {
+  border-color: rgba(176, 173, 166, 0.25);
+  transform: translateY(-3px);
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  border-radius: 3px 3px 0 0;
+}
+
+.service-card:hover::before {
+  background: linear-gradient(90deg, transparent, var(--accent-silver), transparent);
+}
+
+.service-number {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+}
+
+.service-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.service-desc {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ═══════════════════════════════════════ */
+/*  TECHNOLOGY / APPROACH                 */
+/* ═══════════════════════════════════════ */
+.approach {
+  background: var(--bg-primary);
+}
+
+.approach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.approach-visual {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.approach-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(138, 140, 248, 0.04), transparent 70%);
+}
+
+.approach-formula {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  color: var(--accent-silver);
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.5rem;
+}
+
+.approach-formula .exp-small {
+  font-size: 0.42em;
+  vertical-align: super;
+  top: -0.25em;
+  position: relative;
+}
+
+.approach-annotation {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+  position: relative;
+  z-index: 1;
+}
+
+.approach-text h3 {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 1.2rem;
+}
+
+.approach-text p {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  margin-bottom: 1.2rem;
+}
+
+.approach-list {
+  list-style: none;
+  margin-top: 2rem;
+}
+
+.approach-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.approach-list li:last-child { border-bottom: none; }
+
+.approach-list .marker {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  min-width: 2rem;
+  padding-top: 2px;
+}
+
+/* ═══════════════════════════════════════ */
+/*  CONTACT / CTA SECTION                 */
+/* ═══════════════════════════════════════ */
+.contact {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 6rem 0;
+}
+
+.contact .section-subtitle {
+  margin: 0 auto 3rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.contact-info h4 {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+}
+
+.contact-info p, .contact-info a {
+  font-size: 0.92rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 2;
+}
+
+.contact-info a:hover { color: var(--text-primary); }
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+  outline: none;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: var(--accent-silver);
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.contact-form textarea { resize: vertical; min-height: 110px; }
+
+.contact-form button {
+  width: 100%;
+  padding: 0.85rem 2rem;
+  background: transparent;
+  border: 1px solid var(--accent-silver);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s;
+  border-radius: 2px;
+}
+
+.contact-form button:hover {
+  background: rgba(176, 173, 166, 0.08);
+}
+
+/* ═══════════════════════════════════════ */
+/*  FOOTER                                */
+/* ═══════════════════════════════════════ */
+footer {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+  padding: 4rem 0 2.5rem;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.footer-brand .logo { margin-bottom: 1.2rem; }
+
+.footer-brand p {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 280px;
+}
+
+.footer-col h5 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  padding: 0.3rem 0;
+  transition: color 0.3s;
+}
+
+.footer-col a:hover { color: var(--text-primary); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-bottom p {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-socials a {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.footer-socials a:hover { color: var(--text-primary); }
+
+/* ═══════════════════════════════════════ */
+/*  RESPONSIVE                            */
+/* ═══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .about-grid,
+  .services-header,
+  .approach-grid,
+  .contact-grid,
+  .footer-top { grid-template-columns: 1fr; }
+
+  .services-grid { grid-template-columns: 1fr 1fr; }
+  .vowel-grid { grid-template-columns: repeat(5, 1fr); gap: 0.6rem; }
+  .vowel-card { padding: 1.2rem 0.8rem; }
+  .vowel-letter { font-size: 2rem; }
+
+  nav { display: none; }
+  nav.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,22,0.98);
+    backdrop-filter: blur(20px);
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    z-index: 999;
+  }
+  nav.open a { font-size: 1.1rem; }
+  .hamburger { display: flex; z-index: 1001; }
+}
+
+@media (max-width: 600px) {
+  .vowel-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .services-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  section { padding: 5rem 0; }
+}
+
+/* ═══════════════════════════════════════ */
+/*  ANIMATIONS (fade-in on scroll)        */
+/* ═══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  HEADER                                -->
+<!-- ═══════════════════════════════════════ -->
+<header id="header">
+  <div class="container">
+    <a href="#" class="logo">
+      <span>PRIMARYV</span><span class="eye-icon"><svg viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="8" rx="11" ry="7" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="8" r="1.2" fill="currentColor"/></svg></span><span>WELS</span>
+    </a>
+
+    <nav id="nav">
+      <a href="#about">About</a>
+      <a href="#formula">The Formula</a>
+      <a href="#services">Services</a>
+      <a href="#approach">Technology</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </nav>
+
+    <div class="hamburger" id="hamburger" onclick="document.getElementById('nav').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  HERO                                  -->
+<!-- ═══════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="neuralCanvas"></canvas>
+
+  <div class="hero-content">
+    <div class="formula-mark">
+      <span class="base">ae</span><span class="exponent">iou</span>
+    </div>
+
+    <div class="brand-name">
+      PRIMARYV<span class="eye-o"><svg viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="14" cy="9" rx="12.5" ry="7.5" stroke="currentColor" stroke-width="1.2"/><circle cx="14" cy="9" r="4" stroke="currentColor" stroke-width="1"/><circle cx="14" cy="9" r="1.5" fill="currentColor"/><line x1="1" y1="9" x2="5" y2="9" stroke="currentColor" stroke-width="0.6" opacity="0.4"/><line x1="23" y1="9" x2="27" y2="9" stroke="currentColor" stroke-width="0.6" opacity="0.4"/></svg></span>WELS
+    </div>
+
+    <p class="hero-tagline">
+      Machine vision intelligence built on the mathematical primitives
+      that power modern AI. We see what others cannot.
+    </p>
+
+    <div class="hero-cta-group">
+      <a href="#services" class="btn-primary">Explore Our Work</a>
+      <a href="#formula" class="btn-ghost">The Formula &darr;</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  ABOUT                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <div class="section-label">// 001 &mdash; About</div>
+        <h2 class="section-title">We speak the language<br>of intelligent vision.</h2>
+        <div class="divider"></div>
+        <p>
+          Primary Vowels is a machine vision and artificial intelligence company
+          founded on a simple premise: the same vowels that form human language
+          also encode the mathematical foundations of modern AI.
+        </p>
+        <p>
+          Our name is our thesis. A, E, I, O, and U aren't just letters &mdash;
+          they represent Artificial Intelligence, Euler's constant, Intersection,
+          the computational complexity that governs scale, and the Union operations
+          that merge data into understanding. Every system we build is grounded in
+          these primitives.
+        </p>
+        <p>
+          From real-time object detection to multi-modal sensor fusion,
+          we develop vision systems that operate at the intersection of
+          mathematical rigor and production-grade engineering.
+        </p>
+      </div>
+
+      <div class="about-stats reveal">
+        <div class="stat">
+          <div class="stat-value">IoU</div>
+          <div class="stat-label">Core Metric</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">e<sup style="font-size:0.5em">x</sup></div>
+          <div class="stat-label">Exponential Scale</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">O(n)</div>
+          <div class="stat-label">Optimized Complexity</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">A&cup;B</div>
+          <div class="stat-label">Unified Data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  THE FORMULA                           -->
+<!-- ═══════════════════════════════════════ -->
+<section class="formula-section" id="formula">
+  <div class="container">
+    <div class="section-label reveal" style="text-align:center">// 002 &mdash; The Formula</div>
+    <h2 class="section-title reveal" style="text-align:center">Every vowel is a primitive.</h2>
+    <p class="section-subtitle reveal" style="text-align:center;margin:0 auto">
+      Our identity isn't just a name &mdash; it's a mathematical statement.
+      Each primary vowel encodes a concept that is foundational to machine intelligence.
+    </p>
+
+    <div class="formula-display reveal">
+      Ae<span class="exp">(IoU)</span>
+    </div>
+
+    <div class="vowel-grid reveal">
+      <div class="vowel-card">
+        <div class="vowel-letter">A</div>
+        <div class="vowel-symbol">amplitude</div>
+        <div class="vowel-meaning">Artificial Intelligence</div>
+        <div class="vowel-desc">The field itself. The function that wraps everything.</div>
+      </div>
+
+      <div class="vowel-card">
+        <div class="vowel-letter">e</div>
+        <div class="vowel-symbol">&asymp; 2.718</div>
+        <div class="vowel-meaning">Euler's Number</div>
+        <div class="vowel-desc">The constant in every activation, gradient, and probability.</div>
+      </div>
+
+      <div class="vowel-card">
+        <div class="vowel-letter">I</div>
+        <div class="vowel-symbol">&cap; intersect</div>
+        <div class="vowel-meaning">Intersection</div>
+        <div class="vowel-desc">Where prediction meets ground truth. The overlap that matters.</div>
+      </div>
+
+      <div class="vowel-card">
+        <div class="vowel-letter">o</div>
+        <div class="vowel-symbol">&#247; over</div>
+        <div class="vowel-meaning">Division</div>
+        <div class="vowel-desc">The ratio that normalizes. Intersection over Union.</div>
+      </div>
+
+      <div class="vowel-card">
+        <div class="vowel-letter">U</div>
+        <div class="vowel-symbol">&cup; union</div>
+        <div class="vowel-meaning">Union</div>
+        <div class="vowel-desc">Merging datasets, modalities, and intelligence into one.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SERVICES                              -->
+<!-- ═══════════════════════════════════════ -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="services-header">
+      <div class="reveal">
+        <div class="section-label">// 003 &mdash; Services</div>
+        <h2 class="section-title">What we build.</h2>
+      </div>
+      <div class="reveal">
+        <p class="section-subtitle">
+          End-to-end machine vision systems &mdash; from research through
+          deployment &mdash; engineered for real-world precision and scale.
+        </p>
+      </div>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-number">01</div>
+        <h3 class="service-title">Object Detection &amp; Recognition</h3>
+        <p class="service-desc">
+          Real-time detection, classification, and tracking across video streams.
+          Custom-trained models optimized for your domain: manufacturing,
+          logistics, security, or autonomous systems.
+        </p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-number">02</div>
+        <h3 class="service-title">Image Segmentation</h3>
+        <p class="service-desc">
+          Pixel-level understanding of visual scenes. Semantic, instance,
+          and panoptic segmentation pipelines evaluated against IoU benchmarks
+          and deployed at edge or cloud scale.
+        </p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-number">03</div>
+        <h3 class="service-title">Multi-Modal Fusion</h3>
+        <p class="service-desc">
+          Unifying RGB, depth, LiDAR, thermal, and satellite inputs into
+          coherent perception layers. The union of datasets that no single
+          sensor can achieve alone.
+        </p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-number">04</div>
+        <h3 class="service-title">Model Optimization</h3>
+        <p class="service-desc">
+          Reducing Big-O complexity without sacrificing accuracy. Quantization,
+          pruning, distillation, and architecture search for deployment on
+          constrained hardware.
+        </p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-number">05</div>
+        <h3 class="service-title">Vision APIs &amp; Pipelines</h3>
+        <p class="service-desc">
+          Production-grade inference APIs, batch processing pipelines,
+          and MLOps infrastructure. From prototype to millions of
+          predictions per day.
+        </p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-number">06</div>
+        <h3 class="service-title">Research &amp; Consulting</h3>
+        <p class="service-desc">
+          Technical advisory for teams building vision capabilities.
+          Architecture reviews, feasibility studies, and custom
+          research engagements.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  APPROACH / TECHNOLOGY                 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="approach" id="approach">
+  <div class="container">
+    <div class="approach-grid">
+      <div class="approach-visual reveal">
+        <div class="approach-formula">
+          Ae<span class="exp-small">(IoU)</span>
+        </div>
+        <div class="approach-annotation">
+          // where A = amplitude<br>
+          // e &asymp; 2.718 (Euler)<br>
+          // I = |pred &cap; truth|<br>
+          // o = over (division)<br>
+          // U = |pred &cup; truth|<br>
+          // IoU &isin; [0, 1]
+        </div>
+      </div>
+
+      <div class="approach-text reveal">
+        <div class="section-label">// 004 &mdash; Technology</div>
+        <h3>Built on first principles.</h3>
+        <p>
+          Every vision system we deliver is measured against the metric
+          that defines our name: Intersection over Union. It is the gold
+          standard for evaluating how precisely a model understands what
+          it sees.
+        </p>
+        <p>
+          We don't chase benchmarks. We engineer systems where the math
+          holds under real-world conditions: variable lighting, occlusion,
+          sensor noise, and adversarial inputs.
+        </p>
+
+        <ul class="approach-list">
+          <li><span class="marker">01</span> Transformer and CNN architectures tuned per problem domain</li>
+          <li><span class="marker">02</span> IoU-aware loss functions for tighter bounding and masks</li>
+          <li><span class="marker">03</span> Edge deployment with sub-10ms inference latency</li>
+          <li><span class="marker">04</span> Continuous evaluation against production ground truth</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  CONTACT                               -->
+<!-- ═══════════════════════════════════════ -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="section-label reveal">// 005 &mdash; Contact</div>
+    <h2 class="section-title reveal">Let's build something<br>that sees clearly.</h2>
+    <p class="section-subtitle reveal" style="margin:0 auto 3rem">
+      Whether you have a vision problem to solve or want to explore
+      what's possible, we'd like to hear from you.
+    </p>
+
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h4>Get in touch</h4>
+        <p>
+          <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a><br>
+          San Francisco, CA<br>
+          <br>
+          We typically respond within 24 hours.
+        </p>
+
+        <div style="margin-top:2.5rem">
+          <h4>Follow</h4>
+          <p>
+            <a href="#">LinkedIn</a><br>
+            <a href="#">GitHub</a><br>
+            <a href="#">X / Twitter</a>
+          </p>
+        </div>
+      </div>
+
+      <form class="contact-form reveal" onsubmit="event.preventDefault(); this.querySelector('button').textContent='MESSAGE SENT'; this.querySelector('button').style.borderColor='#5abf8a'; this.querySelector('button').style.color='#5abf8a';">
+        <input type="text" placeholder="Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="text" placeholder="Company (optional)">
+        <textarea placeholder="Tell us about your project..." required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  FOOTER                                -->
+<!-- ═══════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <span>PRIMARYV</span><span class="eye-icon"><svg viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="8" rx="11" ry="7" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="8" r="1.2" fill="currentColor"/></svg></span><span>WELS</span>
+        </div>
+        <p>Machine vision intelligence built on the mathematical primitives of AI.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#about">About</a>
+        <a href="#formula">The Formula</a>
+        <a href="#">Careers</a>
+        <a href="#">Blog</a>
+      </div>
+
+      <div class="footer-col">
+        <h5>Services</h5>
+        <a href="#services">Detection</a>
+        <a href="#services">Segmentation</a>
+        <a href="#services">Fusion</a>
+        <a href="#services">Consulting</a>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <a href="#">Documentation</a>
+        <a href="#">Research</a>
+        <a href="#">API Reference</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Primary Vowels. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+        <a href="#">X</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SCRIPTS                               -->
+<!-- ═══════════════════════════════════════ -->
+<script>
+/* ── Header scroll effect ── */
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ── Reveal on scroll ── */
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+reveals.forEach(el => observer.observe(el));
+
+/* ── Neural network canvas ── */
+(function() {
+  const canvas = document.getElementById('neuralCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let w, h, nodes = [], edges = [];
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    init();
+  }
+
+  function init() {
+    nodes = [];
+    edges = [];
+    const count = Math.floor((w * h) / 18000);
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        r: Math.random() * 1.5 + 0.5
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Move nodes
+    nodes.forEach(n => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    });
+
+    // Draw edges
+    const maxDist = 140;
+    ctx.strokeStyle = 'rgba(140, 140, 160, 0.08)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          const alpha = 0.08 * (1 - dist / maxDist);
+          ctx.strokeStyle = `rgba(140, 140, 165, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(170, 168, 160, 0.25)';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+/* ── Smooth scroll for nav links ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('nav').classList.remove('open');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
