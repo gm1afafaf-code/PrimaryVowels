@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: #0a0a0f;
+  background: #1a1a1f url('assets/backdrop.svg') center / cover no-repeat;
   color: #e8e8f0;
   font-family: 'Segoe UI', system-ui, sans-serif;
   line-height: 1.6;
@@ -117,11 +117,7 @@ nav ul a:hover { color: #fff; text-decoration: none; }
   justify-content: center;
 }
 .orb {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #7c3aed55, #3b82f633, transparent 70%);
-  filter: blur(50px);
+  display: none;
 }
 .hero-logo-svg {
   position: relative;
