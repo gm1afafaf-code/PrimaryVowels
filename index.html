@@ -7,93 +7,60 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <header>
+    <nav>
+      <span class="logo">Primary Vowels</span>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <!-- Nav -->
-  <nav>
-    <a class="logo" href="/">
-      <svg class="logo-mark" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="16" r="15" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="16" y="21" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#a78bfa">o</text>
-      </svg>
-      <span class="logo-text">primaryvowels</span>
-    </a>
-    <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>AI. <span class="accent">Reimagined.</span></h1>
+        <p>Primary Vowels is where language meets intelligence. We build with AI at the core.</p>
+        <a href="#work" class="btn">See Our Work</a>
+      </div>
+      <div class="hero-visual">
+        <div class="orb"></div>
+      </div>
+    </section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-content">
-      <span class="formula-badge">The Vowel Formula</span>
-      <div class="formula-display">
-        <span class="vowel-a">a</span><span class="formula-op">+</span><span class="vowel-e">e</span><span class="formula-op">+</span><span class="vowel-i">i</span><span class="formula-op">+</span><span class="vowel-o">o</span><span class="formula-op">+</span><span class="vowel-u">u</span>
-      </div>
-      <p class="tagline">Where language meets <span class="accent">design</span></p>
-      <p class="hero-sub">Primary Vowels is a creative studio exploring the intersection of typography, sound, and visual identity.</p>
-      <div class="hero-actions">
-        <a class="btn" href="#features">Explore</a>
-        <a class="btn btn-outline" href="#contact">Get in touch</a>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="orb"></div>
-      <svg class="hero-logo-svg" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="150" cy="150" r="120" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 6" opacity="0.4"/>
-        <circle cx="150" cy="150" r="80" stroke="#7c3aed" stroke-width="1" opacity="0.3"/>
-        <text x="150" y="100" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#f472b6" opacity="0.85">a</text>
-        <text x="92"  y="165" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#a78bfa" opacity="0.85">e</text>
-        <text x="150" y="220" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#7c3aed" opacity="0.85">i</text>
-        <text x="208" y="165" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#6366f1" opacity="0.85">o</text>
-        <text x="150" y="165" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#3b82f6" opacity="0.85">u</text>
-      </svg>
-    </div>
-  </section>
+    <section id="about" class="section">
+      <h2>About</h2>
+      <p>We are a creative studio exploring the intersection of artificial intelligence and human expression. From generative art to language models, we push the boundaries of what AI can create.</p>
+    </section>
 
-  <!-- About -->
-  <div id="about" class="section">
-    <h2>What are Primary Vowels?</h2>
-    <p>The five primary vowels — <strong>a, e, i, o, u</strong> — are the foundation of spoken language. We take that foundation and build visual systems, brand identities, and digital experiences on top of it.</p>
-  </div>
+    <section id="work" class="section alt">
+      <h2>Work</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Language Models</h3>
+          <p>Custom LLM integrations tailored to your brand voice and audience.</p>
+        </div>
+        <div class="card">
+          <h3>Generative Design</h3>
+          <p>AI-assisted visuals, type, and motion — built for the modern web.</p>
+        </div>
+        <div class="card">
+          <h3>AI Workflows</h3>
+          <p>Automations and pipelines that make your team move faster with AI.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Features -->
-  <div id="features" class="section alt">
-    <h2>What we do</h2>
-    <p>From brand design to interactive experiences, we work across the full creative spectrum.</p>
-    <div class="grid">
-      <div class="card">
-        <h3>Typography</h3>
-        <p>Crafting type-led identities that communicate with clarity and character.</p>
-      </div>
-      <div class="card">
-        <h3>Visual Identity</h3>
-        <p>Building cohesive brand systems rooted in meaningful visual language.</p>
-      </div>
-      <div class="card">
-        <h3>Web Design</h3>
-        <p>Designing and building digital experiences that feel as good as they look.</p>
-      </div>
-      <div class="card">
-        <h3>Motion</h3>
-        <p>Bringing identity to life with purposeful animation and motion design.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact -->
-  <div id="contact" class="section">
-    <h2>Get in touch</h2>
-    <p>Have a project in mind? We'd love to hear about it. Reach out and let's create something together.</p>
-    <div class="hero-actions" style="margin-top:2rem;">
-      <a class="btn" href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a>
-    </div>
-  </div>
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>Ready to build something? Reach out at <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a></p>
+    </section>
+  </main>
 
   <footer>
-    &copy; 2026 Primary Vowels. All rights reserved.
+    <p>&copy; 2026 Primary Vowels. All rights reserved.</p>
   </footer>
-
 </body>
 </html>
