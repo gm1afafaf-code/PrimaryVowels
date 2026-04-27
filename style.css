@@ -82,15 +82,15 @@ nav {
 }
 .nav-links a:hover { color: #fff; text-decoration: none; }
 
-.nav-cta {
-  background: var(--orange) !important;
-  color: #fff !important;
+.nav-links a.nav-cta {
+  background: var(--orange);
+  color: #fff;
   padding: 0.45rem 1.1rem;
   border-radius: 6px;
-  font-weight: 600 !important;
-  transition: background 0.2s !important;
+  font-weight: 600;
+  transition: background 0.2s;
 }
-.nav-cta:hover { background: var(--orange-dim) !important; }
+.nav-links a.nav-cta:hover { background: var(--orange-dim); text-decoration: none; }
 
 /* Hamburger */
 .nav-toggle {
@@ -141,7 +141,7 @@ nav {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   color: var(--orange);
   margin-bottom: 0.9rem;
 }
