@@ -3,123 +3,343 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Primary Vowels — a·e^(IoU)</title>
+  <title>Primary Vowels — AI Server Rigs &amp; GPU Hardware</title>
+  <meta name="description" content="Primary Vowels builds custom GPU rigs and server hardware for AI companies. Small-team buildable. Enterprise-grade performance." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- ===== NAV ===== -->
   <header>
     <nav>
       <a href="#" class="logo" aria-label="Primary Vowels home">
-        <!-- Inline SVG logo mark -->
-        <svg class="logo-mark" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
-          <defs>
-            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#a78bfa"/>
-              <stop offset="100%" stop-color="#60a5fa"/>
-            </linearGradient>
-          </defs>
-          <circle cx="20" cy="20" r="19" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
-          <text x="20" y="16" text-anchor="middle" fill="url(#logoGrad)" font-size="11" font-weight="700" font-family="'Georgia','Times New Roman',serif" letter-spacing="0.5">
-            <tspan>a·e</tspan>
-          </text>
-          <text x="26" y="12" text-anchor="middle" fill="#60a5fa" font-size="7" font-weight="700" font-family="'Georgia','Times New Roman',serif">
-            <tspan>(IoU)</tspan>
-          </text>
-          <line x1="8" y1="22" x2="32" y2="22" stroke="url(#logoGrad)" stroke-width="0.75" opacity="0.4"/>
-          <text x="20" y="32" text-anchor="middle" fill="#e8e8f0" font-size="6" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="2.5">VOWELS</text>
+        <svg class="logo-mark" viewBox="0 0 44 44" width="38" height="38" aria-hidden="true">
+          <rect width="44" height="44" rx="8" fill="#f97316"/>
+          <text x="22" y="30" text-anchor="middle" fill="#fff" font-size="22" font-weight="800" font-family="system-ui,sans-serif" letter-spacing="-1">PV</text>
         </svg>
         <span class="logo-text">Primary Vowels</span>
       </a>
-      <ul>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="#products">Products</a></li>
+        <li><a href="#gallery">Gallery</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="#work">Work</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
+
+    <!-- ===== HERO ===== -->
     <section class="hero">
       <div class="hero-content">
-        <div class="formula-badge">The Formula</div>
-        <h1 class="formula-display">
-          <span class="vowel-a">a</span><span class="formula-op">·</span><span class="vowel-e">e</span><sup class="formula-exp">(<span class="vowel-i">I</span><span class="vowel-o">o</span><span class="vowel-u">U</span>)</sup>
-        </h1>
-        <p class="tagline">Five vowels. One equation. <span class="accent">Infinite intelligence.</span></p>
-        <p class="hero-sub">Primary Vowels is an AI company built on a simple truth — the building blocks of language power the future of machine intelligence.</p>
+        <div class="eyebrow">Custom AI Hardware</div>
+        <h1>Power Your AI.<br><span class="highlight">Build What Others Won't.</span></h1>
+        <p class="hero-sub">Primary Vowels designs and assembles custom GPU rigs and server hardware for AI companies — engineered for performance, sized for small teams, priced for the real world.</p>
+        <div class="hero-stats">
+          <div class="stat"><span class="stat-num">8–16</span><span class="stat-label">GPUs per rig</span></div>
+          <div class="stat-divider"></div>
+          <div class="stat"><span class="stat-num">2U–4U</span><span class="stat-label">rack form factor</span></div>
+          <div class="stat-divider"></div>
+          <div class="stat"><span class="stat-num">NVLink</span><span class="stat-label">interconnect ready</span></div>
+        </div>
         <div class="hero-actions">
-          <a href="#work" class="btn">See Our Work</a>
-          <a href="#about" class="btn btn-outline">Learn More</a>
+          <a href="#products" class="btn">View Builds</a>
+          <a href="#contact" class="btn btn-outline">Talk to Us</a>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="orb"></div>
-        <!-- Large decorative SVG logo -->
-        <svg class="hero-logo-svg" viewBox="0 0 300 300" aria-hidden="true">
-          <defs>
-            <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#a78bfa"/>
-              <stop offset="50%" stop-color="#7c3aed"/>
-              <stop offset="100%" stop-color="#60a5fa"/>
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="4" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          <circle cx="150" cy="150" r="140" fill="none" stroke="url(#heroGrad)" stroke-width="2" opacity="0.3"/>
-          <circle cx="150" cy="150" r="110" fill="none" stroke="url(#heroGrad)" stroke-width="1.5" opacity="0.2"/>
-          <circle cx="150" cy="150" r="80" fill="none" stroke="url(#heroGrad)" stroke-width="1" opacity="0.15"/>
-          <text x="150" y="145" text-anchor="middle" fill="url(#heroGrad)" font-size="64" font-weight="700" font-family="'Georgia','Times New Roman',serif" filter="url(#glow)">
-            a·e
-          </text>
-          <text x="218" y="110" text-anchor="middle" fill="#60a5fa" font-size="32" font-weight="700" font-family="'Georgia','Times New Roman',serif" filter="url(#glow)">
-            (IoU)
-          </text>
-          <text x="150" y="200" text-anchor="middle" fill="#e8e8f0" font-size="18" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="8" opacity="0.6">
-            PRIMARY
-          </text>
-          <text x="150" y="225" text-anchor="middle" fill="#e8e8f0" font-size="18" font-weight="600" font-family="system-ui,sans-serif" letter-spacing="8" opacity="0.6">
-            VOWELS
-          </text>
-        </svg>
+      <div class="hero-image">
+        <img
+          src="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=900&q=85&auto=format&fit=crop"
+          alt="High-performance GPU array for AI workloads"
+          loading="eager"
+        />
+        <div class="hero-image-glow"></div>
       </div>
     </section>
 
+    <!-- ===== PRODUCTS ===== -->
+    <section id="products" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="eyebrow">What We Build</div>
+          <h2>Rigs Engineered for AI</h2>
+          <p class="section-sub">Every machine is hand-assembled, stress-tested, and shipped ready to train.</p>
+        </div>
+        <div class="products-grid">
+
+          <article class="product-card">
+            <div class="product-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1639322537228-f710d846310a?w=700&q=80&auto=format&fit=crop"
+                alt="Multi-GPU training rig with open frame"
+                loading="lazy"
+              />
+            </div>
+            <div class="product-body">
+              <span class="product-tag">Training Rig</span>
+              <h3>VowelRig T8</h3>
+              <p>8× NVIDIA RTX 4090 or H100 SXM open-frame rig. PCIe Gen5 riser, 2 000 W PSU, 12-fan active cooling. Fits under a desk or in a half-rack.</p>
+              <ul class="spec-list">
+                <li>320 GB VRAM (4090 config)</li>
+                <li>PCIe 5.0 x16 per card</li>
+                <li>2× 1 GbE + 1× 10 GbE NIC</li>
+              </ul>
+              <a href="#contact" class="btn btn-sm">Request Quote</a>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=700&q=80&auto=format&fit=crop"
+                alt="Rack-mounted server hardware"
+                loading="lazy"
+              />
+            </div>
+            <div class="product-body">
+              <span class="product-tag">Rack Server</span>
+              <h3>VowelRack R16</h3>
+              <p>16× GPU 4U rack server with NVLink bridge support, dual Xeon or EPYC CPUs, and 1 TB DDR5 system RAM. The serious cluster starter.</p>
+              <ul class="spec-list">
+                <li>NVSwitch fabric optional</li>
+                <li>Dual 25 GbE + InfiniBand</li>
+                <li>Hot-swap NVMe bays</li>
+              </ul>
+              <a href="#contact" class="btn btn-sm">Request Quote</a>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=700&q=80&auto=format&fit=crop"
+                alt="High-density compute nodes"
+                loading="lazy"
+              />
+            </div>
+            <div class="product-body">
+              <span class="product-tag">Inference Node</span>
+              <h3>VowelNode I4</h3>
+              <p>Compact 2U inference node with 4× GPU, optimised for low-latency serving. Quiet enough for an office, powerful enough for production.</p>
+              <ul class="spec-list">
+                <li>160 GB VRAM (4090 config)</li>
+                <li>Liquid cooling option</li>
+                <li>iDRAC / IPMI remote mgmt</li>
+              </ul>
+              <a href="#contact" class="btn btn-sm">Request Quote</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GALLERY ===== -->
+    <section id="gallery" class="section section-dark">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="eyebrow">Hardware Gallery</div>
+          <h2>The Metal, Up Close</h2>
+        </div>
+        <div class="gallery-grid">
+          <figure class="gallery-item gallery-item--tall">
+            <img
+              src="https://images.unsplash.com/photo-1625314897518-bb4fe6e95229?w=800&q=80&auto=format&fit=crop"
+              alt="GPU cluster rack with blinking status lights"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="gallery-item">
+            <img
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80&auto=format&fit=crop"
+              alt="Circuit board close-up"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="gallery-item">
+            <img
+              src="https://images.unsplash.com/photo-1562408590-e32931084e23?w=600&q=80&auto=format&fit=crop"
+              alt="Server racks in operation"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="gallery-item gallery-item--wide">
+            <img
+              src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=900&q=80&auto=format&fit=crop"
+              alt="Data center server rows"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="gallery-item">
+            <img
+              src="https://images.unsplash.com/photo-1600267204026-85c3cc8e96cd?w=600&q=80&auto=format&fit=crop"
+              alt="Custom cooling hardware"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="gallery-item">
+            <img
+              src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80&auto=format&fit=crop"
+              alt="GPU close-up"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== WHY US ===== -->
     <section id="about" class="section">
-      <h2>About</h2>
-      <p>We are an AI research and product studio exploring the intersection of artificial intelligence and human expression. The formula <strong class="accent">a·e<sup>(IoU)</sup></strong> is our north star — every primary vowel, unified in one elegant expression. From generative art to language models, we push the boundaries of what AI can create.</p>
-    </section>
-
-    <section id="work" class="section alt">
-      <h2>Work</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Language Models</h3>
-          <p>Custom LLM integrations tailored to your brand voice and audience.</p>
-        </div>
-        <div class="card">
-          <h3>Generative Design</h3>
-          <p>AI-assisted visuals, type, and motion — built for the modern web.</p>
-        </div>
-        <div class="card">
-          <h3>AI Workflows</h3>
-          <p>Automations and pipelines that make your team move faster with AI.</p>
+      <div class="section-inner">
+        <div class="split-section">
+          <div class="split-text">
+            <div class="eyebrow">About Primary Vowels</div>
+            <h2>Built by Builders,<br>for AI Teams</h2>
+            <p>We started Primary Vowels because off-the-shelf servers were either too expensive, too slow to ship, or designed for someone else's workload. We cut that out.</p>
+            <p>Our team sources components direct, assembles every rig in-house, and tests it under full load before it leaves the door. No reseller margins. No mystery configs.</p>
+            <p>We work with early-stage AI labs, research teams, and companies scaling their first on-prem cluster — people who need real horsepower without the hyperscaler price tag.</p>
+            <a href="#contact" class="btn">Work With Us</a>
+          </div>
+          <div class="split-feats">
+            <div class="feat">
+              <div class="feat-icon">⚡</div>
+              <div>
+                <h4>Same-Week Turnaround</h4>
+                <p>Standard configs ship in 5–7 business days. Custom builds in two to three weeks.</p>
+              </div>
+            </div>
+            <div class="feat">
+              <div class="feat-icon">🔧</div>
+              <div>
+                <h4>Small-Team Buildable</h4>
+                <p>Every rig is designed so two people can rack, cable, and power it without a specialist crew.</p>
+              </div>
+            </div>
+            <div class="feat">
+              <div class="feat-icon">🛡️</div>
+              <div>
+                <h4>3-Year Parts Warranty</h4>
+                <p>All GPUs, CPUs, and PSUs covered. We send replacements next-day, no questions asked.</p>
+              </div>
+            </div>
+            <div class="feat">
+              <div class="feat-icon">📞</div>
+              <div>
+                <h4>Direct Engineer Support</h4>
+                <p>You get our engineers on call, not a tier-1 help desk. Slack, email, or phone.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="contact" class="section">
-      <h2>Contact</h2>
-      <p>Ready to build something? Reach out at <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a></p>
+    <!-- ===== PROCESS ===== -->
+    <section class="section section-dark">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="eyebrow">How It Works</div>
+          <h2>From Quote to Running Cluster</h2>
+        </div>
+        <ol class="process-steps">
+          <li class="step">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4>Tell Us Your Workload</h4>
+              <p>Model size, batch size, budget. We spec the right configuration in 24 hours.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4>Approve the Build Sheet</h4>
+              <p>Itemised BOM with component links. No hidden costs or markup surprises.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4>We Build &amp; Burn-In Test</h4>
+              <p>72-hour stability run at full load before packing. Logs included with shipment.</p>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step-num">04</div>
+            <div class="step-body">
+              <h4>Rack It, Train It</h4>
+              <p>Arrives with OS pre-installed, drivers tuned, and CUDA benchmarks already green.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section id="contact" class="section">
+      <div class="section-inner">
+        <div class="contact-wrap">
+          <div class="contact-text">
+            <div class="eyebrow">Get Started</div>
+            <h2>Ready to Build?</h2>
+            <p>Tell us about your project and we'll send a configuration and quote within one business day.</p>
+            <address class="contact-details">
+              <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a>
+            </address>
+          </div>
+          <form class="contact-form" action="mailto:hello@primaryvowels.com" method="post" enctype="text/plain">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@company.com" required />
+            </div>
+            <div class="form-group">
+              <label for="workload">Workload / Requirements</label>
+              <textarea id="workload" name="workload" rows="4" placeholder="Model size, GPU count, budget range…"></textarea>
+            </div>
+            <button type="submit" class="btn btn-full">Send Enquiry</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </main>
 
+  <!-- ===== FOOTER ===== -->
   <footer>
-    <p>&copy; 2026 Primary Vowels. All rights reserved.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg viewBox="0 0 44 44" width="32" height="32" aria-hidden="true">
+          <rect width="44" height="44" rx="8" fill="#f97316"/>
+          <text x="22" y="30" text-anchor="middle" fill="#fff" font-size="22" font-weight="800" font-family="system-ui,sans-serif" letter-spacing="-1">PV</text>
+        </svg>
+        <span>Primary Vowels</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 Primary Vowels Ltd. All rights reserved.</p>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="#products">Products</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#about">About</a>
+        <a href="mailto:hello@primaryvowels.com">Contact</a>
+      </nav>
+    </div>
   </footer>
+
+  <script>
+    // Mobile nav toggle
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      navLinks.classList.toggle('open');
+    });
+  </script>
 </body>
 </html>
