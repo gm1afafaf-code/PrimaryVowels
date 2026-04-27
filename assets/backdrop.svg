@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <!-- Subtle hex-grid tile for corners -->
+    <pattern id="hex" x="0" y="0" width="46" height="40" patternUnits="userSpaceOnUse">
+      <path d="M23,0 L46,10 L46,30 L23,40 L0,30 L0,10 Z" fill="none" stroke="#26263c" stroke-width="0.8"/>
+    </pattern>
+    <!-- Vignette: darkens edges for depth -->
+    <radialGradient id="vign" cx="50%" cy="50%" r="75%">
+      <stop offset="20%" stop-color="#1a1a1f" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0d0d12" stop-opacity="0.65"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="1920" height="1080" fill="#1a1a1f"/>
+
+  <!-- ── Hex grid in bottom-left and bottom-right corners ── -->
+  <rect x="0"    y="680" width="500" height="400" fill="url(#hex)" opacity="0.45"/>
+  <rect x="1420" y="680" width="500" height="400" fill="url(#hex)" opacity="0.45"/>
+
+  <!-- ── Overlapping geometric circles (muted blue-grey) ──
+       5 circles of r=180, centres at x=560,760,960,1160,1360, y=480
+       Adjacent circles 200 px apart → 160 px overlap each pair            -->
+  <circle cx="560"  cy="480" r="180" fill="none" stroke="#3a5272" stroke-width="1.1" opacity="0.52"/>
+  <circle cx="760"  cy="480" r="180" fill="none" stroke="#3a5272" stroke-width="1.1" opacity="0.52"/>
+  <circle cx="960"  cy="480" r="180" fill="none" stroke="#3a5272" stroke-width="1.1" opacity="0.52"/>
+  <circle cx="1160" cy="480" r="180" fill="none" stroke="#3a5272" stroke-width="1.1" opacity="0.52"/>
+  <circle cx="1360" cy="480" r="180" fill="none" stroke="#3a5272" stroke-width="1.1" opacity="0.52"/>
+
+  <!-- Larger outer rings on first, centre and last circles -->
+  <circle cx="560"  cy="480" r="250" fill="none" stroke="#2a3f5a" stroke-width="0.7" opacity="0.28"/>
+  <circle cx="960"  cy="480" r="250" fill="none" stroke="#2a3f5a" stroke-width="0.7" opacity="0.28"/>
+  <circle cx="1360" cy="480" r="250" fill="none" stroke="#2a3f5a" stroke-width="0.7" opacity="0.28"/>
+
+  <!-- ── a  e  i  o  u – thin outlined serif letters ── -->
+  <text x="560"  y="568" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="210" font-weight="300"
+        fill="none" stroke="#d2d2e6" stroke-width="1.2" opacity="0.88">a</text>
+  <text x="760"  y="568" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="210" font-weight="300"
+        fill="none" stroke="#d2d2e6" stroke-width="1.2" opacity="0.88">e</text>
+  <text x="960"  y="568" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="210" font-weight="300"
+        fill="none" stroke="#d2d2e6" stroke-width="1.2" opacity="0.88">i</text>
+  <text x="1160" y="568" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="210" font-weight="300"
+        fill="none" stroke="#d2d2e6" stroke-width="1.2" opacity="0.88">o</text>
+  <text x="1360" y="568" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="210" font-weight="300"
+        fill="none" stroke="#d2d2e6" stroke-width="1.2" opacity="0.88">u</text>
+
+  <!-- ── Edge vignette for depth ── -->
+  <rect width="1920" height="1080" fill="url(#vign)"/>
+
+  <!-- ── "primaryvowels" wordmark at bottom centre ──
+       Layout: "primaryv" + eye-icon (replacing 'o') + "wels"
+       Estimated widths at font-size=20, letter-spacing=0.1em (~2 px/ch):
+         "primaryv" ≈ 105 px  |  eye 36 px  |  "wels" ≈ 52 px  → total ≈ 193 px
+       Start: 960 − 96 = 864                                               -->
+  <g opacity="0.80">
+    <text x="864" y="1020"
+          font-family="'Segoe UI', system-ui, sans-serif"
+          font-size="20" font-weight="600" letter-spacing="0.1em"
+          fill="#b0b0c8">primaryv</text>
+    <!-- Eye icon -->
+    <ellipse cx="987" cy="1011" rx="16" ry="10.5"
+             fill="none" stroke="#b0b0c8" stroke-width="1.5"/>
+    <circle  cx="987" cy="1011" r="5" fill="#b0b0c8"/>
+    <!-- "wels" -->
+    <text x="1007" y="1020"
+          font-family="'Segoe UI', system-ui, sans-serif"
+          font-size="20" font-weight="600" letter-spacing="0.1em"
+          fill="#b0b0c8">wels</text>
+  </g>
+</svg>
