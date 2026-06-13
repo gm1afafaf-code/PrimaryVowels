@@ -3,25 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrimaryVowels • Pre-Owned GPUs &amp; AI Rigs</title>
+  <title>PrimaryVowels • Pre-Owned GPUs & AI Rigs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
-    body { font-family: 'Inter', system_ui, sans-serif; }
-    .logo-font { font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
-    .section-header { font-size: 1.35rem; letter-spacing: -0.025em; }
-    .product-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-    .product-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05); }
-    .rig-card { transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }
-    .nav-link { transition: color 0.1s ease; }
-    .nav-link:hover { color: #334155; }
-    .price { font-variant-numeric: tabular-nums; }
-    .shop-filter { transition: all 0.1s ease; }
-    .shop-filter.active { background-color: #0f172a; color: white; border-color: #0f172a; }
-    .modal { animation: modalPop 0.15s ease-out forwards; }
-    @keyframes modalPop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .spec-row { font-size: 0.875rem; line-height: 1.25rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+    
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+    
+    .logo-font {
+      font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .section-header {
+      font-size: 1.35rem;
+      letter-spacing: -0.025em;
+    }
+
+    .product-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    }
+
+    .rig-card {
+      transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    .nav-link {
+      transition: color 0.1s ease;
+    }
+    
+    .nav-link:hover {
+      color: #334155;
+    }
+
+    .price {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .shop-filter {
+      transition: all 0.1s ease;
+    }
+    .shop-filter.active {
+      background-color: #0f172a;
+      color: white;
+      border-color: #0f172a;
+    }
+
+    .modal {
+      animation: modalPop 0.15s ease-out forwards;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .spec-row {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -53,10 +102,14 @@
                   class="flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 transition-colors">
             <i class="fa-solid fa-shopping-cart text-slate-700"></i>
             <span class="hidden sm:inline text-slate-700">Cart</span>
-            <span id="cart-count" class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 text-[11px] font-semibold bg-slate-900 text-white rounded-full">0</span>
+            <span id="cart-count" 
+                  class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 text-[11px] font-semibold bg-slate-900 text-white rounded-full">0</span>
           </button>
           
-          <a href="#contact" class="hidden sm:block px-5 py-2 text-sm font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 active:bg-black transition-colors">Contact</a>
+          <a href="#contact" 
+             class="hidden sm:block px-5 py-2 text-sm font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 active:bg-black transition-colors">
+            Contact
+          </a>
         </div>
       </div>
     </div>
@@ -81,10 +134,12 @@
             </p>
             
             <div class="mt-8 flex flex-wrap gap-3">
-              <a href="#shop" class="inline-flex items-center justify-center px-7 h-12 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-black transition-colors">
+              <a href="#shop" 
+                 class="inline-flex items-center justify-center px-7 h-12 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-black transition-colors">
                 Browse GPUs
               </a>
-              <a href="#rigs" class="inline-flex items-center justify-center px-7 h-12 rounded-2xl border border-slate-300 hover:bg-white text-sm font-semibold transition-colors">
+              <a href="#rigs" 
+                 class="inline-flex items-center justify-center px-7 h-12 rounded-2xl border border-slate-300 hover:bg-white text-sm font-semibold transition-colors">
                 View Pre-Built Rigs
               </a>
             </div>
@@ -108,20 +163,29 @@
         
         <div class="md:col-span-5">
           <div class="relative rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-            <img src="images/8.jpg" alt="Pre-owned GPUs for AI rigs" class="w-full h-auto object-cover aspect-[16/10]">
+            <img src="https://picsum.photos/id/1015/800/500" alt="Pre-owned GPUs and AI server rigs in stock" class="w-full h-auto object-cover aspect-[16/10]">
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- TRUST -->
+  <!-- TRUST / STATS -->
   <div class="border-b border-slate-200 bg-white">
     <div class="max-w-screen-2xl mx-auto px-8 py-5">
       <div class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 text-sm text-slate-600">
-        <div class="flex items-center gap-x-2"><i class="fa-solid fa-shield-halved text-emerald-600"></i> <span class="font-medium">30-day functional warranty on all hardware</span></div>
-        <div class="flex items-center gap-x-2"><i class="fa-solid fa-check-double text-emerald-600"></i> <span class="font-medium">Every GPU load-tested for 24+ hours</span></div>
-        <div class="flex items-center gap-x-2"><i class="fa-solid fa-truck text-emerald-600"></i> <span class="font-medium">US shipping 2–5 business days</span></div>
+        <div class="flex items-center gap-x-2">
+          <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+          <span class="font-medium">30-day functional warranty on all hardware</span>
+        </div>
+        <div class="flex items-center gap-x-2">
+          <i class="fa-solid fa-check-double text-emerald-600"></i>
+          <span class="font-medium">Every GPU load-tested for 24+ hours</span>
+        </div>
+        <div class="flex items-center gap-x-2">
+          <i class="fa-solid fa-truck text-emerald-600"></i>
+          <span class="font-medium">US shipping 2–5 business days</span>
+        </div>
       </div>
     </div>
   </div>
@@ -134,9 +198,12 @@
         <h2 class="section-header font-semibold tracking-tight">Pre-Owned GPUs</h2>
       </div>
       <div class="hidden md:flex items-center gap-1.5 text-sm">
-        <button onclick="filterGPUs('all')" id="filter-all" class="shop-filter active px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300">All</button>
-        <button onclick="filterGPUs('30-series')" id="filter-30" class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">30 Series</button>
-        <button onclick="filterGPUs('40-series')" id="filter-40" class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">40 Series</button>
+        <button onclick="filterGPUs('all')" id="filter-all"
+                class="shop-filter active px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300">All</button>
+        <button onclick="filterGPUs('30-series')" id="filter-30"
+                class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">30 Series</button>
+        <button onclick="filterGPUs('40-series')" id="filter-40"
+                class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">40 Series</button>
       </div>
     </div>
 
@@ -146,7 +213,7 @@
     
     <div class="mt-3 text-xs text-slate-500 flex items-center gap-x-2">
       <i class="fa-solid fa-info-circle"></i> 
-      <span>All cards are tested pre-owned. Condition ratings reflect cosmetic and functional state.</span>
+      <span>All cards are tested pre-owned. Condition ratings reflect cosmetic and functional state. Photos are representative stock images.</span>
     </div>
   </section>
 
@@ -158,7 +225,9 @@
           <div class="text-xs uppercase tracking-[1.5px] font-semibold text-slate-500">READY TO DEPLOY</div>
           <h2 class="section-header font-semibold tracking-tight">Pre-Built AI Rigs</h2>
         </div>
-        <a href="#builder" class="text-sm font-medium hidden md:inline-flex items-center gap-x-1.5 text-slate-700 hover:text-slate-900">Or configure your own <i class="fa-solid fa-arrow-right text-xs"></i></a>
+        <a href="#builder" class="text-sm font-medium hidden md:inline-flex items-center gap-x-1.5 text-slate-700 hover:text-slate-900">
+          Or configure your own <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
       </div>
 
       <div id="rigs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
@@ -177,6 +246,8 @@
 
     <div class="mt-8 bg-white border border-slate-200 rounded-3xl p-8 max-w-[980px]">
       <div class="grid md:grid-cols-12 gap-x-8 gap-y-8">
+        
+        <!-- GPU Selection -->
         <div class="md:col-span-5">
           <label class="block text-xs font-medium text-slate-500 tracking-wider mb-1.5">GPU MODEL</label>
           <select id="builder-gpu" onchange="updateBuilderPrice()" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-slate-400">
@@ -191,38 +262,61 @@
           <label class="block text-xs font-medium text-slate-500 tracking-wider mt-6 mb-1.5">QUANTITY</label>
           <div class="flex items-center gap-2">
             <button onclick="adjustQuantity(-1)" class="w-9 h-9 flex items-center justify-center border border-slate-300 hover:bg-slate-50 active:bg-slate-100 rounded-xl text-lg font-light">–</button>
-            <input type="number" id="builder-qty" value="6" min="2" max="12" step="1" oninput="updateBuilderPrice()" class="w-20 text-center border border-slate-300 rounded-2xl py-2.5 font-semibold text-lg tabular-nums focus:outline-none focus:border-slate-400">
+            <input type="number" id="builder-qty" value="6" min="2" max="12" step="1" 
+                   oninput="updateBuilderPrice()" 
+                   class="w-20 text-center border border-slate-300 rounded-2xl py-2.5 font-semibold text-lg tabular-nums focus:outline-none focus:border-slate-400">
             <button onclick="adjustQuantity(1)" class="w-9 h-9 flex items-center justify-center border border-slate-300 hover:bg-slate-50 active:bg-slate-100 rounded-xl text-lg font-light">+</button>
             <span class="text-xs text-slate-500 ml-2">GPUs (2–12)</span>
           </div>
         </div>
 
+        <!-- Base System -->
         <div class="md:col-span-4">
           <label class="block text-xs font-medium text-slate-500 tracking-wider mb-1.5">BASE SYSTEM</label>
           <div class="border border-slate-200 rounded-2xl p-4 text-sm">
-            <div class="flex justify-between mb-1"><div>Chassis + 1600W+ PSU (Platinum)</div></div>
-            <div class="flex justify-between mb-1"><div>CPU + 64GB DDR4</div></div>
-            <div class="flex justify-between mb-1"><div>2TB NVMe SSD + OS install</div></div>
-            <div class="flex justify-between text-slate-500 pt-2 border-t mt-2 text-xs"><div>Included in estimate</div></div>
+            <div class="flex justify-between mb-1">
+              <div>Chassis + 1600W+ PSU (Platinum)</div>
+            </div>
+            <div class="flex justify-between mb-1">
+              <div>CPU + 64GB DDR4</div>
+            </div>
+            <div class="flex justify-between mb-1">
+              <div>2TB NVMe SSD + OS install</div>
+            </div>
+            <div class="flex justify-between text-slate-500 pt-2 border-t mt-2 text-xs">
+              <div>Included in estimate</div>
+            </div>
           </div>
           <div class="mt-4">
             <label class="text-xs font-medium text-slate-500 tracking-wider">ADD-ONS</label>
             <div class="mt-2 space-y-1.5 text-sm">
-              <label class="flex items-center gap-x-2"><input type="checkbox" id="add-nvlink" onchange="updateBuilderPrice()" class="accent-slate-900"> <span>NVLink bridge kit (for compatible 3090s) <span class="text-xs text-slate-500">+$240</span></span></label>
-              <label class="flex items-center gap-x-2"><input type="checkbox" id="add-10gbe" onchange="updateBuilderPrice()" class="accent-slate-900"> <span>10GbE NIC + SFP+ <span class="text-xs text-slate-500">+$165</span></span></label>
+              <label class="flex items-center gap-x-2">
+                <input type="checkbox" id="add-nvlink" onchange="updateBuilderPrice()" class="accent-slate-900">
+                <span>NVLink bridge kit (for compatible 3090s) <span class="text-xs text-slate-500">+$240</span></span>
+              </label>
+              <label class="flex items-center gap-x-2">
+                <input type="checkbox" id="add-10gbe" onchange="updateBuilderPrice()" class="accent-slate-900">
+                <span>10GbE NIC + SFP+ <span class="text-xs text-slate-500">+$165</span></span>
+              </label>
             </div>
           </div>
         </div>
 
+        <!-- Live Price -->
         <div class="md:col-span-3 bg-slate-900 text-white rounded-3xl p-6 flex flex-col">
           <div>
             <div class="text-xs tracking-[1px] text-slate-400">ESTIMATED TOTAL</div>
             <div id="builder-total" class="font-semibold tabular-nums text-4xl tracking-tighter mt-1">$4,199</div>
           </div>
           
-          <div id="builder-breakdown" class="mt-auto text-xs text-slate-300 leading-snug pt-6"></div>
+          <div id="builder-breakdown" class="mt-auto text-xs text-slate-300 leading-snug pt-6">
+            <!-- populated by JS -->
+          </div>
           
-          <button onclick="addBuilderToCart()" class="mt-6 bg-white hover:bg-slate-100 transition-colors text-slate-900 font-semibold py-3 rounded-2xl text-sm active:scale-[0.985]">ADD CONFIGURED RIG TO CART</button>
+          <button onclick="addBuilderToCart()"
+                  class="mt-6 bg-white hover:bg-slate-100 transition-colors text-slate-900 font-semibold py-3 rounded-2xl text-sm active:scale-[0.985]">
+            ADD CONFIGURED RIG TO CART
+          </button>
           <div class="text-[10px] text-center text-slate-400 mt-2.5">Ships fully assembled &amp; tested • 30-day warranty</div>
         </div>
       </div>
@@ -242,7 +336,10 @@
         <div class="md:col-span-7 mt-7 md:mt-0">
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="rounded-2xl border border-slate-200 p-5">
-              <div class="font-semibold text-sm flex items-center gap-x-2"><i class="fa-solid fa-truck text-slate-400"></i> <span>Domestic (USA)</span></div>
+              <div class="font-semibold text-sm flex items-center gap-x-2">
+                <i class="fa-solid fa-truck text-slate-400"></i> 
+                <span>Domestic (USA)</span>
+              </div>
               <ul class="mt-3 text-sm text-slate-600 space-y-1.5">
                 <li class="flex gap-x-2"><span class="font-medium w-24 inline-block">Orders &gt; $1,500</span> <span>Free standard shipping</span></li>
                 <li class="flex gap-x-2"><span class="font-medium w-24 inline-block">Orders &lt; $1,500</span> <span>$89 flat rate</span></li>
@@ -252,7 +349,10 @@
             </div>
             
             <div class="rounded-2xl border border-slate-200 p-5">
-              <div class="font-semibold text-sm flex items-center gap-x-2"><i class="fa-solid fa-globe text-slate-400"></i> <span>International</span></div>
+              <div class="font-semibold text-sm flex items-center gap-x-2">
+                <i class="fa-solid fa-globe text-slate-400"></i> 
+                <span>International</span>
+              </div>
               <ul class="mt-3 text-sm text-slate-600 space-y-1.5">
                 <li>Shipping calculated at checkout (DHL / FedEx / freight)</li>
                 <li class="text-slate-500 text-xs">Typical transit 5–14 days depending on destination</li>
@@ -260,7 +360,9 @@
               
               <div class="mt-5 pt-4 border-t text-sm">
                 <div class="font-medium mb-1">Customs, Duties &amp; VAT</div>
-                <div class="text-xs leading-relaxed text-slate-600">Import duties, VAT/GST, and customs brokerage fees are the responsibility of the buyer. We include a commercial invoice with accurate HS codes (8471.50 / 8473.30) and declared value matching the invoice total. We do not mark up or under-declare.</div>
+                <div class="text-xs leading-relaxed text-slate-600">
+                  Import duties, VAT/GST, and customs brokerage fees are the responsibility of the buyer. We include a commercial invoice with accurate HS codes (8471.50 / 8473.30) and declared value matching the invoice total. We do not mark up or under-declare.
+                </div>
               </div>
             </div>
           </div>
@@ -269,6 +371,7 @@
     </div>
   </section>
 
+  <!-- ABOUT / SIMPLE -->
   <section class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-200">
     <div class="max-w-3xl">
       <div class="text-sm leading-relaxed text-slate-600">
@@ -281,6 +384,7 @@
     </div>
   </section>
 
+  <!-- FOOTER + CONTACT -->
   <footer id="contact" class="bg-slate-900 text-slate-300">
     <div class="max-w-screen-2xl mx-auto px-8 pt-10 pb-16">
       <div class="flex flex-col md:flex-row justify-between gap-y-10">
@@ -297,15 +401,27 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-7 text-sm">
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">COMPANY</div>
-            <div class="space-y-1.5"><div>About</div><div>Inventory Policy</div><div>Testing Standards</div></div>
+            <div class="space-y-1.5">
+              <div>About</div>
+              <div>Inventory Policy</div>
+              <div>Testing Standards</div>
+            </div>
           </div>
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">SUPPORT</div>
-            <div class="space-y-1.5"><div>Warranty &amp; Returns</div><div>RMA Process</div><div>Technical Documentation</div></div>
+            <div class="space-y-1.5">
+              <div>Warranty &amp; Returns</div>
+              <div>RMA Process</div>
+              <div>Technical Documentation</div>
+            </div>
           </div>
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">CONTACT</div>
-            <div class="space-y-[5px]"><div>sales@primaryvowels.com</div><div>+1 (512) 555-0182</div><div class="text-xs pt-1">Austin, TX • Ships worldwide</div></div>
+            <div class="space-y-[5px]">
+              <div>sales@primaryvowels.com</div>
+              <div>+1 (512) 555-0182</div>
+              <div class="text-xs pt-1">Austin, TX • Ships worldwide</div>
+            </div>
           </div>
         </div>
       </div>
@@ -324,55 +440,268 @@
         <div class="font-semibold">Your Cart</div>
         <button onclick="hideCart()" class="text-xl leading-none px-2 text-slate-400 hover:text-slate-600">×</button>
       </div>
+      
       <div id="cart-items" class="max-h-[380px] overflow-auto px-6 py-2 text-sm divide-y"></div>
+      
       <div class="px-6 pt-5 pb-6 border-t">
-        <div class="flex justify-between items-baseline mb-4"><div class="text-sm text-slate-500">Total</div><div id="cart-total" class="font-semibold text-2xl tabular-nums tracking-tighter">$0</div></div>
-        <button onclick="checkout()" class="w-full bg-slate-900 hover:bg-black active:bg-black transition-colors text-white rounded-2xl py-[13px] text-sm font-semibold">PROCEED TO CHECKOUT</button>
+        <div class="flex justify-between items-baseline mb-4">
+          <div class="text-sm text-slate-500">Total</div>
+          <div id="cart-total" class="font-semibold text-2xl tabular-nums tracking-tighter">$0</div>
+        </div>
+        
+        <button onclick="checkout()" 
+                class="w-full bg-slate-900 hover:bg-black active:bg-black transition-colors text-white rounded-2xl py-[13px] text-sm font-semibold">
+          PROCEED TO CHECKOUT
+        </button>
+        
         <div class="text-center text-[10px] text-slate-400 pt-3">Taxes &amp; shipping calculated at checkout. International customers see customs note above.</div>
       </div>
     </div>
   </div>
 
-  <!-- CHECKOUT SUCCESS -->
+  <!-- SUCCESS / CHECKOUT MODAL -->
   <div id="checkout-modal" onclick="if (event.target.id === 'checkout-modal') hideCheckout()" class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center">
     <div onclick="event.stopImmediatePropagation()" class="bg-white mx-4 w-full max-w-md rounded-3xl overflow-hidden">
       <div class="px-7 pt-7 pb-6">
-        <div class="text-emerald-600"><i class="fa-solid fa-check-circle text-4xl"></i></div>
+        <div class="text-emerald-600">
+          <i class="fa-solid fa-check-circle text-4xl"></i>
+        </div>
         <div class="font-semibold text-xl tracking-tight mt-4">Order request received.</div>
         <p class="mt-2 text-sm text-slate-600">Thank you. A sales representative will contact you within 4 hours to confirm inventory, finalize shipping, and provide a formal invoice. Payment via ACH, wire, or credit card.</p>
-        <div class="bg-slate-50 rounded-2xl p-4 mt-6 text-xs text-slate-500">Order reference will be emailed to the address you provide. Rigs are built and tested to order (7–14 days). GPUs ship same or next business day when in stock.</div>
+        
+        <div class="bg-slate-50 rounded-2xl p-4 mt-6 text-xs text-slate-500">
+          Order reference will be emailed to the address you provide. Rigs are built and tested to order (7–14 days). GPUs ship same or next business day when in stock.
+        </div>
       </div>
+      
       <div class="border-t px-7 py-5 flex gap-3">
-        <button onclick="hideCheckout(); clearCartAfterSuccess()" class="flex-1 border border-slate-300 hover:bg-slate-50 text-sm font-medium rounded-2xl py-2.5">CLOSE</button>
-        <button onclick="window.location.reload()" class="flex-1 bg-slate-900 text-white text-sm font-medium rounded-2xl py-2.5">RETURN TO STORE</button>
+        <button onclick="hideCheckout(); clearCartAfterSuccess()" 
+                class="flex-1 border border-slate-300 hover:bg-slate-50 text-sm font-medium rounded-2xl py-2.5">
+          CLOSE
+        </button>
+        <button onclick="window.location.reload()" 
+                class="flex-1 bg-slate-900 text-white text-sm font-medium rounded-2xl py-2.5">
+          RETURN TO STORE
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    function initTailwind() { }
+    // Tailwind script
+    function initTailwind() {
+      // Tailwind via CDN already loaded
+    }
 
+    // Product data with simple stock photos (picsum for reliable demo)
     const gpus = [
-      { id: "g3070", name: "NVIDIA GeForce RTX 3070 8GB", series: "30-series", price: 249, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 47, badge: "Best value", img: "images/4.jpg" },
-      { id: "g3090", name: "NVIDIA GeForce RTX 3090 24GB", series: "30-series", price: 679, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 19, badge: "High VRAM", img: "images/1.jpg" },
-      { id: "g3080", name: "NVIDIA GeForce RTX 3080 10GB", series: "30-series", price: 329, vram: "10 GB GDDR6X", condition: "Tested Pre-Owned", power: "320W", stock: 31, badge: null, img: "images/2.jpg" },
-      { id: "g3060ti", name: "NVIDIA GeForce RTX 3060 Ti 8GB", series: "30-series", price: 229, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "200W", stock: 64, badge: "Budget", img: "images/4.jpg" },
-      { id: "g4060", name: "NVIDIA GeForce RTX 4060 8GB", series: "40-series", price: 259, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "115W", stock: 28, badge: "Low power", img: "images/8.jpg" },
-      { id: "g4060ti", name: "NVIDIA GeForce RTX 4060 Ti 8GB", series: "40-series", price: 319, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "160W", stock: 22, badge: null, img: "images/8.jpg" },
-      { id: "g3070fe", name: "NVIDIA RTX 3070 Founders Edition 8GB", series: "30-series", price: 265, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 12, badge: "Premium", img: "images/4.jpg" },
-      { id: "g3090fe", name: "NVIDIA RTX 3090 Founders Edition 24GB", series: "30-series", price: 749, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 7, badge: "High VRAM", img: "images/1.jpg" }
+      {
+        id: "g3070",
+        name: "NVIDIA GeForce RTX 3070 8GB",
+        series: "30-series",
+        price: 249,
+        vram: "8 GB GDDR6",
+        condition: "Tested Pre-Owned",
+        power: "220W",
+        img: "https://picsum.photos/id/29/400/300",
+        stock: 47,
+        badge: "Best value"
+      },
+      {
+        id: "g3090",
+        name: "NVIDIA GeForce RTX 3090 24GB",
+        series: "30-series",
+        price: 679,
+        vram: "24 GB GDDR6X",
+        condition: "Tested Pre-Owned",
+        power: "350W",
+        img: "https://picsum.photos/id/160/400/300",
+        stock: 19,
+        badge: "High VRAM"
+      },
+      {
+        id: "g3080",
+        name: "NVIDIA GeForce RTX 3080 10GB",
+        series: "30-series",
+        price: 329,
+        vram: "10 GB GDDR6X",
+        condition: "Tested Pre-Owned",
+        power: "320W",
+        img: "https://picsum.photos/id/201/400/300",
+        stock: 31,
+        badge: null
+      },
+      {
+        id: "g3060ti",
+        name: "NVIDIA GeForce RTX 3060 Ti 8GB",
+        series: "30-series",
+        price: 229,
+        vram: "8 GB GDDR6",
+        condition: "Tested Pre-Owned",
+        power: "200W",
+        img: "https://picsum.photos/id/251/400/300",
+        stock: 64,
+        badge: "Budget"
+      },
+      {
+        id: "g4060",
+        name: "NVIDIA GeForce RTX 4060 8GB",
+        series: "40-series",
+        price: 259,
+        vram: "8 GB GDDR6",
+        condition: "Tested Pre-Owned",
+        power: "115W",
+        img: "https://picsum.photos/id/30/400/300",
+        stock: 28,
+        badge: "Low power"
+      },
+      {
+        id: "g4060ti",
+        name: "NVIDIA GeForce RTX 4060 Ti 8GB",
+        series: "40-series",
+        price: 319,
+        vram: "8 GB GDDR6",
+        condition: "Tested Pre-Owned",
+        power: "160W",
+        img: "https://picsum.photos/id/180/400/300",
+        stock: 22,
+        badge: null
+      },
+      {
+        id: "g3070fe",
+        name: "NVIDIA RTX 3070 Founders Edition 8GB",
+        series: "30-series",
+        price: 265,
+        vram: "8 GB GDDR6",
+        condition: "Tested Pre-Owned",
+        power: "220W",
+        img: "https://picsum.photos/id/29/400/300",
+        stock: 12,
+        badge: "Premium"
+      },
+      {
+        id: "g3090fe",
+        name: "NVIDIA RTX 3090 Founders Edition 24GB",
+        series: "30-series",
+        price: 749,
+        vram: "24 GB GDDR6X",
+        condition: "Tested Pre-Owned",
+        power: "350W",
+        img: "https://picsum.photos/id/160/400/300",
+        stock: 7,
+        badge: "High VRAM"
+      }
     ];
 
     const rigs = [
-      { id: "r4-3070", name: "4× RTX 3070 AI Starter", price: 2299, gpus: "4 × RTX 3070 8GB", totalVram: "32 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~850W", chassis: "Open frame", use: "Local inference (7B–13B), Stable Diffusion, small services", img: "images/3.jpg" },
-      { id: "r6-3070", name: "6× RTX 3070 Home Lab", price: 3299, gpus: "6 × RTX 3070 8GB", totalVram: "48 GB", cpu: "Ryzen 9 5900X", ram: "96 GB DDR4", storage: "2 TB NVMe", psu: "2000W Platinum", power: "~1250W", chassis: "Open frame", use: "Multi-user inference, fine-tuning 7B–30B models", img: "images/5.jpg" },
-      { id: "r8-3060ti", name: "8× RTX 3060 Ti Value Rig", price: 2899, gpus: "8 × RTX 3060 Ti 8GB", totalVram: "64 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~1100W", chassis: "Open frame", use: "High throughput inference, batch workloads", img: "images/5.jpg" },
-      { id: "r4-3090", name: "4× RTX 3090 High-VRAM", price: 3999, gpus: "4 × RTX 3090 24GB", totalVram: "96 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2000W Platinum", power: "~1400W", chassis: "Open frame", use: "70B Q4/Q5 inference, training small models", img: "images/3.jpg" },
-      { id: "r5-3090", name: "5× RTX 3090 Mid-Size", price: 4799, gpus: "5 × RTX 3090 24GB", totalVram: "120 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2400W Titanium", power: "~1750W", chassis: "Open frame", use: "Large context LLMs, multi-tenant AI services", img: "images/5.jpg" },
-      { id: "r8-3090", name: "8× RTX 3090 Enterprise", price: 7799, gpus: "8 × RTX 3090 24GB", totalVram: "192 GB", cpu: "Threadripper 3960X", ram: "256 GB DDR4 ECC", storage: "4 TB NVMe", psu: "2× 1600W Platinum (redundant)", power: "~2800W", chassis: "4U rackmount frame", use: "Heavy production inference, fine-tuning 70B+", img: "images/5.jpg" },
-      { id: "r10-3070", name: "10× RTX 3070 Large Inference", price: 5799, gpus: "10 × RTX 3070 8GB", totalVram: "80 GB", cpu: "Ryzen 9 5950X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2× 1600W Platinum", power: "~2100W", chassis: "Open frame + rack rails", use: "High volume batch processing and serving", img: "images/3.jpg" }
+      {
+        id: "r4-3070",
+        name: "4× RTX 3070 AI Starter",
+        price: 2299,
+        gpus: "4 × RTX 3070 8GB",
+        totalVram: "32 GB",
+        cpu: "Ryzen 7 5700X",
+        ram: "64 GB DDR4",
+        storage: "2 TB NVMe",
+        psu: "1600W Platinum",
+        power: "~850W",
+        chassis: "Open frame",
+        img: "https://picsum.photos/id/1015/600/400",
+        use: "Local inference (7B–13B), Stable Diffusion, small services"
+      },
+      {
+        id: "r6-3070",
+        name: "6× RTX 3070 Home Lab",
+        price: 3299,
+        gpus: "6 × RTX 3070 8GB",
+        totalVram: "48 GB",
+        cpu: "Ryzen 9 5900X",
+        ram: "96 GB DDR4",
+        storage: "2 TB NVMe",
+        psu: "2000W Platinum",
+        power: "~1250W",
+        chassis: "Open frame",
+        img: "https://picsum.photos/id/133/600/400",
+        use: "Multi-user inference, fine-tuning 7B–30B models"
+      },
+      {
+        id: "r8-3060ti",
+        name: "8× RTX 3060 Ti Value Rig",
+        price: 2899,
+        gpus: "8 × RTX 3060 Ti 8GB",
+        totalVram: "64 GB",
+        cpu: "Ryzen 7 5700X",
+        ram: "64 GB DDR4",
+        storage: "2 TB NVMe",
+        psu: "1600W Platinum",
+        power: "~1100W",
+        chassis: "Open frame",
+        img: "https://picsum.photos/id/201/600/400",
+        use: "High throughput inference, batch workloads"
+      },
+      {
+        id: "r4-3090",
+        name: "4× RTX 3090 High-VRAM",
+        price: 3999,
+        gpus: "4 × RTX 3090 24GB",
+        totalVram: "96 GB",
+        cpu: "Ryzen 9 5900X",
+        ram: "128 GB DDR4",
+        storage: "4 TB NVMe",
+        psu: "2000W Platinum",
+        power: "~1400W",
+        chassis: "Open frame",
+        img: "https://picsum.photos/id/160/600/400",
+        use: "70B Q4/Q5 inference, training small models"
+      },
+      {
+        id: "r5-3090",
+        name: "5× RTX 3090 Mid-Size",
+        price: 4799,
+        gpus: "5 × RTX 3090 24GB",
+        totalVram: "120 GB",
+        cpu: "Ryzen 9 5900X",
+        ram: "128 GB DDR4",
+        storage: "4 TB NVMe",
+        psu: "2400W Titanium",
+        power: "~1750W",
+        chassis: "Open frame",
+        img: "https://picsum.photos/id/251/600/400",
+        use: "Large context LLMs, multi-tenant AI services"
+      },
+      {
+        id: "r8-3090",
+        name: "8× RTX 3090 Enterprise",
+        price: 7799,
+        gpus: "8 × RTX 3090 24GB",
+        totalVram: "192 GB",
+        cpu: "Threadripper 3960X",
+        ram: "256 GB DDR4 ECC",
+        storage: "4 TB NVMe",
+        psu: "2× 1600W Platinum (redundant)",
+        power: "~2800W",
+        chassis: "4U rackmount frame",
+        img: "https://picsum.photos/id/29/600/400",
+        use: "Heavy production inference, fine-tuning 70B+"
+      },
+      {
+        id: "r10-3070",
+        name: "10× RTX 3070 Large Inference",
+        price: 5799,
+        gpus: "10 × RTX 3070 8GB",
+        totalVram: "80 GB",
+        cpu: "Ryzen 9 5950X",
+        ram: "128 GB DDR4",
+        storage: "4 TB NVMe",
+        psu: "2× 1600W Platinum",
+        power: "~2100W",
+        chassis: "Open frame + rack rails",
+        img: "https://picsum.photos/id/30/600/400",
+        use: "High volume batch processing and serving"
+      }
     ];
 
+    // Cart state
     let cart = [];
 
     function updateCartCount() {
@@ -383,67 +712,134 @@
 
     function addToCart(item, type = 'gpu') {
       const existing = cart.findIndex(c => c.id === item.id && c.type === type);
-      if (existing !== -1) { cart[existing].qty += 1; } else { cart.push({ ...item, qty: 1, type }); }
+      
+      if (existing !== -1) {
+        cart[existing].qty += 1;
+      } else {
+        cart.push({ ...item, qty: 1, type });
+      }
+      
       updateCartCount();
+      
+      // tiny toast
       const toast = document.createElement('div');
       toast.className = `fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]`;
       toast.innerHTML = `<span>Added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View cart</button>`;
       document.body.appendChild(toast);
-      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2400);
+      
+      setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 2400);
     }
 
-    function removeFromCart(index) { cart.splice(index, 1); updateCartCount(); renderCart(); }
-    function changeCartQty(index, delta) { cart[index].qty = Math.max(1, cart[index].qty + delta); renderCart(); }
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartCount();
+      renderCart();
+    }
+
+    function changeCartQty(index, delta) {
+      cart[index].qty = Math.max(1, cart[index].qty + delta);
+      renderCart();
+    }
 
     function renderCart() {
       const container = document.getElementById('cart-items');
       const totalEl = document.getElementById('cart-total');
-      if (cart.length === 0) { container.innerHTML = `<div class="py-10 text-center text-slate-400 text-sm">Cart is empty.</div>`; totalEl.textContent = '$0'; return; }
+      
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="py-10 text-center text-slate-400 text-sm">Cart is empty.</div>`;
+        totalEl.textContent = '$0';
+        return;
+      }
+      
       let html = '';
       let total = 0;
+      
       cart.forEach((item, index) => {
         const lineTotal = item.price * item.qty;
         total += lineTotal;
+        
         const label = item.type === 'rig' ? 'Pre-built rig' : 'GPU';
-        const thumb = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl border border-slate-200" alt="">` : `<div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>`;
-        html += `<div class="flex gap-4 py-4">
-          ${thumb}
-          <div class="flex-1 min-w-0 pr-2">
-            <div class="font-medium leading-tight tracking-tight text-[13.5px]">${item.name}</div>
-            <div class="text-[10px] text-emerald-700 mt-0.5">${label} • ${item.qty} × $${item.price}</div>
-            <div class="mt-3 flex items-center gap-x-1">
-              <button onclick="changeCartQty(${index}, -1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">-</button>
-              <div class="w-7 text-center text-xs tabular-nums font-medium">${item.qty}</div>
-              <button onclick="changeCartQty(${index}, 1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">+</button>
-              <button onclick="removeFromCart(${index})" class="ml-auto text-xs text-red-500 hover:text-red-600 px-1">Remove</button>
+        const thumb = item.img ? 
+          `<img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl border border-slate-200" alt="">` : 
+          `<div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>`;
+        
+        html += `
+          <div class="flex gap-4 py-4">
+            ${thumb}
+            <div class="flex-1 min-w-0 pr-2">
+              <div class="font-medium leading-tight tracking-tight text-[13.5px]">${item.name}</div>
+              <div class="text-[10px] text-emerald-700 mt-0.5">${label} • ${item.qty} × $${item.price}</div>
+              
+              <div class="mt-3 flex items-center gap-x-1">
+                <button onclick="changeCartQty(${index}, -1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">-</button>
+                <div class="w-7 text-center text-xs tabular-nums font-medium">${item.qty}</div>
+                <button onclick="changeCartQty(${index}, 1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">+</button>
+                
+                <button onclick="removeFromCart(${index})" class="ml-auto text-xs text-red-500 hover:text-red-600 px-1">Remove</button>
+              </div>
             </div>
+            <div class="font-semibold tabular-nums text-right text-sm pt-0.5">$${lineTotal}</div>
           </div>
-          <div class="font-semibold tabular-nums text-right text-sm pt-0.5">$${lineTotal}</div>
-        </div>`;
+        `;
       });
+      
       container.innerHTML = html;
       totalEl.textContent = '$' + total.toLocaleString();
     }
 
-    function showCart() { const modal = document.getElementById('cart-modal'); modal.classList.remove('hidden'); modal.classList.add('flex'); renderCart(); }
-    function hideCart() { const modal = document.getElementById('cart-modal'); modal.classList.remove('flex'); modal.classList.add('hidden'); }
-    function checkout() { hideCart(); const modal = document.getElementById('checkout-modal'); modal.classList.remove('hidden'); modal.classList.add('flex'); }
-    function hideCheckout() { const modal = document.getElementById('checkout-modal'); modal.classList.remove('flex'); modal.classList.add('hidden'); }
-    function clearCartAfterSuccess() { cart = []; updateCartCount(); hideCheckout(); }
+    function showCart() {
+      const modal = document.getElementById('cart-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      renderCart();
+    }
+
+    function hideCart() {
+      const modal = document.getElementById('cart-modal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    function checkout() {
+      hideCart();
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideCheckout() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    function clearCartAfterSuccess() {
+      cart = [];
+      updateCartCount();
+      hideCheckout();
+    }
 
     function renderGPUs(filter = 'all') {
       const grid = document.getElementById('gpu-grid');
       grid.innerHTML = '';
+      
       let filtered = gpus;
       if (filter === '30-series') filtered = gpus.filter(g => g.series === '30-series');
       if (filter === '40-series') filtered = gpus.filter(g => g.series === '40-series');
+      
       filtered.forEach(gpu => {
         const card = document.createElement('div');
         card.className = `product-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
-        const badgeHtml = gpu.badge ? `<div class="absolute top-3 right-3 bg-white/95 text-[10px] font-medium tracking-wider px-2.5 py-[1px] rounded-xl border border-slate-200 shadow-sm">${gpu.badge}</div>` : '';
+        
+        const badgeHtml = gpu.badge 
+          ? `<div class="absolute top-2 right-2 bg-white/90 text-[9px] font-medium tracking-wider px-1.5 py-[1px] rounded border border-slate-200 shadow-sm">${gpu.badge}</div>` 
+          : '';
+        
         card.innerHTML = `
           <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-            <img src="${gpu.img || 'images/8.jpg'}" class="absolute inset-0 w-full h-full object-cover" alt="${gpu.name}">
+            <img src="${gpu.img}" class="absolute inset-0 w-full h-full object-cover" alt="${gpu.name}">
             ${badgeHtml}
           </div>
           <div class="p-4 flex flex-col flex-1">
@@ -451,41 +847,60 @@
               <div class="font-semibold tracking-tight text-[15px] leading-tight">${gpu.name}</div>
               <div class="text-xs text-slate-500 mt-px">${gpu.vram} • ${gpu.condition}</div>
             </div>
+            
             <div class="mt-auto pt-4">
               <div class="flex items-baseline justify-between">
-                <span class="font-semibold text-2xl tabular-nums tracking-tighter">$${gpu.price}</span>
-                <div class="text-right"><div class="text-[10px] text-emerald-700 font-medium">In stock: ${gpu.stock}</div></div>
+                <div>
+                  <span class="font-semibold text-2xl tabular-nums tracking-tighter">$${gpu.price}</span>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-emerald-700 font-medium">In stock: ${gpu.stock}</div>
+                </div>
               </div>
+              
               <div class="flex items-center gap-2 mt-3">
-                <button onclick='addToCart(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium bg-slate-900 hover:bg-black transition-colors active:bg-slate-950 text-white py-2 rounded-2xl">Add to cart</button>
-                <button onclick='addRigFromGpu(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium border border-slate-300 hover:bg-slate-50 transition-colors py-2 rounded-2xl">Build rig</button>
+                <button onclick='addToCart(${JSON.stringify(gpu)})' 
+                        class="flex-1 text-sm font-medium bg-slate-900 hover:bg-black transition-colors active:bg-slate-950 text-white py-2 rounded-2xl">
+                  Add to cart
+                </button>
+                <button onclick='addRigFromGpu(${JSON.stringify(gpu)})' 
+                        class="flex-1 text-sm font-medium border border-slate-300 hover:bg-slate-50 transition-colors py-2 rounded-2xl">
+                  Build rig
+                </button>
               </div>
             </div>
-          </div>`;
+          </div>
+        `;
         grid.appendChild(card);
       });
     }
 
     let currentFilter = 'all';
+
     function filterGPUs(filter) {
       currentFilter = filter;
+      
+      // update active state
       document.querySelectorAll('.shop-filter').forEach(btn => btn.classList.remove('active'));
-      const id = 'filter-' + (filter === 'all' ? 'all' : filter === '30-series' ? '30' : '40');
-      const activeBtn = document.getElementById(id);
+      const activeBtn = document.getElementById('filter-' + (filter === 'all' ? 'all' : filter === '30-series' ? '30' : '40'));
       if (activeBtn) activeBtn.classList.add('active');
+      
       renderGPUs(filter);
     }
 
     function renderRigs() {
       const grid = document.getElementById('rigs-grid');
       grid.innerHTML = '';
+      
       rigs.forEach(rig => {
         const card = document.createElement('div');
         card.className = `rig-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
+        
         card.innerHTML = `
           <div class="relative aspect-[16/10] bg-slate-100 overflow-hidden">
-            <img src="${rig.img || 'images/8.jpg'}" class="absolute inset-0 w-full h-full object-cover" alt="${rig.name}">
+            <img src="${rig.img}" class="absolute inset-0 w-full h-full object-cover" alt="${rig.name}">
           </div>
+          
           <div class="p-5 flex flex-col flex-1">
             <div class="flex justify-between items-start gap-3">
               <div>
@@ -494,6 +909,7 @@
               </div>
               <div class="font-semibold text-3xl tabular-nums tracking-[-1.5px] text-right">$${rig.price}</div>
             </div>
+            
             <div class="mt-4 text-xs leading-relaxed grid grid-cols-2 gap-x-3 gap-y-1 text-slate-600">
               <div class="spec-row"><span class="text-slate-400">VRAM:</span> ${rig.totalVram}</div>
               <div class="spec-row"><span class="text-slate-400">CPU:</span> ${rig.cpu}</div>
@@ -502,17 +918,33 @@
               <div class="spec-row"><span class="text-slate-400">PSU:</span> ${rig.psu}</div>
               <div class="spec-row"><span class="text-slate-400">Power:</span> ${rig.power}</div>
             </div>
-            <div class="mt-4 pt-4 border-t text-[12px] text-slate-500 leading-tight flex-1">${rig.use}</div>
-            <div class="mt-4"><button onclick='addToCart(${JSON.stringify(rig)}, "rig")' class="w-full text-sm font-semibold py-[10px] rounded-2xl bg-slate-900 hover:bg-black text-white transition-colors">Add to cart</button></div>
-          </div>`;
+            
+            <div class="mt-4 pt-4 border-t text-[12px] text-slate-500 leading-tight flex-1">
+              ${rig.use}
+            </div>
+            
+            <div class="mt-4">
+              <button onclick='addToCart(${JSON.stringify(rig)}, "rig")' 
+                      class="w-full text-sm font-semibold py-[10px] rounded-2xl bg-slate-900 hover:bg-black text-white transition-colors">
+                Add to cart
+              </button>
+            </div>
+          </div>
+        `;
         grid.appendChild(card);
       });
     }
 
     function addRigFromGpu(gpu) {
+      // Suggest a 4x or 6x rig using this model
       const sel = document.getElementById('builder-gpu');
-      sel.value = gpu.id.includes('3090') ? '3090' : gpu.id.includes('3080') ? '3080' : gpu.id.includes('3060') ? '3060ti' : gpu.id.includes('4060ti') ? '4060ti' : '3070';
+      sel.value = gpu.id.includes('3090') ? '3090' : 
+                     gpu.id.includes('3080') ? '3080' : 
+                     gpu.id.includes('3060') ? '3060ti' : 
+                     gpu.id.includes('4060ti') ? '4060ti' : '3070';
       document.getElementById('builder-qty').value = 4;
+      
+      // scroll and update
       document.getElementById('builder').scrollIntoView({ behavior: 'smooth', block: 'start' });
       setTimeout(updateBuilderPrice, 350);
     }
@@ -528,36 +960,65 @@
     function updateBuilderPrice() {
       const gpuSelect = document.getElementById('builder-gpu');
       const qty = parseInt(document.getElementById('builder-qty').value) || 6;
+      
       const selected = gpuSelect.options[gpuSelect.selectedIndex];
       const gpuPrice = parseInt(selected.dataset.price);
       const vramPer = parseInt(selected.dataset.vram);
-      let base = 950;
+      
+      let base = 950;   // chassis + psu + cpu + ram + storage + assembly + testing
       if (qty >= 8) base = 1350;
       if (qty >= 10) base = 1790;
+      
       let addons = 0;
       if (document.getElementById('add-nvlink').checked) addons += 240;
       if (document.getElementById('add-10gbe').checked) addons += 165;
+      
       const gpuTotal = gpuPrice * qty;
       const total = gpuTotal + base + addons;
+      
       document.getElementById('builder-total').textContent = '$' + total.toLocaleString();
+      
       const breakdown = document.getElementById('builder-breakdown');
-      breakdown.innerHTML = `${qty} × $${gpuPrice} GPUs  •  $${gpuTotal}<br>Base system &amp; assembly  •  $${base}<br>${addons > 0 ? `Add-ons  •  $${addons}<br>` : ''}<span class="text-emerald-400">Total VRAM: ${qty * vramPer} GB</span>`;
+      breakdown.innerHTML = `
+        ${qty} × $${gpuPrice} GPUs  •  $${gpuTotal}<br>
+        Base system &amp; assembly  •  $${base}<br>
+        ${addons > 0 ? `Add-ons  •  $${addons}<br>` : ''}
+        <span class="text-emerald-400">Total VRAM: ${qty * vramPer} GB</span>
+      `;
     }
 
     function addBuilderToCart() {
       const gpuSelect = document.getElementById('builder-gpu');
       const qty = parseInt(document.getElementById('builder-qty').value) || 6;
+      
       const selected = gpuSelect.options[gpuSelect.selectedIndex];
       const gpuPrice = parseInt(selected.dataset.price);
       const modelName = selected.textContent.split('—')[0].trim();
-      let base = 950; if (qty >= 8) base = 1350; if (qty >= 10) base = 1790;
-      let addons = 0; let addonNames = [];
+      
+      let base = 950;
+      if (qty >= 8) base = 1350;
+      if (qty >= 10) base = 1790;
+      
+      let addons = 0;
+      let addonNames = [];
       if (document.getElementById('add-nvlink').checked) { addons += 240; addonNames.push('NVLink'); }
       if (document.getElementById('add-10gbe').checked) { addons += 165; addonNames.push('10GbE'); }
+      
       const total = (gpuPrice * qty) + base + addons;
-      const rigItem = { id: 'custom-' + Date.now(), name: `${qty}× ${modelName} Custom Rig`, price: total, qty: 1, img: 'images/5.jpg', details: `${qty} GPUs • Base system + ${addonNames.length ? addonNames.join(' + ') : 'no addons'}` };
+      
+      const rigItem = {
+        id: 'custom-' + Date.now(),
+        name: `${qty}× ${modelName} Custom Rig`,
+        price: total,
+        qty: 1,
+        img: 'https://picsum.photos/id/133/600/400',
+        details: `${qty} GPUs • Base system + ${addonNames.length ? addonNames.join(' + ') : 'no addons'}`
+      };
+      
+      // Add as rig type
       cart.push({ ...rigItem, type: 'rig' });
       updateCartCount();
+      
       const toast = document.createElement('div');
       toast.className = `fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]`;
       toast.innerHTML = `<span>Configured rig added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View</button>`;
@@ -568,12 +1029,17 @@
     function initBuilder() {
       const qtyEl = document.getElementById('builder-qty');
       qtyEl.addEventListener('input', updateBuilderPrice);
-      setTimeout(updateBuilderPrice, 80);
+      
+      // initial price
+      setTimeout(() => {
+        updateBuilderPrice();
+      }, 80);
     }
 
     function initFilters() {
+      // set initial active
       const allBtn = document.getElementById('filter-all');
-      if (allBtn) allBtn.classList.add('active');
+      allBtn.classList.add('active');
     }
 
     function initEverything() {
@@ -585,13 +1051,17 @@
       updateCartCount();
     }
 
+    // Keyboard support for builder qty
     document.addEventListener('keydown', function(e) {
       if (document.activeElement && document.activeElement.id === 'builder-qty' && e.key === 'Enter') {
         addBuilderToCart();
       }
     });
 
-    window.onload = function() { initEverything(); }
+    // Boot
+    window.onload = function() {
+      initEverything();
+    };
   </script>
 </body>
 </html>
