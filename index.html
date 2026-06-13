@@ -3,140 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Professional pre-owned NVIDIA GPUs and complete AI inference rigs for home labs and small business. Tested hardware at market prices.">
+  <meta name="description" content="Professional pre-owned NVIDIA GPUs and complete AI inference rigs for home labs and small business. Tested hardware at market prices with 30-day warranty.">
   <title>PrimaryVowels • Pre-Owned GPUs & AI Rigs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
     
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
-    body {
-      font-family: 'Inter', system_ui, sans-serif;
-    }
+    body { font-family: 'Inter', system_ui, sans-serif; }
     
-    .logo-font {
-      font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
-      font-weight: 600;
-      letter-spacing: -0.025em;
-    }
+    .logo-font { font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
 
-    .section-header {
-      font-size: 1.35rem;
-      letter-spacing: -0.025em;
-    }
+    .section-header { font-size: 1.35rem; letter-spacing: -0.025em; }
 
-    .product-card {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .product-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-    }
+    .product-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05); }
 
-    .rig-card {
-      transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-    }
+    .rig-card { transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }
 
-    .nav-link {
-      transition: color 0.1s ease;
-      position: relative;
-    }
-    
-    .nav-link:hover {
-      color: #334155;
-    }
+    .nav-link { transition: color 0.1s ease; position: relative; }
+    .nav-link:hover { color: #334155; }
+    .nav-link.active { color: #0f172a; font-weight: 600; }
+    .nav-link.active:after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: #0f172a; }
 
-    .nav-link.active {
-      color: #0f172a;
-      font-weight: 600;
-    }
+    .price { font-variant-numeric: tabular-nums; }
 
-    .nav-link.active:after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #0f172a;
-    }
+    .shop-filter { transition: all 0.1s ease; }
+    .shop-filter.active { background-color: #0f172a; color: white; border-color: #0f172a; }
 
-    .price {
-      font-variant-numeric: tabular-nums;
-    }
+    .modal { animation: modalPop 0.15s ease-out forwards; }
+    @keyframes modalPop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    .shop-filter {
-      transition: all 0.1s ease;
-    }
-    .shop-filter.active {
-      background-color: #0f172a;
-      color: white;
-      border-color: #0f172a;
-    }
+    .spec-row { font-size: 0.875rem; line-height: 1.25rem; }
 
-    .modal {
-      animation: modalPop 0.15s ease-out forwards;
-    }
+    .skip-link { position: absolute; top: -40px; left: 0; background: #0f172a; color: white; padding: 8px 16px; z-index: 1000; transition: top 0.2s; }
+    .skip-link:focus { top: 0; }
 
-    @keyframes modalPop {
-      from { transform: scale(0.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+    .back-to-top { position: fixed; bottom: 20px; right: 20px; z-index: 50; opacity: 0; visibility: hidden; transition: all 0.3s; width: 44px; height: 44px; }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
 
-    .spec-row {
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-    }
-
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: #0f172a;
-      color: white;
-      padding: 8px 16px;
-      z-index: 1000;
-      transition: top 0.2s;
-    }
-
-    .skip-link:focus {
-      top: 0;
-    }
-
-    .back-to-top {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 50;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-      width: 44px;
-      height: 44px;
-    }
-
-    .back-to-top.visible {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .nav-link:focus-visible,
-    button:focus-visible {
-      outline: 2px solid #0f172a;
-      outline-offset: 2px;
-    }
+    .nav-link:focus-visible, button:focus-visible { outline: 2px solid #0f172a; outline-offset: 2px; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-  <!-- Skip to content for accessibility -->
   <a href="#main" class="skip-link">Skip to main content</a>
 
-  <!-- HEADER -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
     <div class="max-w-screen-2xl mx-auto">
       <div class="px-8 py-5 flex items-center justify-between">
@@ -152,7 +65,6 @@
           </a>
         </div>
 
-        <!-- Desktop Nav -->
         <nav class="hidden md:flex items-center gap-x-8 text-sm font-medium" aria-label="Main navigation">
           <a href="#shop" class="nav-link text-slate-600 hover:text-slate-900">GPUs</a>
           <a href="#rigs" class="nav-link text-slate-600 hover:text-slate-900">Pre-Built Rigs</a>
@@ -161,28 +73,20 @@
         </nav>
 
         <div class="flex items-center gap-x-3">
-          <button onclick="showCart()" 
-                  class="flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                  aria-label="Open cart">
+          <button onclick="showCart()" class="flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 transition-colors" aria-label="Open shopping cart">
             <i class="fa-solid fa-shopping-cart text-slate-700"></i>
             <span class="hidden sm:inline text-slate-700">Cart</span>
-            <span id="cart-count" 
-                  class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 text-[11px] font-semibold bg-slate-900 text-white rounded-full">0</span>
+            <span id="cart-count" class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 text-[11px] font-semibold bg-slate-900 text-white rounded-full">0</span>
           </button>
           
-          <a href="#contact" 
-             class="hidden sm:block px-5 py-2 text-sm font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 active:bg-black transition-colors">
-            Contact
-          </a>
+          <a href="#contact" class="hidden sm:block px-5 py-2 text-sm font-semibold rounded-xl bg-slate-900 text-white hover:bg-slate-800 active:bg-black transition-colors">Contact</a>
 
-          <!-- Mobile menu button -->
-          <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-700 hover:text-slate-900" aria-label="Toggle menu" aria-expanded="false">
+          <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-700 hover:text-slate-900" aria-label="Toggle mobile menu" aria-expanded="false">
             <i class="fa-solid fa-bars text-xl"></i>
           </button>
         </div>
       </div>
 
-      <!-- Mobile Nav -->
       <div id="mobile-nav" class="hidden md:hidden border-t bg-white px-8 py-4">
         <nav class="flex flex-col gap-y-3 text-sm font-medium" aria-label="Mobile navigation">
           <a href="#shop" class="nav-link text-slate-600 hover:text-slate-900 py-1">GPUs</a>
@@ -195,8 +99,8 @@
     </div>
   </header>
 
-  <!-- HERO / TOP -->
   <div id="top"></div>
+
   <section id="hero" class="bg-white border-b border-slate-100">
     <div class="max-w-screen-2xl mx-auto px-8 pt-14 pb-16">
       <div class="grid md:grid-cols-12 gap-10 items-center">
@@ -215,14 +119,8 @@
             </p>
             
             <div class="mt-8 flex flex-wrap gap-3">
-              <a href="#shop" 
-                 class="inline-flex items-center justify-center px-7 h-12 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-black transition-colors">
-                Browse GPUs
-              </a>
-              <a href="#rigs" 
-                 class="inline-flex items-center justify-center px-7 h-12 rounded-2xl border border-slate-300 hover:bg-white text-sm font-semibold transition-colors">
-                View Pre-Built Rigs
-              </a>
+              <a href="#shop" class="inline-flex items-center justify-center px-7 h-12 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-black transition-colors">Browse GPUs</a>
+              <a href="#rigs" class="inline-flex items-center justify-center px-7 h-12 rounded-2xl border border-slate-300 hover:bg-white text-sm font-semibold transition-colors">View Pre-Built Rigs</a>
             </div>
             
             <div class="mt-9 flex items-center gap-x-8 text-sm">
@@ -251,29 +149,17 @@
     </div>
   </section>
 
-  <!-- TRUST / STATS -->
   <div class="border-b border-slate-200 bg-white">
     <div class="max-w-screen-2xl mx-auto px-8 py-5">
       <div class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 text-sm text-slate-600">
-        <div class="flex items-center gap-x-2">
-          <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-          <span class="font-medium">30-day functional warranty on all hardware</span>
-        </div>
-        <div class="flex items-center gap-x-2">
-          <i class="fa-solid fa-check-double text-emerald-600"></i>
-          <span class="font-medium">Every GPU load-tested for 24+ hours</span>
-        </div>
-        <div class="flex items-center gap-x-2">
-          <i class="fa-solid fa-truck text-emerald-600"></i>
-          <span class="font-medium">US shipping 2–5 business days</span>
-        </div>
+        <div class="flex items-center gap-x-2"><i class="fa-solid fa-shield-halved text-emerald-600"></i> <span class="font-medium">30-day functional warranty on all hardware</span></div>
+        <div class="flex items-center gap-x-2"><i class="fa-solid fa-check-double text-emerald-600"></i> <span class="font-medium">Every GPU load-tested for 24+ hours</span></div>
+        <div class="flex items-center gap-x-2"><i class="fa-solid fa-truck text-emerald-600"></i> <span class="font-medium">US shipping 2–5 business days</span></div>
       </div>
     </div>
   </div>
 
-  <!-- MAIN CONTENT -->
   <main id="main">
-    <!-- SHOP GPUS -->
     <section id="shop" class="max-w-screen-2xl mx-auto px-8 pt-14 pb-10">
       <div class="flex items-end justify-between mb-6">
         <div>
@@ -281,12 +167,9 @@
           <h2 class="section-header font-semibold tracking-tight">Pre-Owned GPUs</h2>
         </div>
         <div class="hidden md:flex items-center gap-1.5 text-sm">
-          <button onclick="filterGPUs('all')" id="filter-all"
-                  class="shop-filter active px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300">All</button>
-          <button onclick="filterGPUs('30-series')" id="filter-30"
-                  class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">30 Series</button>
-          <button onclick="filterGPUs('40-series')" id="filter-40"
-                  class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">40 Series</button>
+          <button onclick="filterGPUs('all')" id="filter-all" class="shop-filter active px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300">All</button>
+          <button onclick="filterGPUs('30-series')" id="filter-30" class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">30 Series</button>
+          <button onclick="filterGPUs('40-series')" id="filter-40" class="shop-filter px-4 py-1.5 text-sm font-medium rounded-xl border border-slate-300 hover:bg-slate-50">40 Series</button>
         </div>
       </div>
 
@@ -300,7 +183,6 @@
       </div>
     </section>
 
-    <!-- PRE-BUILT RIGS -->
     <section id="rigs" class="bg-white border-y border-slate-200">
       <div class="max-w-screen-2xl mx-auto px-8 py-14">
         <div class="flex items-end justify-between mb-6">
@@ -319,7 +201,6 @@
       </div>
     </section>
 
-    <!-- RIG BUILDER -->
     <section id="builder" class="max-w-screen-2xl mx-auto px-8 py-14">
       <div class="max-w-3xl">
         <div class="text-xs uppercase tracking-[1.5px] font-semibold text-slate-500">CONFIGURATOR</div>
@@ -329,8 +210,6 @@
 
       <div class="mt-8 bg-white border border-slate-200 rounded-3xl p-8 max-w-[980px]">
         <div class="grid md:grid-cols-12 gap-x-8 gap-y-8">
-          
-          <!-- GPU Selection -->
           <div class="md:col-span-5">
             <label class="block text-xs font-medium text-slate-500 tracking-wider mb-1.5">GPU MODEL</label>
             <select id="builder-gpu" onchange="updateBuilderPrice()" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-slate-400">
@@ -345,61 +224,36 @@
             <label class="block text-xs font-medium text-slate-500 tracking-wider mt-6 mb-1.5">QUANTITY</label>
             <div class="flex items-center gap-2">
               <button onclick="adjustQuantity(-1)" class="w-9 h-9 flex items-center justify-center border border-slate-300 hover:bg-slate-50 active:bg-slate-100 rounded-xl text-lg font-light">–</button>
-              <input type="number" id="builder-qty" value="6" min="2" max="12" step="1" 
-                     oninput="updateBuilderPrice()" 
-                     class="w-20 text-center border border-slate-300 rounded-2xl py-2.5 font-semibold text-lg tabular-nums focus:outline-none focus:border-slate-400">
+              <input type="number" id="builder-qty" value="6" min="2" max="12" step="1" oninput="updateBuilderPrice()" class="w-20 text-center border border-slate-300 rounded-2xl py-2.5 font-semibold text-lg tabular-nums focus:outline-none focus:border-slate-400">
               <button onclick="adjustQuantity(1)" class="w-9 h-9 flex items-center justify-center border border-slate-300 hover:bg-slate-50 active:bg-slate-100 rounded-xl text-lg font-light">+</button>
               <span class="text-xs text-slate-500 ml-2">GPUs (2–12)</span>
             </div>
           </div>
 
-          <!-- Base System -->
           <div class="md:col-span-4">
             <label class="block text-xs font-medium text-slate-500 tracking-wider mb-1.5">BASE SYSTEM</label>
             <div class="border border-slate-200 rounded-2xl p-4 text-sm">
-              <div class="flex justify-between mb-1">
-                <div>Chassis + 1600W+ PSU (Platinum)</div>
-              </div>
-              <div class="flex justify-between mb-1">
-                <div>CPU + 64GB DDR4</div>
-              </div>
-              <div class="flex justify-between mb-1">
-                <div>2TB NVMe SSD + OS install</div>
-              </div>
-              <div class="flex justify-between text-slate-500 pt-2 border-t mt-2 text-xs">
-                <div>Included in estimate</div>
-              </div>
+              <div class="flex justify-between mb-1"><div>Chassis + 1600W+ PSU (Platinum)</div></div>
+              <div class="flex justify-between mb-1"><div>CPU + 64GB DDR4</div></div>
+              <div class="flex justify-between mb-1"><div>2TB NVMe SSD + OS install</div></div>
+              <div class="flex justify-between text-slate-500 pt-2 border-t mt-2 text-xs"><div>Included in estimate</div></div>
             </div>
             <div class="mt-4">
               <label class="text-xs font-medium text-slate-500 tracking-wider">ADD-ONS</label>
               <div class="mt-2 space-y-1.5 text-sm">
-                <label class="flex items-center gap-x-2">
-                  <input type="checkbox" id="add-nvlink" onchange="updateBuilderPrice()" class="accent-slate-900">
-                  <span>NVLink bridge kit (for compatible 3090s) <span class="text-xs text-slate-500">+$240</span></span>
-                </label>
-                <label class="flex items-center gap-x-2">
-                  <input type="checkbox" id="add-10gbe" onchange="updateBuilderPrice()" class="accent-slate-900">
-                  <span>10GbE NIC + SFP+ <span class="text-xs text-slate-500">+$165</span></span>
-                </label>
+                <label class="flex items-center gap-x-2"><input type="checkbox" id="add-nvlink" onchange="updateBuilderPrice()" class="accent-slate-900"> <span>NVLink bridge kit (for compatible 3090s) <span class="text-xs text-slate-500">+$240</span></span></label>
+                <label class="flex items-center gap-x-2"><input type="checkbox" id="add-10gbe" onchange="updateBuilderPrice()" class="accent-slate-900"> <span>10GbE NIC + SFP+ <span class="text-xs text-slate-500">+$165</span></span></label>
               </div>
             </div>
           </div>
 
-          <!-- Live Price -->
           <div class="md:col-span-3 bg-slate-900 text-white rounded-3xl p-6 flex flex-col">
             <div>
               <div class="text-xs tracking-[1px] text-slate-400">ESTIMATED TOTAL</div>
               <div id="builder-total" class="font-semibold tabular-nums text-4xl tracking-tighter mt-1">$4,199</div>
             </div>
-            
-            <div id="builder-breakdown" class="mt-auto text-xs text-slate-300 leading-snug pt-6">
-              <!-- populated by JS -->
-            </div>
-            
-            <button onclick="addBuilderToCart()"
-                    class="mt-6 bg-white hover:bg-slate-100 transition-colors text-slate-900 font-semibold py-3 rounded-2xl text-sm active:scale-[0.985]">
-              ADD CONFIGURED RIG TO CART
-            </button>
+            <div id="builder-breakdown" class="mt-auto text-xs text-slate-300 leading-snug pt-6"></div>
+            <button onclick="addBuilderToCart()" class="mt-6 bg-white hover:bg-slate-100 transition-colors text-slate-900 font-semibold py-3 rounded-2xl text-sm active:scale-[0.985]">ADD CONFIGURED RIG TO CART</button>
             <div class="text-[10px] text-center text-slate-400 mt-2.5">Ships fully assembled &amp; tested • 30-day warranty</div>
           </div>
         </div>
@@ -407,7 +261,6 @@
     </div>
   </section>
 
-  <!-- SHIPPING + CUSTOMS -->
   <section id="shipping" class="border-t border-slate-200 bg-white">
     <div class="max-w-screen-2xl mx-auto px-8 py-14">
       <div class="grid md:grid-cols-12 gap-x-10">
@@ -420,10 +273,7 @@
         <div class="md:col-span-7 mt-7 md:mt-0">
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="rounded-2xl border border-slate-200 p-5">
-              <div class="font-semibold text-sm flex items-center gap-x-2">
-                <i class="fa-solid fa-truck text-slate-400"></i> 
-                <span>Domestic (USA)</span>
-              </div>
+              <div class="font-semibold text-sm flex items-center gap-x-2"><i class="fa-solid fa-truck text-slate-400"></i> <span>Domestic (USA)</span></div>
               <ul class="mt-3 text-sm text-slate-600 space-y-1.5">
                 <li class="flex gap-x-2"><span class="font-medium w-24 inline-block">Orders &gt; $1,500</span> <span>Free standard shipping</span></li>
                 <li class="flex gap-x-2"><span class="font-medium w-24 inline-block">Orders &lt; $1,500</span> <span>$89 flat rate</span></li>
@@ -433,10 +283,7 @@
             </div>
             
             <div class="rounded-2xl border border-slate-200 p-5">
-              <div class="font-semibold text-sm flex items-center gap-x-2">
-                <i class="fa-solid fa-globe text-slate-400"></i> 
-                <span>International</span>
-              </div>
+              <div class="font-semibold text-sm flex items-center gap-x-2"><i class="fa-solid fa-globe text-slate-400"></i> <span>International</span></div>
               <ul class="mt-3 text-sm text-slate-600 space-y-1.5">
                 <li>Shipping calculated at checkout (DHL / FedEx / freight)</li>
                 <li class="text-slate-500 text-xs">Typical transit 5–14 days depending on destination</li>
@@ -444,9 +291,7 @@
               
               <div class="mt-5 pt-4 border-t text-sm">
                 <div class="font-medium mb-1">Customs, Duties &amp; VAT</div>
-                <div class="text-xs leading-relaxed text-slate-600">
-                  Import duties, VAT/GST, and customs brokerage fees are the responsibility of the buyer. We include a commercial invoice with accurate HS codes (8471.50 / 8473.30) and declared value matching the invoice total. We do not mark up or under-declare.
-                </div>
+                <div class="text-xs leading-relaxed text-slate-600">Import duties, VAT/GST, and customs brokerage fees are the responsibility of the buyer. We include a commercial invoice with accurate HS codes (8471.50 / 8473.30) and declared value matching the invoice total. We do not mark up or under-declare.</div>
               </div>
             </div>
           </div>
@@ -455,7 +300,6 @@
     </div>
   </section>
 
-  <!-- ABOUT / SIMPLE -->
   <section class="max-w-screen-2xl mx-auto px-8 py-12 border-t border-slate-200">
     <div class="max-w-3xl">
       <div class="text-sm leading-relaxed text-slate-600">
@@ -469,7 +313,6 @@
   </section>
   </main>
 
-  <!-- FOOTER + CONTACT -->
   <footer id="contact" class="bg-slate-900 text-slate-300">
     <div class="max-w-screen-2xl mx-auto px-8 pt-10 pb-16">
       <div class="flex flex-col md:flex-row justify-between gap-y-10">
@@ -488,27 +331,15 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-7 text-sm">
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">COMPANY</div>
-            <div class="space-y-1.5">
-              <div>About</div>
-              <div>Inventory Policy</div>
-              <div>Testing Standards</div>
-            </div>
+            <div class="space-y-1.5"><div>About</div><div>Inventory Policy</div><div>Testing Standards</div></div>
           </div>
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">SUPPORT</div>
-            <div class="space-y-1.5">
-              <div>Warranty &amp; Returns</div>
-              <div>RMA Process</div>
-              <div>Technical Documentation</div>
-            </div>
+            <div class="space-y-1.5"><div>Warranty &amp; Returns</div><div>RMA Process</div><div>Technical Documentation</div></div>
           </div>
           <div>
             <div class="text-xs font-semibold tracking-wider text-slate-400 mb-2.5">CONTACT</div>
-            <div class="space-y-[5px]">
-              <div>sales@primaryvowels.com</div>
-              <div>+1 (512) 555-0182</div>
-              <div class="text-xs pt-1">Austin, TX • Ships worldwide</div>
-            </div>
+            <div class="space-y-[5px]"><div>sales@primaryvowels.com</div><div>+1 (512) 555-0182</div><div class="text-xs pt-1">Austin, TX • Ships worldwide</div></div>
           </div>
         </div>
       </div>
@@ -521,149 +352,85 @@
     </div>
   </footer>
 
-  <!-- BACK TO TOP -->
-  <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-          class="back-to-top bg-slate-900 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-black"
-          aria-label="Back to top">
+  <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top bg-slate-900 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-black" aria-label="Back to top">
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
-  <!-- CART MODAL -->
-  <div id="cart-modal" onclick="if (event.target.id === 'cart-modal') hideCart()" 
-       class="hidden fixed inset-0 z-[100] bg-black/70 flex items-end md:items-center justify-center"
-       role="dialog" aria-modal="true" aria-labelledby="cart-title">
+  <div id="cart-modal" onclick="if (event.target.id === 'cart-modal') hideCart()" class="hidden fixed inset-0 z-[100] bg-black/70 flex items-end md:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="cart-title">
     <div onclick="event.stopImmediatePropagation()" class="bg-white w-full md:w-[440px] md:rounded-3xl md:m-4 rounded-t-3xl overflow-hidden">
       <div class="flex items-center justify-between px-6 py-4 border-b">
         <div id="cart-title" class="font-semibold">Your Cart</div>
         <button onclick="hideCart()" class="text-xl leading-none px-2 text-slate-400 hover:text-slate-600" aria-label="Close cart">×</button>
       </div>
-      
       <div id="cart-items" class="max-h-[380px] overflow-auto px-6 py-2 text-sm divide-y"></div>
-      
       <div class="px-6 pt-5 pb-6 border-t">
-        <div class="flex justify-between items-baseline mb-4">
-          <div class="text-sm text-slate-500">Total</div>
-          <div id="cart-total" class="font-semibold text-2xl tabular-nums tracking-tighter">$0</div>
-        </div>
-        
-        <button onclick="checkout()" 
-                class="w-full bg-slate-900 hover:bg-black active:bg-black transition-colors text-white rounded-2xl py-[13px] text-sm font-semibold">
-          PROCEED TO CHECKOUT
-        </button>
-        
+        <div class="flex justify-between items-baseline mb-4"><div class="text-sm text-slate-500">Total</div><div id="cart-total" class="font-semibold text-2xl tabular-nums tracking-tighter">$0</div></div>
+        <button onclick="checkout()" class="w-full bg-slate-900 hover:bg-black active:bg-black transition-colors text-white rounded-2xl py-[13px] text-sm font-semibold">PROCEED TO CHECKOUT</button>
         <div class="text-center text-[10px] text-slate-400 pt-3">Taxes &amp; shipping calculated at checkout. International customers see customs note above.</div>
       </div>
     </div>
   </div>
 
-  <!-- SUCCESS / CHECKOUT MODAL -->
-  <div id="checkout-modal" onclick="if (event.target.id === 'checkout-modal') hideCheckout()" 
-       class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center"
-       role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+  <div id="checkout-modal" onclick="if (event.target.id === 'checkout-modal') hideCheckout()" class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
     <div onclick="event.stopImmediatePropagation()" class="bg-white mx-4 w-full max-w-md rounded-3xl overflow-hidden">
       <div class="px-7 pt-7 pb-6">
-        <div class="text-emerald-600">
-          <i class="fa-solid fa-check-circle text-4xl"></i>
-        </div>
+        <div class="text-emerald-600"><i class="fa-solid fa-check-circle text-4xl"></i></div>
         <div id="checkout-title" class="font-semibold text-xl tracking-tight mt-4">Order request received.</div>
         <p class="mt-2 text-sm text-slate-600">Thank you. A sales representative will contact you within 4 hours to confirm inventory, finalize shipping, and provide a formal invoice. Payment via ACH, wire, or credit card.</p>
-        
-        <div class="bg-slate-50 rounded-2xl p-4 mt-6 text-xs text-slate-500">
-          Order reference will be emailed to the address you provide. Rigs are built and tested to order (7–14 days). GPUs ship same or next business day when in stock.
-        </div>
+        <div class="bg-slate-50 rounded-2xl p-4 mt-6 text-xs text-slate-500">Order reference will be emailed to the address you provide. Rigs are built and tested to order (7–14 days). GPUs ship same or next business day when in stock.</div>
       </div>
-      
       <div class="border-t px-7 py-5 flex gap-3">
-        <button onclick="hideCheckout(); clearCartAfterSuccess()" 
-                class="flex-1 border border-slate-300 hover:bg-slate-50 text-sm font-medium rounded-2xl py-2.5">
-          CLOSE
-        </button>
-        <button onclick="window.location.reload()" 
-                class="flex-1 bg-slate-900 text-white text-sm font-medium rounded-2xl py-2.5">
-          RETURN TO STORE
-        </button>
+        <button onclick="hideCheckout(); clearCartAfterSuccess()" class="flex-1 border border-slate-300 hover:bg-slate-50 text-sm font-medium rounded-2xl py-2.5">CLOSE</button>
+        <button onclick="window.location.reload()" class="flex-1 bg-slate-900 text-white text-sm font-medium rounded-2xl py-2.5">RETURN TO STORE</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Tailwind already loaded
-
-    // Mobile menu
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const mobileNav = document.getElementById('mobile-nav');
-
     if (mobileBtn && mobileNav) {
       mobileBtn.addEventListener('click', () => {
-        const isOpen = !mobileNav.classList.contains('hidden');
+        const isOpen = mobileNav.classList.contains('hidden');
         mobileNav.classList.toggle('hidden');
-        mobileBtn.setAttribute('aria-expanded', !isOpen);
-        mobileBtn.innerHTML = isOpen 
-          ? '<i class="fa-solid fa-bars text-xl"></i>' 
-          : '<i class="fa-solid fa-times text-xl"></i>';
+        mobileBtn.setAttribute('aria-expanded', String(!isOpen));
+        mobileBtn.innerHTML = isOpen ? '<i class="fa-solid fa-bars text-xl"></i>' : '<i class="fa-solid fa-times text-xl"></i>';
       });
     }
 
-    // Back to top visibility
-    const backToTop = document.getElementById('back-to-top');
-    if (backToTop) {
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
       window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
-          backToTop.classList.add('visible');
-        } else {
-          backToTop.classList.remove('visible');
-        }
+        backToTopBtn.classList.toggle('visible', window.scrollY > 400);
       });
     }
 
-    // Active nav on scroll
     function initActiveNav() {
       const navLinks = document.querySelectorAll('nav a[href^="#"]');
       const sections = document.querySelectorAll('section[id], #hero');
-
       function updateActive() {
-        let current = 'top';
+        let current = 'hero';
         const scrollPos = window.scrollY + 120;
-
-        sections.forEach(section => {
-          if (scrollPos >= section.offsetTop) {
-            current = section.getAttribute('id') || 'top';
-          }
-        });
-
+        sections.forEach(section => { if (scrollPos >= section.offsetTop) current = section.getAttribute('id') || 'hero'; });
         navLinks.forEach(link => {
           link.classList.remove('active');
-          const href = link.getAttribute('href');
-          if (href === '#' + current || (current === 'top' && href === '#top')) {
-            link.classList.add('active');
-          }
+          if (link.getAttribute('href') === '#' + current) link.classList.add('active');
         });
       }
-
       window.addEventListener('scroll', updateActive);
-      updateActive(); // initial
+      updateActive();
     }
 
-    // Improved modal helpers with accessibility
     function showModal(modalId) {
       const modal = document.getElementById(modalId);
       if (!modal) return;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      
-      // Focus first focusable
-      const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const focusable = modal.querySelector('button, [href], input, select, textarea');
       if (focusable) focusable.focus();
-
-      // Escape key
-      const escHandler = (e) => {
-        if (e.key === 'Escape') {
-          hideModal(modalId);
-          document.removeEventListener('keydown', escHandler);
-        }
-      };
-      document.addEventListener('keydown', escHandler);
-      modal._escHandler = escHandler;
+      const esc = (e) => { if (e.key === 'Escape') { hideModal(modalId); document.removeEventListener('keydown', esc); } };
+      document.addEventListener('keydown', esc);
+      modal._esc = esc;
     }
 
     function hideModal(modalId) {
@@ -671,54 +438,14 @@
       if (!modal) return;
       modal.classList.remove('flex');
       modal.classList.add('hidden');
-      
-      if (modal._escHandler) {
-        document.removeEventListener('keydown', modal._escHandler);
-        delete modal._escHandler;
-      }
+      if (modal._esc) { document.removeEventListener('keydown', modal._esc); delete modal._esc; }
     }
 
-    // Override show/hide for compatibility
-    function showCart() { 
-      const modal = document.getElementById('cart-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        renderCart();
-        const focusable = modal.querySelector('button');
-        if (focusable) focusable.focus();
-      }
-    }
-
-    function hideCart() { 
-      const modal = document.getElementById('cart-modal');
-      if (modal) {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-      }
-    }
-
-    function checkout() { 
-      hideCart();
-      const modal = document.getElementById('checkout-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        const focusable = modal.querySelector('button');
-        if (focusable) focusable.focus();
-      }
-    }
-
-    function hideCheckout() { 
-      const modal = document.getElementById('checkout-modal');
-      if (modal) {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-      }
-    }
-
-    // Rest of the original JS (cart, products, builder, filters, etc.) remains unchanged for functionality
-    // (The full original script logic is preserved below for completeness)
+    function showCart() { showModal('cart-modal'); renderCart(); }
+    function hideCart() { hideModal('cart-modal'); }
+    function checkout() { hideCart(); showModal('checkout-modal'); }
+    function hideCheckout() { hideModal('checkout-modal'); }
+    function clearCartAfterSuccess() { cart = []; updateCartCount(); hideCheckout(); }
 
     const gpus = [
       { id: "g3070", name: "NVIDIA GeForce RTX 3070 8GB", series: "30-series", price: 249, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", img: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&q=80", stock: 47, badge: "Best value" },
@@ -745,179 +472,110 @@
 
     function updateCartCount() {
       const countEl = document.getElementById('cart-count');
-      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-      countEl.textContent = totalItems;
+      countEl.textContent = cart.reduce((s, i) => s + i.qty, 0);
     }
 
     function addToCart(item, type = 'gpu') {
-      const existing = cart.findIndex(c => c.id === item.id && c.type === type);
-      if (existing !== -1) { cart[existing].qty += 1; } else { cart.push({ ...item, qty: 1, type }); }
+      const ex = cart.findIndex(c => c.id === item.id && c.type === type);
+      if (ex !== -1) cart[ex].qty += 1; else cart.push({...item, qty: 1, type});
       updateCartCount();
-      const toast = document.createElement('div');
-      toast.className = `fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]`;
-      toast.innerHTML = `<span>Added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View cart</button>`;
-      document.body.appendChild(toast);
-      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2400);
+      const t = document.createElement('div');
+      t.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]';
+      t.innerHTML = `<span>Added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View cart</button>`;
+      document.body.appendChild(t);
+      setTimeout(() => t.parentNode && t.parentNode.removeChild(t), 2400);
     }
 
-    function removeFromCart(index) { cart.splice(index, 1); updateCartCount(); renderCart(); }
-    function changeCartQty(index, delta) { cart[index].qty = Math.max(1, cart[index].qty + delta); renderCart(); }
+    function removeFromCart(i) { cart.splice(i,1); updateCartCount(); renderCart(); }
+    function changeCartQty(i, d) { cart[i].qty = Math.max(1, cart[i].qty + d); renderCart(); }
 
     function renderCart() {
-      const container = document.getElementById('cart-items');
-      const totalEl = document.getElementById('cart-total');
-      if (cart.length === 0) { container.innerHTML = `<div class="py-10 text-center text-slate-400 text-sm">Cart is empty.</div>`; totalEl.textContent = '$0'; return; }
-      let html = '';
-      let total = 0;
-      cart.forEach((item, index) => {
-        const lineTotal = item.price * item.qty;
-        total += lineTotal;
-        const label = item.type === 'rig' ? 'Pre-built rig' : 'GPU';
-        const thumb = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl border border-slate-200" alt="">` : `<div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>`;
-        html += `<div class="flex gap-4 py-4">${thumb}<div class="flex-1 min-w-0 pr-2"><div class="font-medium leading-tight tracking-tight text-[13.5px]">${item.name}</div><div class="text-[10px] text-emerald-700 mt-0.5">${label} • ${item.qty} × $${item.price}</div><div class="mt-3 flex items-center gap-x-1"><button onclick="changeCartQty(${index}, -1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">-</button><div class="w-7 text-center text-xs tabular-nums font-medium">${item.qty}</div><button onclick="changeCartQty(${index}, 1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">+</button><button onclick="removeFromCart(${index})" class="ml-auto text-xs text-red-500 hover:text-red-600 px-1">Remove</button></div></div><div class="font-semibold tabular-nums text-right text-sm pt-0.5">$${lineTotal}</div></div>`;
+      const c = document.getElementById('cart-items');
+      const tot = document.getElementById('cart-total');
+      if (!cart.length) { c.innerHTML = `<div class="py-10 text-center text-slate-400 text-sm">Cart is empty.</div>`; tot.textContent = '$0'; return; }
+      let h = ''; let total = 0;
+      cart.forEach((item, i) => {
+        const lt = item.price * item.qty; total += lt;
+        const lbl = item.type === 'rig' ? 'Pre-built rig' : 'GPU';
+        const th = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl border border-slate-200" alt="">` : `<div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>`;
+        h += `<div class="flex gap-4 py-4">${th}<div class="flex-1 min-w-0 pr-2"><div class="font-medium leading-tight tracking-tight text-[13.5px]">${item.name}</div><div class="text-[10px] text-emerald-700 mt-0.5">${lbl} • ${item.qty} × $${item.price}</div><div class="mt-3 flex items-center gap-x-1"><button onclick="changeCartQty(${i}, -1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">-</button><div class="w-7 text-center text-xs tabular-nums font-medium">${item.qty}</div><button onclick="changeCartQty(${i}, 1)" class="w-6 h-6 rounded-xl border border-slate-200 flex items-center justify-center text-sm leading-none active:bg-slate-50">+</button><button onclick="removeFromCart(${i})" class="ml-auto text-xs text-red-500 hover:text-red-600 px-1">Remove</button></div></div><div class="font-semibold tabular-nums text-right text-sm pt-0.5">$${lt}</div></div>`;
       });
-      container.innerHTML = html;
-      totalEl.textContent = '$' + total.toLocaleString();
+      c.innerHTML = h; tot.textContent = '$' + total.toLocaleString();
     }
 
-    function showCart() { 
-      const modal = document.getElementById('cart-modal');
-      if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); renderCart(); }
-    }
-
-    function hideCart() { 
-      const modal = document.getElementById('cart-modal');
-      if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); }
-    }
-
-    function checkout() { hideCart(); const modal = document.getElementById('checkout-modal'); if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); } }
-
-    function hideCheckout() { const modal = document.getElementById('checkout-modal'); if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); } }
-
+    function showCart() { const m = document.getElementById('cart-modal'); if (m) { m.classList.remove('hidden'); m.classList.add('flex'); renderCart(); } }
+    function hideCart() { const m = document.getElementById('cart-modal'); if (m) { m.classList.remove('flex'); m.classList.add('hidden'); } }
+    function checkout() { hideCart(); const m = document.getElementById('checkout-modal'); if (m) { m.classList.remove('hidden'); m.classList.add('flex'); } }
+    function hideCheckout() { const m = document.getElementById('checkout-modal'); if (m) { m.classList.remove('flex'); m.classList.add('hidden'); } }
     function clearCartAfterSuccess() { cart = []; updateCartCount(); hideCheckout(); }
 
-    function renderGPUs(filter = 'all') {
-      const grid = document.getElementById('gpu-grid');
-      grid.innerHTML = '';
-      let filtered = gpus;
-      if (filter === '30-series') filtered = gpus.filter(g => g.series === '30-series');
-      if (filter === '40-series') filtered = gpus.filter(g => g.series === '40-series');
-      filtered.forEach(gpu => {
-        const card = document.createElement('div');
-        card.className = `product-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
-        const badgeHtml = gpu.badge ? `<div class="absolute top-2 right-2 bg-white/90 text-[9px] font-medium tracking-wider px-1.5 py-[1px] rounded border border-slate-200 shadow-sm">${gpu.badge}</div>` : '';
-        card.innerHTML = `<div class="relative aspect-[4/3] bg-slate-100 overflow-hidden"><img src="${gpu.img}" class="absolute inset-0 w-full h-full object-cover" alt="${gpu.name}">${badgeHtml}</div><div class="p-4 flex flex-col flex-1"><div><div class="font-semibold tracking-tight text-[15px] leading-tight">${gpu.name}</div><div class="text-xs text-slate-500 mt-px">${gpu.vram} • ${gpu.condition}</div></div><div class="mt-auto pt-4"><div class="flex items-baseline justify-between"><span class="font-semibold text-2xl tabular-nums tracking-tighter">$${gpu.price}</span><div class="text-right"><div class="text-[10px] text-emerald-700 font-medium">In stock: ${gpu.stock}</div></div></div><div class="flex items-center gap-2 mt-3"><button onclick='addToCart(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium bg-slate-900 hover:bg-black transition-colors active:bg-slate-950 text-white py-2 rounded-2xl">Add to cart</button><button onclick='addRigFromGpu(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium border border-slate-300 hover:bg-slate-50 transition-colors py-2 rounded-2xl">Build rig</button></div></div></div>`;
-        grid.appendChild(card);
+    function renderGPUs(f = 'all') {
+      const g = document.getElementById('gpu-grid'); g.innerHTML = '';
+      let fl = gpus; if (f === '30-series') fl = gpus.filter(x => x.series === '30-series'); if (f === '40-series') fl = gpus.filter(x => x.series === '40-series');
+      fl.forEach(gpu => {
+        const d = document.createElement('div'); d.className = 'product-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col';
+        const b = gpu.badge ? `<div class="absolute top-2 right-2 bg-white/90 text-[9px] font-medium tracking-wider px-1.5 py-[1px] rounded border border-slate-200 shadow-sm">${gpu.badge}</div>` : '';
+        d.innerHTML = `<div class="relative aspect-[4/3] bg-slate-100 overflow-hidden"><img src="${gpu.img}" class="absolute inset-0 w-full h-full object-cover" alt="${gpu.name}">${b}</div><div class="p-4 flex flex-col flex-1"><div><div class="font-semibold tracking-tight text-[15px] leading-tight">${gpu.name}</div><div class="text-xs text-slate-500 mt-px">${gpu.vram} • ${gpu.condition}</div></div><div class="mt-auto pt-4"><div class="flex items-baseline justify-between"><span class="font-semibold text-2xl tabular-nums tracking-tighter">$${gpu.price}</span><div class="text-right"><div class="text-[10px] text-emerald-700 font-medium">In stock: ${gpu.stock}</div></div></div><div class="flex items-center gap-2 mt-3"><button onclick='addToCart(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium bg-slate-900 hover:bg-black text-white py-2 rounded-2xl transition-colors">Add to cart</button><button onclick='addRigFromGpu(${JSON.stringify(gpu)})' class="flex-1 text-sm font-medium border border-slate-300 hover:bg-slate-50 py-2 rounded-2xl transition-colors">Build rig</button></div></div></div>`;
+        g.appendChild(d);
       });
     }
 
-    let currentFilter = 'all';
-
-    function filterGPUs(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('.shop-filter').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById('filter-' + (filter === 'all' ? 'all' : filter === '30-series' ? '30' : '40'));
-      if (activeBtn) activeBtn.classList.add('active');
-      renderGPUs(filter);
-    }
+    let cf = 'all';
+    function filterGPUs(f) { cf = f; document.querySelectorAll('.shop-filter').forEach(b => b.classList.remove('active')); document.getElementById('filter-' + (f==='all'?'all':f==='30-series'?'30':'40')).classList.add('active'); renderGPUs(f); }
 
     function renderRigs() {
-      const grid = document.getElementById('rigs-grid');
-      grid.innerHTML = '';
-      rigs.forEach(rig => {
-        const card = document.createElement('div');
-        card.className = `rig-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
-        card.innerHTML = `<div class="relative aspect-[16/10] bg-slate-100 overflow-hidden"><img src="${rig.img}" class="absolute inset-0 w-full h-full object-cover" alt="${rig.name}"></div><div class="p-5 flex flex-col flex-1"><div class="flex justify-between items-start gap-3"><div><div class="font-semibold text-lg leading-tight tracking-tight">${rig.name}</div><div class="text-xs text-emerald-700 font-medium mt-0.5">${rig.gpus}</div></div><div class="font-semibold text-3xl tabular-nums tracking-[-1.5px] text-right">$${rig.price}</div></div><div class="mt-4 text-xs leading-relaxed grid grid-cols-2 gap-x-3 gap-y-1 text-slate-600"><div class="spec-row"><span class="text-slate-400">VRAM:</span> ${rig.totalVram}</div><div class="spec-row"><span class="text-slate-400">CPU:</span> ${rig.cpu}</div><div class="spec-row"><span class="text-slate-400">RAM:</span> ${rig.ram}</div><div class="spec-row"><span class="text-slate-400">Storage:</span> ${rig.storage}</div><div class="spec-row"><span class="text-slate-400">PSU:</span> ${rig.psu}</div><div class="spec-row"><span class="text-slate-400">Power:</span> ${rig.power}</div></div><div class="mt-4 pt-4 border-t text-[12px] text-slate-500 leading-tight flex-1">${rig.use}</div><div class="mt-4"><button onclick='addToCart(${JSON.stringify(rig)}, "rig")' class="w-full text-sm font-semibold py-[10px] rounded-2xl bg-slate-900 hover:bg-black text-white transition-colors">Add to cart</button></div></div>`;
-        grid.appendChild(card);
+      const g = document.getElementById('rigs-grid'); g.innerHTML = '';
+      rigs.forEach(r => {
+        const d = document.createElement('div'); d.className = 'rig-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col';
+        d.innerHTML = `<div class="relative aspect-[16/10] bg-slate-100 overflow-hidden"><img src="${r.img}" class="absolute inset-0 w-full h-full object-cover" alt="${r.name}"></div><div class="p-5 flex flex-col flex-1"><div class="flex justify-between items-start gap-3"><div><div class="font-semibold text-lg leading-tight tracking-tight">${r.name}</div><div class="text-xs text-emerald-700 font-medium mt-0.5">${r.gpus}</div></div><div class="font-semibold text-3xl tabular-nums tracking-[-1.5px] text-right">$${r.price}</div></div><div class="mt-4 text-xs leading-relaxed grid grid-cols-2 gap-x-3 gap-y-1 text-slate-600"><div class="spec-row"><span class="text-slate-400">VRAM:</span> ${r.totalVram}</div><div class="spec-row"><span class="text-slate-400">CPU:</span> ${r.cpu}</div><div class="spec-row"><span class="text-slate-400">RAM:</span> ${r.ram}</div><div class="spec-row"><span class="text-slate-400">Storage:</span> ${r.storage}</div><div class="spec-row"><span class="text-slate-400">PSU:</span> ${r.psu}</div><div class="spec-row"><span class="text-slate-400">Power:</span> ${r.power}</div></div><div class="mt-4 pt-4 border-t text-[12px] text-slate-500 leading-tight flex-1">${r.use}</div><div class="mt-4"><button onclick='addToCart(${JSON.stringify(r)}, "rig")' class="w-full text-sm font-semibold py-[10px] rounded-2xl bg-slate-900 hover:bg-black text-white transition-colors">Add to cart</button></div></div>`;
+        g.appendChild(d);
       });
     }
 
-    function addRigFromGpu(gpu) {
-      const sel = document.getElementById('builder-gpu');
-      sel.value = gpu.id.includes('3090') ? '3090' : gpu.id.includes('3080') ? '3080' : gpu.id.includes('3060') ? '3060ti' : gpu.id.includes('4060ti') ? '4060ti' : '3070';
+    function addRigFromGpu(g) {
+      const s = document.getElementById('builder-gpu');
+      s.value = g.id.includes('3090')?'3090':g.id.includes('3080')?'3080':g.id.includes('3060')?'3060ti':g.id.includes('4060ti')?'4060ti':'3070';
       document.getElementById('builder-qty').value = 4;
-      document.getElementById('builder').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('builder').scrollIntoView({behavior:'smooth', block:'start'});
       setTimeout(updateBuilderPrice, 350);
     }
 
-    function adjustQuantity(delta) {
-      const qtyEl = document.getElementById('builder-qty');
-      let val = parseInt(qtyEl.value) || 6;
-      val = Math.max(2, Math.min(12, val + delta));
-      qtyEl.value = val;
-      updateBuilderPrice();
-    }
+    function adjustQuantity(d) { const q = document.getElementById('builder-qty'); let v = parseInt(q.value)||6; v = Math.max(2, Math.min(12, v+d)); q.value = v; updateBuilderPrice(); }
 
     function updateBuilderPrice() {
-      const gpuSelect = document.getElementById('builder-gpu');
-      const qty = parseInt(document.getElementById('builder-qty').value) || 6;
-      const selected = gpuSelect.options[gpuSelect.selectedIndex];
-      const gpuPrice = parseInt(selected.dataset.price);
-      const vramPer = parseInt(selected.dataset.vram);
-      let base = 950;
-      if (qty >= 8) base = 1350;
-      if (qty >= 10) base = 1790;
-      let addons = 0;
-      if (document.getElementById('add-nvlink').checked) addons += 240;
-      if (document.getElementById('add-10gbe').checked) addons += 165;
-      const gpuTotal = gpuPrice * qty;
-      const total = gpuTotal + base + addons;
-      document.getElementById('builder-total').textContent = '$' + total.toLocaleString();
-      const breakdown = document.getElementById('builder-breakdown');
-      breakdown.innerHTML = `${qty} × $${gpuPrice} GPUs  •  $${gpuTotal}<br>Base system &amp; assembly  •  $${base}<br>${addons > 0 ? `Add-ons  •  $${addons}<br>` : ''}<span class="text-emerald-400">Total VRAM: ${qty * vramPer} GB</span>`;
+      const s = document.getElementById('builder-gpu'); const q = parseInt(document.getElementById('builder-qty').value)||6;
+      const o = s.options[s.selectedIndex]; const p = parseInt(o.dataset.price); const v = parseInt(o.dataset.vram);
+      let b = 950; if (q>=8) b=1350; if (q>=10) b=1790;
+      let a = 0; if (document.getElementById('add-nvlink').checked) a+=240; if (document.getElementById('add-10gbe').checked) a+=165;
+      const gt = p * q; const t = gt + b + a;
+      document.getElementById('builder-total').textContent = '$' + t.toLocaleString();
+      document.getElementById('builder-breakdown').innerHTML = `${q} × $${p} GPUs • $${gt}<br>Base system &amp; assembly • $${b}<br>${a>0?`Add-ons • $${a}<br>`:''}<span class="text-emerald-400">Total VRAM: ${q*v} GB</span>`;
     }
 
     function addBuilderToCart() {
-      const gpuSelect = document.getElementById('builder-gpu');
-      const qty = parseInt(document.getElementById('builder-qty').value) || 6;
-      const selected = gpuSelect.options[gpuSelect.selectedIndex];
-      const gpuPrice = parseInt(selected.dataset.price);
-      const modelName = selected.textContent.split('—')[0].trim();
-      let base = 950; if (qty >= 8) base = 1350; if (qty >= 10) base = 1790;
-      let addons = 0; let addonNames = [];
-      if (document.getElementById('add-nvlink').checked) { addons += 240; addonNames.push('NVLink'); }
-      if (document.getElementById('add-10gbe').checked) { addons += 165; addonNames.push('10GbE'); }
-      const total = (gpuPrice * qty) + base + addons;
-      const rigItem = { id: 'custom-' + Date.now(), name: `${qty}× ${modelName} Custom Rig`, price: total, qty: 1, img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80", details: `${qty} GPUs • Base system + ${addonNames.length ? addonNames.join(' + ') : 'no addons'}` };
-      cart.push({ ...rigItem, type: 'rig' });
-      updateCartCount();
-      const toast = document.createElement('div');
-      toast.className = `fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]`;
-      toast.innerHTML = `<span>Configured rig added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View</button>`;
-      document.body.appendChild(toast);
-      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2300);
+      const s = document.getElementById('builder-gpu'); const q = parseInt(document.getElementById('builder-qty').value)||6;
+      const o = s.options[s.selectedIndex]; const p = parseInt(o.dataset.price); const m = o.textContent.split('—')[0].trim();
+      let b = 950; if (q>=8) b=1350; if (q>=10) b=1790; let a = 0; let an = []; if (document.getElementById('add-nvlink').checked){a+=240;an.push('NVLink')} if (document.getElementById('add-10gbe').checked){a+=165;an.push('10GbE')}
+      const t = p*q + b + a;
+      const r = {id:'custom-'+Date.now(), name:`${q}× ${m} Custom Rig`, price:t, qty:1, img:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80', details:`${q} GPUs • Base + ${an.length?an.join(' + '):'none'}` };
+      cart.push({...r, type:'rig'}); updateCartCount();
+      const t2 = document.createElement('div'); t2.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-5 py-2.5 rounded-2xl flex items-center gap-x-2 shadow-xl z-[200]';
+      t2.innerHTML = `<span>Configured rig added to cart.</span> <button onclick="this.parentNode.remove(); showCart()" class="underline font-medium">View</button>`; document.body.appendChild(t2); setTimeout(()=>t2.parentNode&&t2.parentNode.removeChild(t2),2300);
     }
 
-    function initBuilder() {
-      const qtyEl = document.getElementById('builder-qty');
-      qtyEl.addEventListener('input', updateBuilderPrice);
-      setTimeout(updateBuilderPrice, 80);
-    }
-
-    function initFilters() {
-      const allBtn = document.getElementById('filter-all');
-      if (allBtn) allBtn.classList.add('active');
-    }
+    function initBuilder() { document.getElementById('builder-qty').addEventListener('input', updateBuilderPrice); setTimeout(updateBuilderPrice,80); }
+    function initFilters() { const a = document.getElementById('filter-all'); if(a) a.classList.add('active'); }
 
     function initEverything() {
-      initTailwind();
-      renderGPUs('all');
-      renderRigs();
-      initBuilder();
-      initFilters();
-      updateCartCount();
-      initActiveNav();
+      renderGPUs('all'); renderRigs(); initBuilder(); initFilters(); updateCartCount(); initActiveNav();
+      const mb = document.getElementById('mobile-menu-btn'); const mn = document.getElementById('mobile-nav');
+      if (mb && mn) mb.addEventListener('click', () => { const o = mn.classList.contains('hidden'); mn.classList.toggle('hidden'); mb.setAttribute('aria-expanded', String(!o)); mb.innerHTML = o ? '<i class="fa-solid fa-times text-xl"></i>' : '<i class="fa-solid fa-bars text-xl"></i>'; });
+      const btt = document.getElementById('back-to-top'); if (btt) window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 400));
     }
 
-    document.addEventListener('keydown', function(e) {
-      if (document.activeElement && document.activeElement.id === 'builder-qty' && e.key === 'Enter') {
-        addBuilderToCart();
-      }
-    });
+    document.addEventListener('keydown', e => { if (document.activeElement && document.activeElement.id === 'builder-qty' && e.key === 'Enter') addBuilderToCart(); });
 
-    window.onload = function() { 
-      initEverything(); 
-    };
+    window.onload = () => initEverything();
   </script>
 </body>
 </html>
