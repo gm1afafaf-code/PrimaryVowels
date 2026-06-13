@@ -117,17 +117,7 @@
         
         <div class="md:col-span-5">
           <div class="relative rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-            <div class="w-full aspect-[16/10] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
-              <div class="text-center text-white">
-                <div class="flex justify-center gap-3 mb-4">
-                  <div class="w-9 h-9 rounded bg-emerald-500 flex items-center justify-center"><i class="fa-solid fa-microchip text-white text-sm"></i></div>
-                  <div class="w-9 h-9 rounded bg-emerald-500 flex items-center justify-center"><i class="fa-solid fa-microchip text-white text-sm"></i></div>
-                  <div class="w-9 h-9 rounded bg-emerald-500 flex items-center justify-center"><i class="fa-solid fa-microchip text-white text-sm"></i></div>
-                </div>
-                <div class="text-2xl font-semibold tracking-tight">RTX 30 &amp; 40 Series</div>
-                <div class="text-sm text-slate-300 mt-1">140+ units in inventory</div>
-              </div>
-            </div>
+            <img src="images/gpus.jpg" alt="Pre-owned GPUs in inventory" class="w-full h-auto object-cover aspect-[16/10]">
           </div>
         </div>
       </div>
@@ -369,27 +359,27 @@
   </div>
 
   <script>
-    function initTailwind() { /* Tailwind script already loaded via CDN */ }
+    function initTailwind() { }
 
     const gpus = [
-      { id: "g3070", name: "NVIDIA GeForce RTX 3070 8GB", series: "30-series", price: 249, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 47, badge: "Best value" },
-      { id: "g3090", name: "NVIDIA GeForce RTX 3090 24GB", series: "30-series", price: 679, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 19, badge: "High VRAM" },
-      { id: "g3080", name: "NVIDIA GeForce RTX 3080 10GB", series: "30-series", price: 329, vram: "10 GB GDDR6X", condition: "Tested Pre-Owned", power: "320W", stock: 31, badge: null },
-      { id: "g3060ti", name: "NVIDIA GeForce RTX 3060 Ti 8GB", series: "30-series", price: 229, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "200W", stock: 64, badge: "Budget" },
-      { id: "g4060", name: "NVIDIA GeForce RTX 4060 8GB", series: "40-series", price: 259, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "115W", stock: 28, badge: "Low power" },
-      { id: "g4060ti", name: "NVIDIA GeForce RTX 4060 Ti 8GB", series: "40-series", price: 319, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "160W", stock: 22, badge: null },
-      { id: "g3070fe", name: "NVIDIA RTX 3070 Founders Edition 8GB", series: "30-series", price: 265, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 12, badge: "Premium" },
-      { id: "g3090fe", name: "NVIDIA RTX 3090 Founders Edition 24GB", series: "30-series", price: 749, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 7, badge: "High VRAM" }
+      { id: "g3070", name: "NVIDIA GeForce RTX 3070 8GB", series: "30-series", price: 249, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 47, badge: "Best value", img: "images/3070.jpg" },
+      { id: "g3090", name: "NVIDIA GeForce RTX 3090 24GB", series: "30-series", price: 679, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 19, badge: "High VRAM", img: "images/3090.jpg" },
+      { id: "g3080", name: "NVIDIA GeForce RTX 3080 10GB", series: "30-series", price: 329, vram: "10 GB GDDR6X", condition: "Tested Pre-Owned", power: "320W", stock: 31, badge: null, img: "images/3080.jpg" },
+      { id: "g3060ti", name: "NVIDIA GeForce RTX 3060 Ti 8GB", series: "30-series", price: 229, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "200W", stock: 64, badge: "Budget", img: "images/3070.jpg" },
+      { id: "g4060", name: "NVIDIA GeForce RTX 4060 8GB", series: "40-series", price: 259, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "115W", stock: 28, badge: "Low power", img: "images/gpus.jpg" },
+      { id: "g4060ti", name: "NVIDIA GeForce RTX 4060 Ti 8GB", series: "40-series", price: 319, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "160W", stock: 22, badge: null, img: "images/gpus.jpg" },
+      { id: "g3070fe", name: "NVIDIA RTX 3070 Founders Edition 8GB", series: "30-series", price: 265, vram: "8 GB GDDR6", condition: "Tested Pre-Owned", power: "220W", stock: 12, badge: "Premium", img: "images/3070.jpg" },
+      { id: "g3090fe", name: "NVIDIA RTX 3090 Founders Edition 24GB", series: "30-series", price: 749, vram: "24 GB GDDR6X", condition: "Tested Pre-Owned", power: "350W", stock: 7, badge: "High VRAM", img: "images/3090.jpg" }
     ];
 
     const rigs = [
-      { id: "r4-3070", name: "4× RTX 3070 AI Starter", price: 2299, gpus: "4 × RTX 3070 8GB", totalVram: "32 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~850W", chassis: "Open frame", use: "Local inference (7B–13B), Stable Diffusion, small services" },
-      { id: "r6-3070", name: "6× RTX 3070 Home Lab", price: 3299, gpus: "6 × RTX 3070 8GB", totalVram: "48 GB", cpu: "Ryzen 9 5900X", ram: "96 GB DDR4", storage: "2 TB NVMe", psu: "2000W Platinum", power: "~1250W", chassis: "Open frame", use: "Multi-user inference, fine-tuning 7B–30B models" },
-      { id: "r8-3060ti", name: "8× RTX 3060 Ti Value Rig", price: 2899, gpus: "8 × RTX 3060 Ti 8GB", totalVram: "64 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~1100W", chassis: "Open frame", use: "High throughput inference, batch workloads" },
-      { id: "r4-3090", name: "4× RTX 3090 High-VRAM", price: 3999, gpus: "4 × RTX 3090 24GB", totalVram: "96 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2000W Platinum", power: "~1400W", chassis: "Open frame", use: "70B Q4/Q5 inference, training small models" },
-      { id: "r5-3090", name: "5× RTX 3090 Mid-Size", price: 4799, gpus: "5 × RTX 3090 24GB", totalVram: "120 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2400W Titanium", power: "~1750W", chassis: "Open frame", use: "Large context LLMs, multi-tenant AI services" },
-      { id: "r8-3090", name: "8× RTX 3090 Enterprise", price: 7799, gpus: "8 × RTX 3090 24GB", totalVram: "192 GB", cpu: "Threadripper 3960X", ram: "256 GB DDR4 ECC", storage: "4 TB NVMe", psu: "2× 1600W Platinum (redundant)", power: "~2800W", chassis: "4U rackmount frame", use: "Heavy production inference, fine-tuning 70B+" },
-      { id: "r10-3070", name: "10× RTX 3070 Large Inference", price: 5799, gpus: "10 × RTX 3070 8GB", totalVram: "80 GB", cpu: "Ryzen 9 5950X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2× 1600W Platinum", power: "~2100W", chassis: "Open frame + rack rails", use: "High volume batch processing and serving" }
+      { id: "r4-3070", name: "4× RTX 3070 AI Starter", price: 2299, gpus: "4 × RTX 3070 8GB", totalVram: "32 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~850W", chassis: "Open frame", use: "Local inference (7B–13B), Stable Diffusion, small services", img: "images/rig-4x.jpg" },
+      { id: "r6-3070", name: "6× RTX 3070 Home Lab", price: 3299, gpus: "6 × RTX 3070 8GB", totalVram: "48 GB", cpu: "Ryzen 9 5900X", ram: "96 GB DDR4", storage: "2 TB NVMe", psu: "2000W Platinum", power: "~1250W", chassis: "Open frame", use: "Multi-user inference, fine-tuning 7B–30B models", img: "images/rig-6x.jpg" },
+      { id: "r8-3060ti", name: "8× RTX 3060 Ti Value Rig", price: 2899, gpus: "8 × RTX 3060 Ti 8GB", totalVram: "64 GB", cpu: "Ryzen 7 5700X", ram: "64 GB DDR4", storage: "2 TB NVMe", psu: "1600W Platinum", power: "~1100W", chassis: "Open frame", use: "High throughput inference, batch workloads", img: "images/rig-6x.jpg" },
+      { id: "r4-3090", name: "4× RTX 3090 High-VRAM", price: 3999, gpus: "4 × RTX 3090 24GB", totalVram: "96 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2000W Platinum", power: "~1400W", chassis: "Open frame", use: "70B Q4/Q5 inference, training small models", img: "images/rig-4x.jpg" },
+      { id: "r5-3090", name: "5× RTX 3090 Mid-Size", price: 4799, gpus: "5 × RTX 3090 24GB", totalVram: "120 GB", cpu: "Ryzen 9 5900X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2400W Titanium", power: "~1750W", chassis: "Open frame", use: "Large context LLMs, multi-tenant AI services", img: "images/rig-6x.jpg" },
+      { id: "r8-3090", name: "8× RTX 3090 Enterprise", price: 7799, gpus: "8 × RTX 3090 24GB", totalVram: "192 GB", cpu: "Threadripper 3960X", ram: "256 GB DDR4 ECC", storage: "4 TB NVMe", psu: "2× 1600W Platinum (redundant)", power: "~2800W", chassis: "4U rackmount frame", use: "Heavy production inference, fine-tuning 70B+", img: "images/rig-6x.jpg" },
+      { id: "r10-3070", name: "10× RTX 3070 Large Inference", price: 5799, gpus: "10 × RTX 3070 8GB", totalVram: "80 GB", cpu: "Ryzen 9 5950X", ram: "128 GB DDR4", storage: "4 TB NVMe", psu: "2× 1600W Platinum", power: "~2100W", chassis: "Open frame + rack rails", use: "High volume batch processing and serving", img: "images/rig-4x.jpg" }
     ];
 
     let cart = [];
@@ -424,8 +414,9 @@
         const lineTotal = item.price * item.qty;
         total += lineTotal;
         const label = item.type === 'rig' ? 'Pre-built rig' : 'GPU';
+        const thumb = item.img ? `<img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl border border-slate-200" alt="">` : `<div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>`;
         html += `<div class="flex gap-4 py-4">
-          <div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 font-mono">${item.name.substring(0,8)}</div>
+          ${thumb}
           <div class="flex-1 min-w-0 pr-2">
             <div class="font-medium leading-tight tracking-tight text-[13.5px]">${item.name}</div>
             <div class="text-[10px] text-emerald-700 mt-0.5">${label} • ${item.qty} × $${item.price}</div>
@@ -460,11 +451,8 @@
         card.className = `product-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
         const badgeHtml = gpu.badge ? `<div class="absolute top-3 right-3 bg-white/95 text-[10px] font-medium tracking-wider px-2.5 py-[1px] rounded-xl border border-slate-200 shadow-sm">${gpu.badge}</div>` : '';
         card.innerHTML = `
-          <div class="relative aspect-[4/3] bg-slate-900 flex items-center justify-center text-white overflow-hidden">
-            <div class="text-center">
-              <i class="fa-solid fa-microchip text-4xl opacity-75 mb-2"></i>
-              <div class="text-xs tracking-widest font-mono opacity-75">${gpu.vram}</div>
-            </div>
+          <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+            <img src="${gpu.img || 'images/gpus.jpg'}" class="absolute inset-0 w-full h-full object-cover" alt="${gpu.name}">
             ${badgeHtml}
           </div>
           <div class="p-4 flex flex-col flex-1">
@@ -504,13 +492,8 @@
         const card = document.createElement('div');
         card.className = `rig-card bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col`;
         card.innerHTML = `
-          <div class="relative aspect-[16/10] bg-slate-900 flex items-center justify-center text-white p-6">
-            <div class="text-center">
-              <div class="flex justify-center gap-x-1 mb-3">
-                <i class="fa-solid fa-server text-3xl opacity-80"></i>
-              </div>
-              <div class="font-mono text-xs tracking-[2px] opacity-60">${rig.gpus}</div>
-            </div>
+          <div class="relative aspect-[16/10] bg-slate-100 overflow-hidden">
+            <img src="${rig.img || 'images/rig-4x.jpg'}" class="absolute inset-0 w-full h-full object-cover" alt="${rig.name}">
           </div>
           <div class="p-5 flex flex-col flex-1">
             <div class="flex justify-between items-start gap-3">
@@ -581,7 +564,7 @@
       if (document.getElementById('add-nvlink').checked) { addons += 240; addonNames.push('NVLink'); }
       if (document.getElementById('add-10gbe').checked) { addons += 165; addonNames.push('10GbE'); }
       const total = (gpuPrice * qty) + base + addons;
-      const rigItem = { id: 'custom-' + Date.now(), name: `${qty}× ${modelName} Custom Rig`, price: total, qty: 1, img: '', details: `${qty} GPUs • Base system + ${addonNames.length ? addonNames.join(' + ') : 'no addons'}` };
+      const rigItem = { id: 'custom-' + Date.now(), name: `${qty}× ${modelName} Custom Rig`, price: total, qty: 1, img: 'images/rig-6x.jpg', details: `${qty} GPUs • Base system + ${addonNames.length ? addonNames.join(' + ') : 'no addons'}` };
       cart.push({ ...rigItem, type: 'rig' });
       updateCartCount();
       const toast = document.createElement('div');
