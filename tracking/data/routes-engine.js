@@ -1,25 +1,41 @@
-/* Route Bloomberg engine v6.1 — NY→EU→UK triangular customs risk analysis */
-let JURISDICTIONS = null;
-let EU_CET = null;
-let currentRouteAnalysis = null;
-let currentRouteProduct = null;
+/* Route Bloomberg engine v6.2 — NY→EU→UK triangular customs risk analysis */
+window.JURISDICTIONS = window.JURISDICTIONS || null;
+window.EU_CET = window.EU_CET || null;
+window.currentRouteAnalysis = window.currentRouteAnalysis || null;
+window.currentRouteProduct = window.currentRouteProduct || null;
 
 async function loadRouteData() {
-  if (JURISDICTIONS && EU_CET) return;
-  const [jRes, cRes] = await Promise.all([
-    fetch('data/jurisdictions.json'),
-    fetch('data/eu-cet-chapters.json'),
-  ]);
-  if (!jRes.ok) throw new Error('jurisdictions.json HTTP ' + jRes.status);
-  if (!cRes.ok) throw new Error('eu-cet-chapters.json HTTP ' + cRes.status);
-  JURISDICTIONS = await jRes.json();
-  EU_CET = await cRes.json();
+  if (window.JURISDICTIONS && window.EU_CET) return true;
+  const base = document.querySelector('base')?.href || (location.pathname.replace(/\/[^/]*$/, '/') || '/');
+  const prefix = location.pathname.includes('/tracking') ? 'data/' : 'tracking/data/';
+  const urls = [prefix + 'jurisdictions.json', prefix + 'eu-cet-chapters.json', 'data/jurisdictions.json', 'data/eu-cet-chapters.json'];
+  let jData = null, cData = null, lastErr = '';
+  for (let attempt = 0; attempt < 2 && !jData; attempt++) {
+    for (const ju of [urls[attempt * 2], urls[0], 'data/jurisdictions.json']) {
+      try {
+        const r = await fetch(ju);
+        if (r.ok) { jData = await r.json(); break; }
+        lastErr = ju + ' HTTP ' + r.status;
+      } catch (e) { lastErr = e.message; }
+    }
+    for (const cu of [urls[attempt * 2 + 1], urls[1], 'data/eu-cet-chapters.json']) {
+      try {
+        const r = await fetch(cu);
+        if (r.ok) { cData = await r.json(); break; }
+        lastErr = cu + ' HTTP ' + r.status;
+      } catch (e) { lastErr = e.message; }
+    }
+  }
+  if (!jData || !cData) throw new Error('EU route data failed: ' + lastErr);
+  window.JURISDICTIONS = jData;
+  window.EU_CET = cData;
+  return true;
 }
 
 function getEuDutyRate(product) {
   const ch = String(product.chapter);
   if (product.euDuty != null) return product.euDuty;
-  return EU_CET?.chapters?.[ch] ?? product.duty ?? 0;
+  return window.EU_CET?.chapters?.[ch] ?? product.duty ?? 0;
 }
 
 function hubChapterBonus(hub, chapter) {
@@ -95,7 +111,7 @@ function scoreUsToEu(product, inputWeight, inputDims, hub) {
 }
 
 function scoreEuToUk(product, hub) {
-  const m = JURISDICTIONS.triangularModel;
+  const m = window.JURISDICTIONS.triangularModel;
   const e2u = hub.euToUk;
   const breakdown = {
     leg2Base: e2u.leg2Base,
@@ -128,14 +144,14 @@ function scoreEuToUk(product, hub) {
 }
 
 function compositeTriangular(leg1, leg2, hub, product) {
-  const m = JURISDICTIONS.triangularModel;
+  const m = window.JURISDICTIONS.triangularModel;
   const hubBonus = Math.abs(Math.min(0, hubChapterBonus(hub, product.chapter))) + Math.abs(Math.min(0, hubStrengthMatch(hub, product)));
   const combined = leg1.score + leg2.score - Math.round(hubBonus * 0.5);
   return Math.max(4, Math.min(96, Math.round(combined)));
 }
 
 function analyzeRoutesForProduct(product, inputWeight, inputDims) {
-  if (!JURISDICTIONS) return null;
+  if (!window.JURISDICTIONS?.euHubs?.length) return null;
 
   const direct = scoreOption(product, inputWeight, inputDims);
   const directUk = {
@@ -149,7 +165,7 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
     breakdown: direct.breakdown,
   };
 
-  const hubs = JURISDICTIONS.euHubs.map(hub => {
+  const hubs = window.JURISDICTIONS.euHubs.map(hub => {
     const leg1 = scoreUsToEu(product, inputWeight, inputDims, hub);
     const leg2 = scoreEuToUk(product, hub);
     const combined = compositeTriangular(leg1, leg2, hub, product);
@@ -248,11 +264,17 @@ function populateRerouteHubSelect(analysis, selectedCode) {
 }
 
 function renderDetailReroute(analysis, product, hubCode) {
-  if (!analysis?.hubs?.length) return;
+  if (!analysis?.hubs?.length) {
+    showRerouteLegsError('No EU hub routes computed for this classification.');
+    return;
+  }
   populateRerouteHubSelect(analysis, hubCode);
   const code = hubCode || document.getElementById('reroute-hub-select')?.value || analysis.bestHub?.hub?.code;
   const route = analysis.hubs.find(h => h.hub.code === code) || analysis.bestHub;
-  if (!route) return;
+  if (!route) {
+    showRerouteLegsError('Selected EU hub route not found.');
+    return;
+  }
 
   const leg1El = document.getElementById('reroute-leg1');
   const leg2El = document.getElementById('reroute-leg2');
@@ -290,6 +312,20 @@ function renderDetailReroute(analysis, product, hubCode) {
   const b2 = document.getElementById('reroute-leg2-breakdown');
   if (b1) b1.innerHTML = breakdownRows(route.leg1.breakdown, LEG1_LABELS);
   if (b2) b2.innerHTML = breakdownRows(route.leg2.breakdown, LEG2_LABELS);
+
+  const status = document.getElementById('reroute-status');
+  if (status) status.textContent = '15 EU hubs loaded · showing ' + route.hub.code;
+}
+
+function showRerouteLegsError(msg) {
+  ['reroute-leg1', 'reroute-leg2', 'reroute-combined'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '!'; el.className = 'text-2xl font-bold leading-tight risk-high'; }
+  });
+  const cmp = document.getElementById('reroute-direct-compare');
+  if (cmp) cmp.innerHTML = '<span class="risk-high">' + msg + '</span>';
+  const status = document.getElementById('reroute-status');
+  if (status) status.textContent = msg;
 }
 
 function renderRouteBloomberg(analysis, product) {
@@ -335,11 +371,20 @@ function renderRouteBloomberg(analysis, product) {
       + '<div>Corridor: ' + best.corridor + ' · Transit ~' + best.transitDays + 'd · EU duty ' + best.euDuty + '% · UK duty ' + best.ukDuty + '%</div>'
       + '<div>Leg 1 agency: ' + best.hub.agency + ' · Entry ' + best.hub.entryAir + '/' + (best.hub.entrySea || '—') + '</div>'
       + '<div>Leg 2: ' + best.leg2.exportSystem + ' → ' + best.leg2.ukEntry + ' · ' + best.leg2.notes + '</div>'
-      + '<div class="text-[#666]">' + JURISDICTIONS.triangularModel.originPreserved + '</div></div>';
+      + '<div class="text-[#666]">' + window.JURISDICTIONS.triangularModel.originPreserved + '</div></div>';
   }
 
   body.innerHTML = html;
 }
+
+window.RouteBloomberg = {
+  loadRouteData,
+  analyzeRoutesForProduct,
+  renderDetailReroute,
+  renderRouteBloomberg,
+  scanBestTriangularRoutes,
+  showRerouteLegsError,
+};
 
 async function scanBestTriangularRoutes(weight, inputDims, limit) {
   await loadRouteData();

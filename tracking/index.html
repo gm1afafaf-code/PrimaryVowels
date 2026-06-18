@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v6.1 | EU RE-ROUTE</title>
+  <title>TRACKING // RISK ADJUSTER v6.2 | EU RE-ROUTE</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -80,7 +80,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.1</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.2</span>
         </div>
         <div class="text-xs text-[#666]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
       </div>
@@ -207,6 +207,7 @@
                 <div id="reroute-delta" class="text-[8px]">—</div>
               </div>
             </div>
+            <div id="reroute-status" class="text-[8px] text-[#666] mb-1">Awaiting selection…</div>
             <div id="reroute-direct-compare" class="text-[9px] text-[#aaa] mb-2 panel p-1"></div>
             <div class="grid grid-cols-1 gap-1">
               <div class="panel p-1">
@@ -305,11 +306,12 @@
     </div>
   </div>
 
+<script src="data/routes-engine.js"></script>
 <script>
 
 const REGIME = {
-  version: '6.1.0',
-  codename: 'EU RE-ROUTE DETAIL',
+  version: '6.2.0',
+  codename: 'EU RE-ROUTE FIX',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
   route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
@@ -1124,37 +1126,57 @@ function selectOption(id) {
   document.getElementById('detail-uk-calc').textContent = 'FOB $'+p.value+' + '+cfg.label.toLowerCase()+' freight $'+calc.freight+' + ins $'+calc.ins+' → CIF ~$'+Math.round(calc.cifUsd)+' (~£'+Math.round(calc.cifGbp)+') | Duty ~£'+Math.round(calc.dutyGbp);
   document.getElementById('detail-vat').textContent = '£'+Math.round(calc.vatGbp)+' VAT (PVA if GB VAT-registered importer)';
   document.getElementById('detail-why').textContent = buildWhyText(p, r);
-  updateRouteBloomberg(p, r);
+  void updateRouteBloomberg(p, r);
 }
 
 function onRerouteHubChange() {
+  const RB = window.RouteBloomberg;
   const code = document.getElementById('reroute-hub-select')?.value;
-  if (code && currentRouteAnalysis) renderDetailReroute(currentRouteAnalysis, currentRouteProduct, code);
+  if (code && window.currentRouteAnalysis && RB) {
+    RB.renderDetailReroute(window.currentRouteAnalysis, window.currentRouteProduct, code);
+  }
 }
 
-function updateRouteBloomberg(product, scored) {
-  const panel = document.getElementById('detail-reroute-panel');
-  if (!JURISDICTIONS) {
-    document.getElementById('route-bloomberg')?.classList.add('hidden');
-    ['reroute-leg1','reroute-leg2','reroute-combined'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.textContent = '…'; el.className = 'text-2xl font-bold leading-tight text-[#666]'; }
-    });
-    const cmp = document.getElementById('reroute-direct-compare');
-    if (cmp) cmp.textContent = 'Loading EU route jurisdictions…';
+function setRerouteLoading() {
+  ['reroute-leg1','reroute-leg2','reroute-combined'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '…'; el.className = 'text-2xl font-bold leading-tight text-[#666]'; }
+  });
+  const st = document.getElementById('reroute-status');
+  if (st) st.textContent = 'Computing EU leg scores…';
+}
+
+async function updateRouteBloomberg(product, scored) {
+  const RB = window.RouteBloomberg;
+  if (!RB) {
+    const st = document.getElementById('reroute-status');
+    if (st) st.textContent = 'Route engine failed to load — refresh page.';
     return;
   }
-  const box = getSelectedBox();
-  const analysis = analyzeRoutesForProduct(product, profile.weight, box.dims);
-  currentRouteAnalysis = analysis;
-  currentRouteProduct = product;
-  renderDetailReroute(analysis, product);
-  renderRouteBloomberg(analysis, product);
+  setRerouteLoading();
+  try {
+    await RB.loadRouteData();
+    const box = getSelectedBox();
+    const weight = parseFloat(document.getElementById('weight-input')?.value) || profile.weight;
+    const analysis = RB.analyzeRoutesForProduct(product, weight, box.dims);
+    if (!analysis) throw new Error('Route analysis returned empty — EU jurisdiction data missing.');
+    window.currentRouteAnalysis = analysis;
+    window.currentRouteProduct = product;
+    RB.renderDetailReroute(analysis, product);
+    RB.renderRouteBloomberg(analysis, product);
+    document.getElementById('route-bloomberg')?.classList.remove('hidden');
+  } catch (e) {
+    console.error('Route bloomberg error:', e);
+    RB.showRerouteLegsError(e.message || String(e));
+    document.getElementById('route-bloomberg')?.classList.add('hidden');
+  }
 }
 
 let triangularScanGen = 0;
 async function runTriangularAdvantageScan() {
-  if (!dbReady || !JURISDICTIONS) return;
+  const RB = window.RouteBloomberg;
+  if (!dbReady || !RB) return;
+  await RB.loadRouteData();
   const gen = ++triangularScanGen;
   const status = document.getElementById('route-scan-status');
   const resultsEl = document.getElementById('route-scan-results');
@@ -1164,7 +1186,7 @@ async function runTriangularAdvantageScan() {
   status.textContent = 'Scanning 13k+ classifications across 15 EU hubs…';
   const box = getSelectedBox();
   const weight = parseFloat(document.getElementById('weight-input').value) || profile.weight;
-  const hits = await scanBestTriangularRoutes(weight, box.dims, 25);
+  const hits = await RB.scanBestTriangularRoutes(weight, box.dims, 25);
   if (gen !== triangularScanGen) return;
   status.textContent = hits.length + ' classifications where EU hub beats direct UK at ' + weight + ' lbs';
   if (!hits.length) {
@@ -1244,10 +1266,13 @@ async function init() {
   updateFreightModeUI();
   if (!dbReady) await loadDatabase();
   try {
-    await loadRouteData();
-    document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs · ' + (JURISDICTIONS?.euHubs?.length || 0) + ' EU hubs';
+    if (window.RouteBloomberg) {
+      await window.RouteBloomberg.loadRouteData();
+      document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs · ' + (window.JURISDICTIONS?.euHubs?.length || 0) + ' EU hubs';
+    }
   } catch (e) {
     console.warn('Route data load failed:', e);
+    document.getElementById('reroute-status').textContent = 'EU route data load failed: ' + e.message;
   }
   syncWeightUI(getFreightConfig().defaultWeight);
   document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
@@ -1256,6 +1281,5 @@ async function init() {
 window.onload = boot;
 
 </script>
-<script src="data/routes-engine.js"></script>
 </body>
 </html>
