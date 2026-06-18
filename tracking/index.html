@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v5.1 | FULL UK TARIFF</title>
+  <title>TRACKING // RISK ADJUSTER v5.2 | FULL UK TARIFF</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -73,7 +73,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.1</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.2</span>
         </div>
         <div class="text-xs text-[#666]">FULL UK IOT · SLIDE WEIGHT → LOWEST-RISK CLASSIFICATIONS | US → GB · LHR</div>
       </div>
@@ -85,7 +85,20 @@
 
     <div class="grid grid-cols-12 gap-3">
       <div class="col-span-12 lg:col-span-3 panel p-3 rounded">
-        <div class="section-title">WEIGHT SLIDER</div>
+        <div class="section-title">LOWEST RISK SEARCH</div>
+        <p class="uk-note mb-2">Find the lowest clearance risk across the full UK tariff — no weight scrolling. Each code scored at its native weight + best-fit box.</p>
+        <div class="mb-2">
+          <div class="label mb-1">TARGET RISK (optional)</div>
+          <input type="number" id="risk-target" min="4" max="96" step="1" placeholder="e.g. 28" class="w-full p-1 text-sm" title="Only show codes scoring at or below this risk" onkeydown="if(event.key==='Enter')runLowestRiskSearch()">
+        </div>
+        <div class="mb-2">
+          <div class="label mb-1">FILTER (optional)</div>
+          <input type="text" id="risk-keyword" placeholder="HS, chapter, keyword…" class="w-full p-1 text-sm" onkeydown="if(event.key==='Enter')runLowestRiskSearch()">
+        </div>
+        <button type="button" class="search-btn w-full py-2 mb-1 text-xs" onclick="runLowestRiskSearch()">FIND LOWEST RISK</button>
+        <button type="button" class="search-btn w-full py-1 text-[9px] text-[#888]" onclick="clearLowestRiskSearch()">clear risk search</button>
+        <div id="risk-search-status" class="text-[9px] text-[#666] mt-1"></div>
+        <div class="section-title mt-4">WEIGHT SLIDER</div>
         <p class="uk-note mb-3">Slide gross weight. Full UK declarable tariff ranked by clearance risk — physical coherence, HMRC description grade, compliance controls, valuation band.</p>
         <div class="mb-2 flex justify-between items-end">
           <div class="label">GROSS WEIGHT</div>
@@ -227,7 +240,7 @@
 <script>
 
 const REGIME = {
-  version: '5.1.0',
+  version: '5.2.0',
   codename: 'FULL TARIFF',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
@@ -319,12 +332,15 @@ const QUICK_PICK_COUNT = 4;
 const WEIGHT_MATCH_CUTOFF = 15;
 
 function getSearchQuery() {
-  return (document.getElementById('risk-search')?.value || '').trim();
+  const q = (document.getElementById('risk-search')?.value || '').trim();
+  if (q) return q;
+  return (document.getElementById('risk-keyword')?.value || '').trim();
 }
 
 function getMaxRiskFilter() {
   const v = parseFloat(document.getElementById('max-risk')?.value);
-  return Number.isFinite(v) ? v : null;
+  if (Number.isFinite(v)) return v;
+  return getRiskTargetFilter();
 }
 
 function filterBySearch(entries) {
@@ -349,21 +365,43 @@ function applyMaxRiskFilter(results) {
   return max != null ? results.filter(r => r.score <= max) : results;
 }
 
+function syncRiskSearchInputs() {
+  const target = document.getElementById('risk-target');
+  const keyword = document.getElementById('risk-keyword');
+  const maxEl = document.getElementById('max-risk');
+  const searchEl = document.getElementById('risk-search');
+  if (target && maxEl && document.activeElement !== maxEl) maxEl.value = target.value;
+  if (target && maxEl && document.activeElement === maxEl) target.value = maxEl.value;
+  if (keyword && searchEl && document.activeElement !== searchEl) searchEl.value = keyword.value;
+  if (keyword && searchEl && document.activeElement === searchEl) keyword.value = searchEl.value;
+}
+
+function getRiskTargetFilter() {
+  const v = parseFloat(document.getElementById('risk-target')?.value);
+  return Number.isFinite(v) ? v : null;
+}
+
 function updateSearchModeUI() {
   const note = document.getElementById('search-mode-note');
   const title = document.getElementById('results-title');
   const btn = document.getElementById('btn-global');
+  const status = document.getElementById('risk-search-status');
+  const target = getRiskTargetFilter() ?? getMaxRiskFilter();
   if (scanMode === 'global') {
     title.textContent = 'GLOBAL LOWEST RISK — NATIVE WEIGHT PER CODE';
-    note.textContent = 'Scoring each code at its own gross weight + best-fit box. WT Δ vs your shipment weight shown for reference.';
+    const targetNote = target != null ? ' · showing risk ≤ ' + target : '';
+    note.textContent = 'Scoring each code at its own gross weight + best-fit box. WT Δ vs your shipment weight shown for reference.' + targetNote;
+    if (status) status.textContent = 'Risk search active — weight slider ignored' + (target != null ? ' · cap ≤ ' + target : '');
     btn?.classList.add('active');
   } else if (getSearchQuery() || getMaxRiskFilter() != null) {
     title.textContent = 'DIRECT SEARCH RESULTS — LOWEST RISK FIRST';
     note.textContent = 'Full-database search at your current weight (' + profile.weight + ' lbs) and box.';
+    if (status) status.textContent = '';
     btn?.classList.remove('active');
   } else {
     title.textContent = 'ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST';
     note.textContent = '';
+    if (status) status.textContent = '';
     btn?.classList.remove('active');
   }
 }
@@ -373,15 +411,36 @@ function clearScanMode() {
 }
 
 function clearDirectSearch() {
+  clearLowestRiskSearch();
+}
+
+function clearLowestRiskSearch() {
   scanMode = 'weight';
   document.getElementById('risk-search').value = '';
   document.getElementById('max-risk').value = '';
+  document.getElementById('risk-target').value = '';
+  document.getElementById('risk-keyword').value = '';
   document.getElementById('show-all').checked = false;
   updateSearchModeUI();
   analyze();
 }
 
+function runLowestRiskSearch() {
+  syncRiskSearchInputs();
+  scanMode = 'global';
+  document.getElementById('show-all').checked = true;
+  updateSearchModeUI();
+  analyzeGlobalAsync();
+}
+
 function runDirectRiskSearch() {
+  syncRiskSearchInputs();
+  const hasQuery = !!getSearchQuery();
+  const hasMax = getMaxRiskFilter() != null;
+  if (!hasQuery) {
+    runLowestRiskSearch();
+    return;
+  }
   scanMode = 'weight';
   document.getElementById('show-all').checked = true;
   updateSearchModeUI();
@@ -389,9 +448,7 @@ function runDirectRiskSearch() {
 }
 
 function runGlobalLowestRisk() {
-  scanMode = 'global';
-  updateSearchModeUI();
-  analyzeGlobalAsync();
+  runLowestRiskSearch();
 }
 
 function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
