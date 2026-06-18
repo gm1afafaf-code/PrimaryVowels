@@ -1,98 +1,487 @@
-[
-  "tracking/data/ch01.json",
-  "tracking/data/ch02.json",
-  "tracking/data/ch03.json",
-  "tracking/data/ch04.json",
-  "tracking/data/ch05.json",
-  "tracking/data/ch06.json",
-  "tracking/data/ch07.json",
-  "tracking/data/ch08.json",
-  "tracking/data/ch09.json",
-  "tracking/data/ch10.json",
-  "tracking/data/ch11.json",
-  "tracking/data/ch12.json",
-  "tracking/data/ch13.json",
-  "tracking/data/ch14.json",
-  "tracking/data/ch15.json",
-  "tracking/data/ch16.json",
-  "tracking/data/ch17.json",
-  "tracking/data/ch18.json",
-  "tracking/data/ch19.json",
-  "tracking/data/ch20.json",
-  "tracking/data/ch21.json",
-  "tracking/data/ch22.json",
-  "tracking/data/ch23.json",
-  "tracking/data/ch24.json",
-  "tracking/data/ch25.json",
-  "tracking/data/ch26.json",
-  "tracking/data/ch27.json",
-  "tracking/data/ch28.json",
-  "tracking/data/ch29.json",
-  "tracking/data/ch30.json",
-  "tracking/data/ch31.json",
-  "tracking/data/ch32.json",
-  "tracking/data/ch33.json",
-  "tracking/data/ch34.json",
-  "tracking/data/ch35.json",
-  "tracking/data/ch36.json",
-  "tracking/data/ch37.json",
-  "tracking/data/ch38.json",
-  "tracking/data/ch39.json",
-  "tracking/data/ch40.json",
-  "tracking/data/ch41.json",
-  "tracking/data/ch42.json",
-  "tracking/data/ch43.json",
-  "tracking/data/ch44.json",
-  "tracking/data/ch45.json",
-  "tracking/data/ch46.json",
-  "tracking/data/ch47.json",
-  "tracking/data/ch48.json",
-  "tracking/data/ch49.json",
-  "tracking/data/ch50.json",
-  "tracking/data/ch51.json",
-  "tracking/data/ch52.json",
-  "tracking/data/ch53.json",
-  "tracking/data/ch54.json",
-  "tracking/data/ch55.json",
-  "tracking/data/ch56.json",
-  "tracking/data/ch57.json",
-  "tracking/data/ch58.json",
-  "tracking/data/ch59.json",
-  "tracking/data/ch60.json",
-  "tracking/data/ch61.json",
-  "tracking/data/ch62.json",
-  "tracking/data/ch63.json",
-  "tracking/data/ch64.json",
-  "tracking/data/ch65.json",
-  "tracking/data/ch66.json",
-  "tracking/data/ch67.json",
-  "tracking/data/ch68.json",
-  "tracking/data/ch69.json",
-  "tracking/data/ch70.json",
-  "tracking/data/ch71.json",
-  "tracking/data/ch72.json",
-  "tracking/data/ch73.json",
-  "tracking/data/ch74.json",
-  "tracking/data/ch75.json",
-  "tracking/data/ch76.json",
-  "tracking/data/ch78.json",
-  "tracking/data/ch79.json",
-  "tracking/data/ch80.json",
-  "tracking/data/ch81.json",
-  "tracking/data/ch82.json",
-  "tracking/data/ch83.json",
-  "tracking/data/ch84.json",
-  "tracking/data/ch85.json",
-  "tracking/data/ch86.json",
-  "tracking/data/ch87.json",
-  "tracking/data/ch88.json",
-  "tracking/data/ch89.json",
-  "tracking/data/ch90.json",
-  "tracking/data/ch91.json",
-  "tracking/data/ch92.json",
-  "tracking/data/ch93.json",
-  "tracking/data/ch94.json",
-  "tracking/data/ch95.json",
-  "tracking/data/ch96.json",
-  "tracking/data/ch97.json"
-]
+{
+  "count": 13209,
+  "source": "UK Integrated Online Tariff API",
+  "asOf": "2026-06-18",
+  "chapters": [
+    {
+      "chapter": 1,
+      "file": "data/ch01.json",
+      "count": 99
+    },
+    {
+      "chapter": 2,
+      "file": "data/ch02.json",
+      "count": 395
+    },
+    {
+      "chapter": 3,
+      "file": "data/ch03.json",
+      "count": 905
+    },
+    {
+      "chapter": 4,
+      "file": "data/ch04.json",
+      "count": 205
+    },
+    {
+      "chapter": 5,
+      "file": "data/ch05.json",
+      "count": 24
+    },
+    {
+      "chapter": 6,
+      "file": "data/ch06.json",
+      "count": 52
+    },
+    {
+      "chapter": 7,
+      "file": "data/ch07.json",
+      "count": 173
+    },
+    {
+      "chapter": 8,
+      "file": "data/ch08.json",
+      "count": 207
+    },
+    {
+      "chapter": 9,
+      "file": "data/ch09.json",
+      "count": 53
+    },
+    {
+      "chapter": 10,
+      "file": "data/ch10.json",
+      "count": 179
+    },
+    {
+      "chapter": 11,
+      "file": "data/ch11.json",
+      "count": 78
+    },
+    {
+      "chapter": 12,
+      "file": "data/ch12.json",
+      "count": 97
+    },
+    {
+      "chapter": 13,
+      "file": "data/ch13.json",
+      "count": 26
+    },
+    {
+      "chapter": 14,
+      "file": "data/ch14.json",
+      "count": 6
+    },
+    {
+      "chapter": 15,
+      "file": "data/ch15.json",
+      "count": 170
+    },
+    {
+      "chapter": 16,
+      "file": "data/ch16.json",
+      "count": 240
+    },
+    {
+      "chapter": 17,
+      "file": "data/ch17.json",
+      "count": 54
+    },
+    {
+      "chapter": 18,
+      "file": "data/ch18.json",
+      "count": 44
+    },
+    {
+      "chapter": 19,
+      "file": "data/ch19.json",
+      "count": 68
+    },
+    {
+      "chapter": 20,
+      "file": "data/ch20.json",
+      "count": 806
+    },
+    {
+      "chapter": 21,
+      "file": "data/ch21.json",
+      "count": 93
+    },
+    {
+      "chapter": 22,
+      "file": "data/ch22.json",
+      "count": 473
+    },
+    {
+      "chapter": 23,
+      "file": "data/ch23.json",
+      "count": 114
+    },
+    {
+      "chapter": 24,
+      "file": "data/ch24.json",
+      "count": 51
+    },
+    {
+      "chapter": 25,
+      "file": "data/ch25.json",
+      "count": 78
+    },
+    {
+      "chapter": 26,
+      "file": "data/ch26.json",
+      "count": 35
+    },
+    {
+      "chapter": 27,
+      "file": "data/ch27.json",
+      "count": 155
+    },
+    {
+      "chapter": 28,
+      "file": "data/ch28.json",
+      "count": 37
+    },
+    {
+      "chapter": 29,
+      "file": "data/ch29.json",
+      "count": 440
+    },
+    {
+      "chapter": 30,
+      "file": "data/ch30.json",
+      "count": 58
+    },
+    {
+      "chapter": 31,
+      "file": "data/ch31.json",
+      "count": 59
+    },
+    {
+      "chapter": 32,
+      "file": "data/ch32.json",
+      "count": 163
+    },
+    {
+      "chapter": 33,
+      "file": "data/ch33.json",
+      "count": 52
+    },
+    {
+      "chapter": 34,
+      "file": "data/ch34.json",
+      "count": 35
+    },
+    {
+      "chapter": 35,
+      "file": "data/ch35.json",
+      "count": 41
+    },
+    {
+      "chapter": 36,
+      "file": "data/ch36.json",
+      "count": 16
+    },
+    {
+      "chapter": 37,
+      "file": "data/ch37.json",
+      "count": 41
+    },
+    {
+      "chapter": 38,
+      "file": "data/ch38.json",
+      "count": 495
+    },
+    {
+      "chapter": 39,
+      "file": "data/ch39.json",
+      "count": 38
+    },
+    {
+      "chapter": 40,
+      "file": "data/ch40.json",
+      "count": 111
+    },
+    {
+      "chapter": 41,
+      "file": "data/ch41.json",
+      "count": 72
+    },
+    {
+      "chapter": 42,
+      "file": "data/ch42.json",
+      "count": 53
+    },
+    {
+      "chapter": 43,
+      "file": "data/ch43.json",
+      "count": 22
+    },
+    {
+      "chapter": 44,
+      "file": "data/ch44.json",
+      "count": 287
+    },
+    {
+      "chapter": 45,
+      "file": "data/ch45.json",
+      "count": 12
+    },
+    {
+      "chapter": 46,
+      "file": "data/ch46.json",
+      "count": 26
+    },
+    {
+      "chapter": 47,
+      "file": "data/ch47.json",
+      "count": 22
+    },
+    {
+      "chapter": 48,
+      "file": "data/ch48.json",
+      "count": 169
+    },
+    {
+      "chapter": 49,
+      "file": "data/ch49.json",
+      "count": 18
+    },
+    {
+      "chapter": 50,
+      "file": "data/ch50.json",
+      "count": 41
+    },
+    {
+      "chapter": 51,
+      "file": "data/ch51.json",
+      "count": 57
+    },
+    {
+      "chapter": 52,
+      "file": "data/ch52.json",
+      "count": 225
+    },
+    {
+      "chapter": 53,
+      "file": "data/ch53.json",
+      "count": 37
+    },
+    {
+      "chapter": 54,
+      "file": "data/ch54.json",
+      "count": 99
+    },
+    {
+      "chapter": 55,
+      "file": "data/ch55.json",
+      "count": 146
+    },
+    {
+      "chapter": 56,
+      "file": "data/ch56.json",
+      "count": 101
+    },
+    {
+      "chapter": 57,
+      "file": "data/ch57.json",
+      "count": 60
+    },
+    {
+      "chapter": 58,
+      "file": "data/ch58.json",
+      "count": 74
+    },
+    {
+      "chapter": 59,
+      "file": "data/ch59.json",
+      "count": 56
+    },
+    {
+      "chapter": 60,
+      "file": "data/ch60.json",
+      "count": 54
+    },
+    {
+      "chapter": 61,
+      "file": "data/ch61.json",
+      "count": 176
+    },
+    {
+      "chapter": 62,
+      "file": "data/ch62.json",
+      "count": 275
+    },
+    {
+      "chapter": 63,
+      "file": "data/ch63.json",
+      "count": 20
+    },
+    {
+      "chapter": 64,
+      "file": "data/ch64.json",
+      "count": 100
+    },
+    {
+      "chapter": 65,
+      "file": "data/ch65.json",
+      "count": 9
+    },
+    {
+      "chapter": 66,
+      "file": "data/ch66.json",
+      "count": 9
+    },
+    {
+      "chapter": 67,
+      "file": "data/ch67.json",
+      "count": 6
+    },
+    {
+      "chapter": 68,
+      "file": "data/ch68.json",
+      "count": 74
+    },
+    {
+      "chapter": 69,
+      "file": "data/ch69.json",
+      "count": 2
+    },
+    {
+      "chapter": 70,
+      "file": "data/ch70.json",
+      "count": 13
+    },
+    {
+      "chapter": 71,
+      "file": "data/ch71.json",
+      "count": 9
+    },
+    {
+      "chapter": 72,
+      "file": "data/ch72.json",
+      "count": 31
+    },
+    {
+      "chapter": 73,
+      "file": "data/ch73.json",
+      "count": 437
+    },
+    {
+      "chapter": 74,
+      "file": "data/ch74.json",
+      "count": 69
+    },
+    {
+      "chapter": 75,
+      "file": "data/ch75.json",
+      "count": 19
+    },
+    {
+      "chapter": 76,
+      "file": "data/ch76.json",
+      "count": 193
+    },
+    {
+      "chapter": 78,
+      "file": "data/ch78.json",
+      "count": 10
+    },
+    {
+      "chapter": 79,
+      "file": "data/ch79.json",
+      "count": 9
+    },
+    {
+      "chapter": 80,
+      "file": "data/ch80.json",
+      "count": 4
+    },
+    {
+      "chapter": 81,
+      "file": "data/ch81.json",
+      "count": 112
+    },
+    {
+      "chapter": 82,
+      "file": "data/ch82.json",
+      "count": 96
+    },
+    {
+      "chapter": 83,
+      "file": "data/ch83.json",
+      "count": 69
+    },
+    {
+      "chapter": 84,
+      "file": "data/ch84.json",
+      "count": 1290
+    },
+    {
+      "chapter": 85,
+      "file": "data/ch85.json",
+      "count": 861
+    },
+    {
+      "chapter": 86,
+      "file": "data/ch86.json",
+      "count": 26
+    },
+    {
+      "chapter": 87,
+      "file": "data/ch87.json",
+      "count": 364
+    },
+    {
+      "chapter": 88,
+      "file": "data/ch88.json",
+      "count": 68
+    },
+    {
+      "chapter": 89,
+      "file": "data/ch89.json",
+      "count": 41
+    },
+    {
+      "chapter": 90,
+      "file": "data/ch90.json",
+      "count": 255
+    },
+    {
+      "chapter": 91,
+      "file": "data/ch91.json",
+      "count": 65
+    },
+    {
+      "chapter": 92,
+      "file": "data/ch92.json",
+      "count": 29
+    },
+    {
+      "chapter": 93,
+      "file": "data/ch93.json",
+      "count": 21
+    },
+    {
+      "chapter": 94,
+      "file": "data/ch94.json",
+      "count": 128
+    },
+    {
+      "chapter": 95,
+      "file": "data/ch95.json",
+      "count": 81
+    },
+    {
+      "chapter": 96,
+      "file": "data/ch96.json",
+      "count": 74
+    },
+    {
+      "chapter": 97,
+      "file": "data/ch97.json",
+      "count": 67
+    }
+  ]
+}
