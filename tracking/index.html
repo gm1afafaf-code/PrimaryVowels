@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v5.3 | FULL UK TARIFF</title>
+  <title>TRACKING // RISK ADJUSTER v6.0 | EU ROUTE BLOOMBERG</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -76,13 +76,13 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.3</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.0</span>
         </div>
-        <div class="text-xs text-[#666]" id="route-tagline">FULL UK IOT · SLIDE WEIGHT → LOWEST-RISK CLASSIFICATIONS | US → GB · LHR · AIR</div>
+        <div class="text-xs text-[#666]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
       </div>
       <div class="flex items-center gap-4 text-xs">
         <div>TARIFF: <span id="last-update">—</span></div>
-        <div class="px-2 py-0.5 bg-[#1a1a1a] border border-[#333]">UK IOT · CDS-READY</div>
+        <div class="px-2 py-0.5 bg-[#1a1a1a] border border-[#333]">UK IOT + EU TARIC · CDS-READY</div>
       </div>
     </div>
 
@@ -213,6 +213,21 @@
         </div>
       </div>
 
+      <div class="col-span-12 panel p-3 rounded hidden" id="route-bloomberg">
+        <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+          <div class="section-title mb-0">ROUTE BLOOMBERG — JFK → EU → UK</div>
+          <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN ALL CLASSIFICATIONS FOR HUB ADVANTAGE</button>
+        </div>
+        <p class="uk-note mb-2">Compares direct NY→UK risk vs triangular NY→EU hub→UK for all 15 EU jurisdictions. Leg 1 = US import clearance; Leg 2 = post-Brexit EU re-export + UK CDS. Combined score = leg1 + leg2 − hub bonus.</p>
+        <div id="route-bloomberg-summary" class="mb-2"></div>
+        <div id="route-scan-status" class="text-[9px] text-[#666] mb-1"></div>
+        <div id="route-bloomberg-body" class="overflow-auto max-h-[360px]"></div>
+        <div id="route-scan-results" class="hidden mt-3">
+          <div class="label mb-1">TOP TRIANGULAR ADVANTAGES (FULL DB SCAN)</div>
+          <div class="overflow-auto max-h-[240px]" id="route-scan-table"></div>
+        </div>
+      </div>
+
       <div class="col-span-12 panel p-3 rounded">
         <div class="section-title">CDS CHECKLIST — APPLY TO SELECTED OPTION</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 text-xs">
@@ -237,7 +252,7 @@
             </ul>
           </div>
         </div>
-        <div class="mt-2 text-[10px] text-[#555]">Full UK tariff database v5.3 — verify measures at trade-tariff.service.gov.uk before CDS filing. Not legal advice.</div>
+        <div class="mt-2 text-[10px] text-[#555]">Full UK + EU TARIC route model v6.0 — verify measures at trade-tariff.service.gov.uk and EU TARIC before filing. Not legal advice.</div>
       </div>
     </div>
 
@@ -250,8 +265,8 @@
 <script>
 
 const REGIME = {
-  version: '5.3.0',
-  codename: 'FULL TARIFF',
+  version: '6.0.0',
+  codename: 'EU ROUTE BLOOMBERG',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
   route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
@@ -1066,6 +1081,51 @@ function selectOption(id) {
   document.getElementById('detail-uk-calc').textContent = 'FOB $'+p.value+' + '+cfg.label.toLowerCase()+' freight $'+calc.freight+' + ins $'+calc.ins+' → CIF ~$'+Math.round(calc.cifUsd)+' (~£'+Math.round(calc.cifGbp)+') | Duty ~£'+Math.round(calc.dutyGbp);
   document.getElementById('detail-vat').textContent = '£'+Math.round(calc.vatGbp)+' VAT (PVA if GB VAT-registered importer)';
   document.getElementById('detail-why').textContent = buildWhyText(p, r);
+  updateRouteBloomberg(p, r);
+}
+
+function updateRouteBloomberg(product, scored) {
+  if (!JURISDICTIONS) {
+    document.getElementById('route-bloomberg')?.classList.add('hidden');
+    return;
+  }
+  const box = getSelectedBox();
+  const analysis = analyzeRoutesForProduct(product, profile.weight, box.dims);
+  renderRouteBloomberg(analysis, product);
+}
+
+let triangularScanGen = 0;
+async function runTriangularAdvantageScan() {
+  if (!dbReady || !JURISDICTIONS) return;
+  const gen = ++triangularScanGen;
+  const status = document.getElementById('route-scan-status');
+  const resultsEl = document.getElementById('route-scan-results');
+  const table = document.getElementById('route-scan-table');
+  document.getElementById('route-bloomberg').classList.remove('hidden');
+  resultsEl.classList.remove('hidden');
+  status.textContent = 'Scanning 13k+ classifications across 15 EU hubs…';
+  const box = getSelectedBox();
+  const weight = parseFloat(document.getElementById('weight-input').value) || profile.weight;
+  const hits = await scanBestTriangularRoutes(weight, box.dims, 25);
+  if (gen !== triangularScanGen) return;
+  status.textContent = hits.length + ' classifications where EU hub beats direct UK at ' + weight + ' lbs';
+  if (!hits.length) {
+    table.innerHTML = '<div class="text-[10px] text-[#666]">No hub advantage found at this weight — direct JFK→UK wins for all scanned codes.</div>';
+    return;
+  }
+  let html = '<table class="text-[10px] w-full"><thead class="text-[#666]"><tr><th>#</th><th>PRODUCT</th><th>HS</th><th>UK</th><th>BEST HUB</th><th>COMB</th><th>SAVE</th></tr></thead><tbody>';
+  hits.forEach((h, i) => {
+    html += '<tr class="option-row border-b border-[#222]" onclick="selectOption(\'' + h.id + '\')">'
+      + '<td>' + (i+1) + '</td>'
+      + '<td class="max-w-[160px] truncate">' + h.product.name + '</td>'
+      + '<td>' + fmtHs(h.product.hs) + '</td>'
+      + '<td class="' + riskClass(h.directScore) + '">' + h.directScore + '</td>'
+      + '<td>' + h.bestHub.hub.code + '</td>'
+      + '<td class="font-bold ' + riskClass(h.bestHub.combined) + '">' + h.bestHub.combined + '</td>'
+      + '<td class="risk-low">-' + h.saving + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  table.innerHTML = html;
 }
 
 const AUTH_USER = 'admin', AUTH_PASS = 'admin', AUTH_KEY = 'tracking_auth';
@@ -1125,6 +1185,12 @@ async function init() {
   populateBoxSelect(); boxManual = false;
   updateFreightModeUI();
   if (!dbReady) await loadDatabase();
+  try {
+    await loadRouteData();
+    document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs · ' + (JURISDICTIONS?.euHubs?.length || 0) + ' EU hubs';
+  } catch (e) {
+    console.warn('Route data load failed:', e);
+  }
   syncWeightUI(getFreightConfig().defaultWeight);
   document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
   analyze();
@@ -1132,5 +1198,6 @@ async function init() {
 window.onload = boot;
 
 </script>
+<script src="data/routes-engine.js"></script>
 </body>
 </html>
