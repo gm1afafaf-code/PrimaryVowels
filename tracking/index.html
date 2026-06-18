@@ -1,1 +1,85 @@
-@file:/tmp/push_v40.json
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACKING // RISK ADJUSTER v5.0 | FULL UK TARIFF</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
+    body { font-family: 'IBM Plex Mono', monospace; }
+    .panel { background: #111; border: 1px solid #333; }
+    .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    .value { font-size: 18px; font-weight: 500; }
+    input, select, button { background: #1a1a1a; border: 1px solid #444; color: #22c55e; font-family: 'IBM Plex Mono', monospace; }
+    .risk-low { color: #22c55e; }
+    .risk-med { color: #eab308; }
+    .risk-high { color: #ef4444; }
+    .section-title { font-size: 11px; letter-spacing: 1.5px; color: #666; border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 8px; }
+    .uk-note { font-size: 9px; color: #888; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { padding: 4px 6px; text-align: left; }
+    tr.option-row { cursor: pointer; transition: background 0.1s; }
+    tr.option-row:hover { background: #1a1a1a; }
+    tr.option-row.selected { background: #1a2a1a; border-left: 2px solid #22c55e; }
+    #auth-gate { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; align-items: center; justify-content: center; }
+    #auth-gate .auth-box { background: #111; border: 1px solid #333; padding: 24px; width: 320px; }
+    #auth-gate .auth-title { font-size: 14px; font-weight: 500; letter-spacing: 2px; margin-bottom: 16px; }
+    #auth-gate .auth-error { color: #ef4444; font-size: 10px; margin-top: 8px; display: none; }
+    #auth-gate input[type="text"], #auth-gate input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; }
+    #auth-gate button { width: 100%; padding: 8px; cursor: pointer; border-color: #22c55e; }
+    #auth-gate button:hover { background: #222; }
+    .flag { font-size: 8px; padding: 1px 4px; border: 1px solid #444; border-radius: 2px; margin-right: 3px; }
+    .flag-warn { color: #eab308; border-color: #665500; }
+    .flag-ok { color: #666; }
+    #weight-slider { width: 100%; height: 10px; accent-color: #22c55e; cursor: pointer; }
+    .weight-display { font-size: 36px; font-weight: 500; line-height: 1; }
+    .weight-scale { display: flex; justify-content: space-between; font-size: 8px; color: #555; margin-top: 4px; }
+    .quick-pick { border: 1px solid #333; padding: 8px; cursor: pointer; transition: all 0.12s; background: #0d0d0d; }
+    .quick-pick:hover { border-color: #22c55e; background: #141a14; }
+    .quick-pick.active { border-color: #22c55e; background: #1a2a1a; }
+    .quick-pick .qp-risk { font-size: 20px; font-weight: 600; }
+    input[type="range"] { background: transparent; border: none; padding: 0; }
+  </style>
+</head>
+<body class="bg-black text-[#22c55e] p-4">
+  <div id="auth-gate">
+    <div class="auth-box">
+      <div class="auth-title">TRACKING // ACCESS</div>
+      <form onsubmit="handleLogin(event)">
+        <div class="label mb-1">USERNAME</div>
+        <input type="text" id="auth-user" autocomplete="username" required>
+        <div class="label mb-1">PASSWORD</div>
+        <input type="password" id="auth-pass" autocomplete="current-password" required>
+        <button type="submit">AUTHENTICATE</button>
+        <div id="auth-error" class="auth-error">ACCESS DENIED</div>
+      </form>
+    </div>
+  </div>
+
+
+  <div id="db-loading" style="display:none;position:fixed;inset:0;background:#000;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+    <div class="text-sm tracking-widest">LOADING UK TARIFF DATABASE</div>
+    <div id="db-loading-status" class="text-xs text-[#666]">fetching products.json…</div>
+  </div>
+
+  <div id="app-content" style="display:none">
+    <div class="flex justify-between items-center mb-4 border-b border-[#333] pb-2">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
+          <span class="font-bold text-lg">TRACKING</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.0</span>
+        </div>
+        <div class="text-xs text-[#666]">FULL UK IOT · SLIDE WEIGHT → LOWEST-RISK CLASSIFICATIONS | US → GB · LHR</div>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <div>TARIFF: <span id="last-update">—</span></div>
+        <div class="px-2 py-0.5 bg-[#1a1a1a] border border-[#333]">UK IOT · CDS-READY</div>
+      </div>
+    </div>
+    <div class="mt-2 text-[10px] text-[#555]">Full UK tariff database v5.0 — 13,209 declarable codes</div>
+  </div>
+<script>const REGIME={version:'5.0.0'};window.onload=function(){};</script>
+</body>
+</html>
