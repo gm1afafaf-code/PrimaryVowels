@@ -1,1 +1,498 @@
-PLACEHOLDER_V3
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACKING // RISK ADJUSTER v3.0 | WEIGHT + BOX → LOWEST RISK OPTIONS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
+    body { font-family: 'IBM Plex Mono', monospace; }
+    .panel { background: #111; border: 1px solid #333; }
+    .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    .value { font-size: 18px; font-weight: 500; }
+    input, select, button { background: #1a1a1a; border: 1px solid #444; color: #22c55e; font-family: 'IBM Plex Mono', monospace; }
+    .risk-low { color: #22c55e; }
+    .risk-med { color: #eab308; }
+    .risk-high { color: #ef4444; }
+    .section-title { font-size: 11px; letter-spacing: 1.5px; color: #666; border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 8px; }
+    .uk-note { font-size: 9px; color: #888; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { padding: 4px 6px; text-align: left; }
+    tr.option-row { cursor: pointer; transition: background 0.1s; }
+    tr.option-row:hover { background: #1a1a1a; }
+    tr.option-row.selected { background: #1a2a1a; border-left: 2px solid #22c55e; }
+    #auth-gate { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; align-items: center; justify-content: center; }
+    #auth-gate .auth-box { background: #111; border: 1px solid #333; padding: 24px; width: 320px; }
+    #auth-gate .auth-title { font-size: 14px; font-weight: 500; letter-spacing: 2px; margin-bottom: 16px; }
+    #auth-gate .auth-error { color: #ef4444; font-size: 10px; margin-top: 8px; display: none; }
+    #auth-gate input[type="text"], #auth-gate input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; }
+    #auth-gate button { width: 100%; padding: 8px; cursor: pointer; border-color: #22c55e; }
+    #auth-gate button:hover { background: #222; }
+    .flag { font-size: 8px; padding: 1px 4px; border: 1px solid #444; border-radius: 2px; margin-right: 3px; }
+    .flag-warn { color: #eab308; border-color: #665500; }
+    .flag-ok { color: #666; }
+  </style>
+</head>
+<body class="bg-black text-[#22c55e] p-4">
+  <div id="auth-gate">
+    <div class="auth-box">
+      <div class="auth-title">TRACKING // ACCESS</div>
+      <form onsubmit="handleLogin(event)">
+        <div class="label mb-1">USERNAME</div>
+        <input type="text" id="auth-user" autocomplete="username" required>
+        <div class="label mb-1">PASSWORD</div>
+        <input type="password" id="auth-pass" autocomplete="current-password" required>
+        <button type="submit">AUTHENTICATE</button>
+        <div id="auth-error" class="auth-error">ACCESS DENIED</div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-content" style="display:none">
+    <div class="flex justify-between items-center mb-4 border-b border-[#333] pb-2">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
+          <span class="font-bold text-lg">TRACKING</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v3.0</span>
+        </div>
+        <div class="text-xs text-[#666]">WEIGHT + BOX → LOWEST CUSTOMS RISK OPTIONS | NYC → LHR</div>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <div>LAST UPDATE: <span id="last-update">—</span></div>
+        <div class="px-2 py-0.5 bg-[#1a1a1a] border border-[#333]">SECTOR-AGNOSTIC RANKING</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-3">
+      <!-- INPUTS -->
+      <div class="col-span-12 lg:col-span-3 panel p-3 rounded">
+        <div class="section-title">SHIPMENT PROFILE</div>
+        <p class="uk-note mb-3">Enter what you have. We rank every classification option by absolute lowest customs risk for that weight and box.</p>
+
+        <div class="mb-4">
+          <div class="label mb-1">GROSS WEIGHT (lbs)</div>
+          <input type="number" id="weight-input" step="0.1" min="0.1" max="500" value="75" class="w-full p-2 text-lg" oninput="analyze()">
+        </div>
+
+        <div class="mb-4">
+          <div class="label mb-1">BOX DIMENSIONS (preset)</div>
+          <select id="box-select" class="w-full p-2 text-sm" onchange="analyze()"></select>
+          <div id="box-note" class="uk-note mt-1"></div>
+        </div>
+
+        <div class="mb-4 panel p-2 text-xs space-y-1">
+          <div class="flex justify-between"><span>Dim weight (÷139)</span><span id="profile-dim-wt" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Billable weight</span><span id="profile-billable" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Weight/dim gap</span><span id="profile-gap" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Volume (cu ft)</span><span id="profile-volume" class="font-semibold">—</span></div>
+        </div>
+
+        <button onclick="analyze()" class="w-full py-2 text-sm bg-[#222] hover:bg-[#333] border border-[#444] rounded">RE-RANK OPTIONS</button>
+        <div class="uk-note mt-2">FedEx/UPS intl divisor 139. Packing list must match selected box exactly.</div>
+      </div>
+
+      <!-- RANKED OPTIONS -->
+      <div class="col-span-12 lg:col-span-6 panel p-3 rounded">
+        <div class="section-title">OPTIONS — SORTED LOWEST RISK FIRST</div>
+        <div class="mb-2 flex justify-between items-center text-xs">
+          <span id="result-count" class="text-[#666]">—</span>
+          <span class="text-[#666]">Click row for full detail</span>
+        </div>
+        <div class="overflow-auto max-h-[520px]">
+          <table class="text-xs">
+            <thead class="text-[#666] sticky top-0 bg-[#111]">
+              <tr>
+                <th>#</th>
+                <th>RISK</th>
+                <th>PRODUCT / CLASSIFICATION</th>
+                <th>HS CODE</th>
+                <th>DUTY</th>
+                <th>WT Δ</th>
+                <th>FLAGS</th>
+              </tr>
+            </thead>
+            <tbody id="options-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div class="col-span-12 lg:col-span-3 panel p-3 rounded flex flex-col">
+        <div class="section-title">SELECTED OPTION</div>
+        <div id="detail-empty" class="text-xs text-[#666] flex-1">Select an option from the ranked list to see classification detail, risk breakdown, and invoice text.</div>
+        <div id="detail-panel" class="hidden text-xs space-y-2 overflow-auto flex-1">
+          <div id="detail-name" class="text-sm font-semibold"></div>
+          <div class="flex items-center gap-2">
+            <span id="detail-risk" class="text-3xl font-bold"></span>
+            <span id="detail-risk-label" class="text-[10px]"></span>
+          </div>
+          <div class="panel p-2">
+            <div class="label mb-1">HS / TARIFF</div>
+            <div id="detail-hs" class="font-semibold"></div>
+            <div id="detail-hs-link" class="uk-note mt-1"></div>
+          </div>
+          <div class="panel p-2">
+            <div class="label mb-1">COMMERCIAL DESCRIPTION (INVOICE)</div>
+            <div id="detail-desc" class="text-[10px] leading-relaxed"></div>
+          </div>
+          <div class="panel p-2">
+            <div class="label mb-1">RISK BREAKDOWN</div>
+            <div id="detail-breakdown" class="space-y-0.5"></div>
+          </div>
+          <div class="panel p-2">
+            <div class="label mb-1">UK IMPORT ESTIMATE</div>
+            <div id="detail-uk-calc"></div>
+            <div class="mt-1">Est. VAT: <span id="detail-vat"></span></div>
+          </div>
+          <div class="panel p-2">
+            <div class="label mb-1">WHY THIS RANK</div>
+            <div id="detail-why" class="text-[10px] text-[#aaa]"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCS FOOTER -->
+      <div class="col-span-12 panel p-3 rounded">
+        <div class="section-title">CDS CHECKLIST — APPLY TO SELECTED OPTION</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 text-xs">
+          <div>
+            <div class="font-semibold mb-1">COMMERCIAL INVOICE MUST INCLUDE</div>
+            <ul class="list-disc ml-4 space-y-0.5 text-[#aaa]">
+              <li>Seller + buyer details + GB EORI (UK importer)</li>
+              <li>Invoice number, date, Incoterms (DAP/DDP London)</li>
+              <li>Description copied from selected option above</li>
+              <li>HS commodity code (10-digit)</li>
+              <li>Qty, unit price, total value, currency, origin US</li>
+              <li>Gross weight: <span id="doc-weight" class="text-[#22c55e]">—</span> lbs | Box: <span id="doc-dims" class="text-[#22c55e]">—</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="font-semibold mb-1">PACKING LIST MUST MATCH</div>
+            <ul class="list-disc ml-4 space-y-0.5 text-[#aaa]">
+              <li>Exact box L×W×H from shipment profile</li>
+              <li>Gross + net weight per package</li>
+              <li>Contents description + HS cross-reference</li>
+              <li>Package marks/numbers</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-[#555]">Sector-agnostic ranking. Verify live at trade-tariff.service.gov.uk before CDS filing.</div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-[10px] text-[#555] flex justify-between flex-wrap gap-2">
+      <div>PrimaryVowels Tracking — internal planning tool</div>
+      <div id="footer-profile"></div>
+    </div>
+  </div>
+
+<script>
+const BOX_PRESETS = [
+  { id: 'xs',   label: '10 × 8 × 6 in (extra small)',        dims: [10, 8, 6] },
+  { id: 'sm',   label: '12 × 10 × 8 in (small)',             dims: [12, 10, 8] },
+  { id: 'med',  label: '16 × 13 × 7 in (medium)',            dims: [16, 13, 7] },
+  { id: 'app',  label: '18 × 14 × 6 in (apparel)',           dims: [18, 14, 6] },
+  { id: 'mdl',  label: '24 × 18 × 12 in (medium-large)',     dims: [24, 18, 12] },
+  { id: 'cube', label: '24 × 24 × 24 in (large cube)',       dims: [24, 24, 24] },
+  { id: 'srv',  label: '30 × 22 × 14 in (machinery)',        dims: [30, 22, 14] },
+  { id: 'xl',   label: '28 × 28 × 16 in (oversize)',         dims: [28, 28, 16] },
+  { id: 'bike', label: '48 × 10 × 30 in (bike flat-pack)',   dims: [48, 10, 30] },
+  { id: 'plt',  label: '48 × 40 × 24 in (pallet carton)',    dims: [48, 40, 24] },
+];
+
+const PRODUCTS = {
+  'elec-gpu':      { name: 'NVIDIA RTX 3090 24GB Graphics Card - Pre-owned', hs: '8473 30 20 00', duty: 0,  desc: 'Used NVIDIA RTX 3090 24GB GDDR6X graphics processing unit suitable for use solely or principally with automatic data-processing machines (heading 8471)', weight: 4.8,  dims: [16,13,7],  value: 679,  used: true },
+  'elec-laptop':   { name: 'Dell Latitude 5540 Laptop - Refurbished', hs: '8471 30 00 00', duty: 0,  desc: 'Used portable automatic data-processing machine comprising CPU, keyboard, display, weighing less than 10 kg', weight: 5.2,  dims: [15,11,2],  value: 420,  used: true },
+  'elec-phone':    { name: 'Apple iPhone 14 Pro 256GB - Used', hs: '8517 13 00 00', duty: 0,  desc: 'Used smartphone for cellular networks, 256GB storage, including battery', weight: 0.8,  dims: [6,4,3],    value: 520,  used: true },
+  'elec-server':   { name: '8x GPU Enterprise AI Server - Assembled', hs: '8471 49 00 00', duty: 0,  desc: 'Used multi-GPU automatic data-processing machine (server) presented in functional state for AI workloads', weight: 78,   dims: [30,22,14], value: 7200, used: true },
+  'app-jacket':    { name: "Men's Leather Jacket - Size L", hs: '4203 10 00 00', duty: 3.7, desc: "Men's outer garment of leather, lined, size L, black", weight: 3.5,  dims: [18,14,6],  value: 185,  used: false },
+  'app-tshirt':    { name: "Cotton T-Shirt 100% - Pack of 12", hs: '6109 10 00 10', duty: 12, desc: "Men's or boys' T-shirts, singlets and other vests, knitted, of cotton", weight: 4.2,  dims: [14,12,8],  value: 96,   used: false },
+  'app-sneakers':  { name: 'Athletic Running Shoes - Synthetic Upper', hs: '6404 11 00 00', duty: 16.9, desc: 'Sports footwear with outer soles of rubber and uppers of textile/synthetic material', weight: 2.8, dims: [13,10,8], value: 120, used: false },
+  'mach-cnc':      { name: 'Desktop CNC Router 3018 - Used', hs: '8465 94 00 00', duty: 0,  desc: 'Used machine tool for milling, routing wood/plastic/metal, numerically controlled', weight: 28,   dims: [24,18,14], value: 890,  used: true },
+  'mach-pump':     { name: 'Industrial Centrifugal Water Pump 2HP', hs: '8413 70 80 00', duty: 0,  desc: 'Centrifugal pump for liquids, power 1.5-2.2 kW, cast iron body, new', weight: 22,   dims: [16,12,12], value: 340,  used: false },
+  'food-wine':     { name: 'California Cabernet Sauvignon - 12 Bottles', hs: '2204 21 80 00', duty: 0,  desc: 'Wine of fresh grapes, in containers holding 2 litres or less, 12 bottles 750ml each, 13.5% ABV', weight: 28, dims: [16,12,12], value: 240, used: false, restricted: true },
+  'food-chocolate':{ name: 'Artisan Dark Chocolate Bars - 48 units', hs: '1806 32 90 00', duty: 0,  desc: 'Chocolate and other food preparations containing cocoa, not filled, bars', weight: 6,    dims: [14,10,8],  value: 180,  used: false, restricted: true },
+  'pharma-vitamins':{ name: 'Vitamin D3 5000IU Capsules - OTC', hs: '2106 90 98 00', duty: 0, desc: 'Food supplements in capsule form, Vitamin D3 5000IU, 120 capsules, OTC', weight: 0.4, dims: [6,4,4], value: 28, used: false, restricted: true },
+  'pharma-device': { name: 'Blood Pressure Monitor - Home Use', hs: '9018 19 10 00', duty: 0,  desc: 'Electronic blood pressure monitoring instrument for domestic use, new', weight: 1.2,  dims: [8,6,5],    value: 65,   used: false },
+  'chem-resin':    { name: 'Epoxy Resin Kit 2-Part - 1 Gallon', hs: '3907 30 00 00', duty: 6.5, desc: 'Epoxide resins in primary forms, two-component kit for industrial coating', weight: 9,    dims: [10,10,10], value: 85,   used: false, restricted: true },
+  'auto-brake':    { name: 'Ceramic Brake Pad Set - Front', hs: '8708 30 91 00', duty: 3.5, desc: 'Brake linings and pads of ceramics for motor vehicles, new aftermarket', weight: 3,    dims: [12,10,6],  value: 95,   used: false },
+  'auto-tyre':     { name: 'Passenger Car Tyre 225/45R17 - Set of 4', hs: '4011 10 00 00', duty: 4.5, desc: 'New pneumatic tyres of rubber for motor cars, radial, 225/45R17', weight: 48,   dims: [28,28,16], value: 380,  used: false },
+  'furn-chair':    { name: 'Ergonomic Office Chair - Mesh', hs: '9401 31 00 00', duty: 0,  desc: 'Swivel seat with adjustable height, upholstered, for office use, new', weight: 32,   dims: [26,24,12], value: 220,  used: false },
+  'furn-lamp':     { name: 'LED Desk Lamp - Adjustable', hs: '9405 42 90 00', duty: 2.7, desc: 'LED electric lamp for desk use, adjustable arm, new', weight: 2.5,  dims: [18,8,6],   value: 45,   used: false },
+  'cos-serum':     { name: 'Hyaluronic Acid Face Serum 30ml', hs: '3304 99 00 00', duty: 0, desc: 'Skin care preparation, hyaluronic acid serum, 30ml bottle, retail', weight: 0.6, dims: [5,3,3], value: 32, used: false, restricted: true },
+  'jew-watch':     { name: 'Stainless Steel Automatic Watch - Used', hs: '9102 21 00 00', duty: 0, desc: 'Used wrist-watch with automatic winding, stainless steel case, mechanical movement', weight: 0.5, dims: [4,4,4], value: 450, used: true },
+  'jew-ring':      { name: '14K Gold Ring with Sapphire - Antique', hs: '7113 19 00 00', duty: 0, desc: 'Articles of jewellery of precious metal, 14K gold ring set with natural sapphire, antique', weight: 0.1, dims: [3,3,2], value: 1200, used: true },
+  'art-painting':  { name: 'Original Oil Painting on Canvas - 24x36', hs: '9701 10 00 00', duty: 0, desc: 'Original oil painting on canvas, contemporary art, unframed', weight: 4, dims: [36,4,28], value: 2800, used: false },
+  'sport-bike':    { name: 'Carbon Road Bicycle - 56cm Frame', hs: '8714 99 90 00', duty: 0, desc: 'Road racing bicycle, carbon frame, presented unassembled in carton', weight: 28, dims: [48,10,30], value: 1850, used: false },
+  'book-set':      { name: 'Technical Manuals - Set of 8 Hardcovers', hs: '4901 99 00 00', duty: 0, desc: 'Printed books, hardcover, technical/engineering subject matter', weight: 12, dims: [14,12,10], value: 160, used: false },
+  'agri-seeds':    { name: 'Tomato Seeds - 50 Packets', hs: '1209 91 80 00', duty: 0, desc: 'Vegetable seeds for sowing, tomato variety, 50 retail packets', weight: 1.5, dims: [10,8,6], value: 75, used: false, restricted: true },
+  'gen-mixed':     { name: 'Assorted Consumer Goods - Mixed Lot', hs: '6307 90 98 00', duty: 6.5, desc: 'Other made-up articles of textile materials, assorted retail goods', weight: 15, dims: [18,14,12], value: 320, used: false },
+  'ind-parts':     { name: 'Industrial Steel Fastener Assortment - 50kg', hs: '7318 15 90 00', duty: 3.7, desc: 'Threaded screws and bolts of iron or steel, assorted industrial fasteners, new', weight: 75, dims: [24,24,24], value: 420, used: false },
+  'gym-weights':   { name: 'Cast Iron Dumbbell Set - 70 lbs total', hs: '9506 91 90 00', duty: 0, desc: 'Articles and equipment for general physical exercise, cast iron dumbbells, pair, new', weight: 70, dims: [24,20,16], value: 180, used: false },
+  'audio-speakers':{ name: 'Studio Monitor Speakers - Pair', hs: '8518 21 00 00', duty: 0, desc: 'Single loudspeakers mounted in enclosures, for professional audio monitoring, new', weight: 38, dims: [24,18,14], value: 540, used: false },
+  'print-paper':   { name: 'Office Copy Paper - 10 Reams', hs: '4802 56 20 00', duty: 0, desc: 'Uncoated paper and paperboard for writing or printing, A4, 80gsm, 10 reams', weight: 48, dims: [24,18,12], value: 95, used: false },
+};
+
+let rankedResults = [];
+let selectedId = null;
+let profile = { weight: 75, dims: [24, 24, 24] };
+
+function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
+
+function hsValid(hs) {
+  const n = normHs(hs);
+  return n.length >= 8 && /^\d+$/.test(n);
+}
+
+function dimDelta(a, b) {
+  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);
+}
+
+function riskClass(score) {
+  return score < 30 ? 'risk-low' : score < 55 ? 'risk-med' : 'risk-high';
+}
+
+function riskLabel(score) {
+  return score < 30 ? 'LOW' : score < 55 ? 'MEDIUM' : 'HIGH';
+}
+
+function scoreOption(product, inputWeight, inputDims) {
+  const breakdown = {};
+  let risk = 8;
+
+  const dimWt = (inputDims[0] * inputDims[1] * inputDims[2]) / 139;
+  const shipGap = Math.abs(inputWeight - dimWt);
+  const wtDelta = Math.abs(product.weight - inputWeight);
+  const dimDiff = dimDelta(product.dims, inputDims);
+
+  if (wtDelta > 30) { breakdown.weight = 28; risk += 28; }
+  else if (wtDelta > 15) { breakdown.weight = 16; risk += 16; }
+  else if (wtDelta > 8) { breakdown.weight = 9; risk += 9; }
+  else if (wtDelta > 3) { breakdown.weight = 4; risk += 4; }
+  else { breakdown.weight = 1; risk += 1; }
+
+  if (dimDiff > 50) { breakdown.dims = 18; risk += 18; }
+  else if (dimDiff > 30) { breakdown.dims = 12; risk += 12; }
+  else if (dimDiff > 15) { breakdown.dims = 6; risk += 6; }
+  else if (dimDiff > 6) { breakdown.dims = 3; risk += 3; }
+  else { breakdown.dims = 0; }
+
+  if (shipGap > 20) { breakdown.shipGap = 14; risk += 14; }
+  else if (shipGap > 10) { breakdown.shipGap = 8; risk += 8; }
+  else if (shipGap > 4) { breakdown.shipGap = 3; risk += 3; }
+  else { breakdown.shipGap = 0; }
+
+  const desc = product.desc || '';
+  if (desc.length < 40) { breakdown.desc = 18; risk += 18; }
+  else if (desc.length < 70) { breakdown.desc = 8; risk += 8; }
+  else { breakdown.desc = 2; risk += 2; }
+
+  if (!hsValid(product.hs)) { breakdown.hs = 22; risk += 22; }
+  else { breakdown.hs = 2; risk += 2; }
+
+  if (product.restricted) { breakdown.restricted = 20; risk += 20; }
+  else { breakdown.restricted = 0; }
+
+  if (product.used) {
+    const hasUsedWord = /used|pre-owned|second|refurb/i.test(desc);
+    breakdown.used = hasUsedWord ? 5 : 14;
+    risk += breakdown.used;
+  } else { breakdown.used = 0; }
+
+  const vpl = product.value / (product.weight || 1);
+  if (vpl > 800 && product.weight < 2) { breakdown.valuation = 14; risk += 14; }
+  else if (vpl > 400 && product.weight < 5) { breakdown.valuation = 8; risk += 8; }
+  else if (vpl > 200 && wtDelta > 10) { breakdown.valuation = 6; risk += 6; }
+  else { breakdown.valuation = 1; risk += 1; }
+
+  if (product.duty > 12) { breakdown.duty = 5; risk += 5; }
+  else if (product.duty > 5) { breakdown.duty = 2; risk += 2; }
+  else { breakdown.duty = 0; }
+
+  const score = Math.max(5, Math.min(95, Math.round(risk)));
+  return { score, breakdown, wtDelta, dimDiff, dimWt, shipGap };
+}
+
+function buildWhyText(product, scored) {
+  const parts = [];
+  if (scored.wtDelta <= 3) parts.push('Weight matches shipment closely');
+  else if (scored.wtDelta > 15) parts.push('Weight mismatch — invoice weight won\'t match box (' + scored.wtDelta.toFixed(1) + ' lbs off)');
+  if (scored.dimDiff <= 6) parts.push('Box dims align with preset');
+  else if (scored.dimDiff > 20) parts.push('Declared product dims don\'t fit selected box');
+  if (scored.shipGap > 10) parts.push('Large actual vs dim-weight gap on this box — void-fill scrutiny');
+  if (product.restricted) parts.push('Licensed/restricted goods — SPS or agency review likely');
+  if (product.used && scored.breakdown.used > 8) parts.push('Used goods — description must state condition');
+  if (scored.breakdown.desc <= 2) parts.push('Strong tariff-matched description');
+  if (scored.breakdown.valuation > 8) parts.push('High value-to-weight ratio attracts valuation check');
+  if (!parts.length) parts.push('Balanced profile across weight, dims, and documentation');
+  return parts.join('. ') + '.';
+}
+
+function populateBoxSelect() {
+  const sel = document.getElementById('box-select');
+  sel.innerHTML = '';
+  BOX_PRESETS.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.textContent = b.label;
+    sel.appendChild(opt);
+  });
+  sel.value = 'cube';
+}
+
+function getSelectedBox() {
+  const id = document.getElementById('box-select').value;
+  return BOX_PRESETS.find(b => b.id === id) || BOX_PRESETS[5];
+}
+
+function analyze() {
+  const weight = parseFloat(document.getElementById('weight-input').value) || 1;
+  const box = getSelectedBox();
+  profile = { weight, dims: [...box.dims] };
+
+  const dimWt = (box.dims[0] * box.dims[1] * box.dims[2]) / 139;
+  const billable = Math.max(weight, dimWt);
+  const gap = Math.abs(weight - dimWt);
+  const cuFt = (box.dims[0] * box.dims[1] * box.dims[2]) / 1728;
+
+  document.getElementById('profile-dim-wt').textContent = dimWt.toFixed(1) + ' lbs';
+  document.getElementById('profile-billable').textContent = billable.toFixed(1) + ' lbs';
+  document.getElementById('profile-gap').textContent = gap.toFixed(1) + ' lbs' + (gap > 10 ? ' ⚠' : '');
+  document.getElementById('profile-volume').textContent = cuFt.toFixed(1) + ' cu ft';
+  document.getElementById('box-note').textContent = box.label + ' — ' + box.dims.join('×') + ' in';
+  document.getElementById('doc-weight').textContent = weight.toFixed(1);
+  document.getElementById('doc-dims').textContent = box.dims.join(' × ') + ' in';
+  document.getElementById('footer-profile').textContent = weight + ' lbs | ' + box.dims.join('×') + ' in | ' + rankedResults.length + ' options ranked';
+  document.getElementById('last-update').textContent = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+
+  rankedResults = Object.entries(PRODUCTS).map(([id, p]) => {
+    const scored = scoreOption(p, weight, box.dims);
+    return { id, product: p, ...scored };
+  }).sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta);
+
+  renderOptions();
+  if (rankedResults.length) selectOption(rankedResults[0].id);
+}
+
+function renderOptions() {
+  const body = document.getElementById('options-body');
+  body.innerHTML = '';
+  document.getElementById('result-count').textContent = rankedResults.length + ' classification options ranked';
+
+  rankedResults.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'option-row border-b border-[#222]' + (r.id === selectedId ? ' selected' : '');
+    tr.onclick = () => selectOption(r.id);
+
+    const flags = [];
+    if (r.product.used) flags.push('<span class="flag flag-warn">USED</span>');
+    if (r.product.restricted) flags.push('<span class="flag flag-warn">LICENSED</span>');
+    if (r.wtDelta <= 3) flags.push('<span class="flag flag-ok">WT MATCH</span>');
+    if (r.dimDiff <= 6) flags.push('<span class="flag flag-ok">DIM MATCH</span>');
+
+    tr.innerHTML =
+      '<td class="text-[#666]">' + (i + 1) + '</td>' +
+      '<td class="font-bold ' + riskClass(r.score) + '">' + r.score + '</td>' +
+      '<td class="max-w-[200px] truncate" title="' + r.product.name + '">' + r.product.name + '</td>' +
+      '<td class="text-[10px]">' + r.product.hs + '</td>' +
+      '<td>' + r.product.duty + '%</td>' +
+      '<td class="' + (r.wtDelta > 10 ? 'text-[#eab308]' : '') + '">' + r.wtDelta.toFixed(1) + '</td>' +
+      '<td>' + (flags.join('') || '—') + '</td>';
+
+    body.appendChild(tr);
+  });
+
+  document.getElementById('footer-profile').textContent = profile.weight + ' lbs | ' + profile.dims.join('×') + ' in | ' + rankedResults.length + ' options ranked';
+}
+
+function selectOption(id) {
+  selectedId = id;
+  const r = rankedResults.find(x => x.id === id);
+  if (!r) return;
+
+  renderOptions();
+
+  document.getElementById('detail-empty').classList.add('hidden');
+  document.getElementById('detail-panel').classList.remove('hidden');
+
+  const p = r.product;
+  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-risk').textContent = r.score;
+  document.getElementById('detail-risk').className = 'text-3xl font-bold ' + riskClass(r.score);
+  document.getElementById('detail-risk-label').textContent = riskLabel(r.score) + ' — target <30 for clean clearance';
+
+  document.getElementById('detail-hs').textContent = p.hs + ' | ' + p.duty + '% duty | 20% VAT';
+  const n = normHs(p.hs);
+  document.getElementById('detail-hs-link').innerHTML = '<a href="https://www.trade-tariff.service.gov.uk/commodities/' + n + '" target="_blank" class="text-[#22c55e] hover:underline">trade-tariff.service.gov.uk/' + n + '</a>';
+
+  document.getElementById('detail-desc').textContent = p.desc;
+
+  const bd = r.breakdown;
+  const rows = [
+    ['Weight match', bd.weight],
+    ['Dimension match', bd.dims],
+    ['Shipment wt/dim gap', bd.shipGap],
+    ['Description quality', bd.desc],
+    ['HS validity', bd.hs],
+    ['Restricted/licensed', bd.restricted],
+    ['Used goods flag', bd.used],
+    ['Valuation density', bd.valuation],
+    ['Duty rate factor', bd.duty],
+  ];
+  document.getElementById('detail-breakdown').innerHTML = rows.map(([k, v]) =>
+    '<div class="flex justify-between"><span>' + k + '</span><span>' + v + ' pts</span></div>'
+  ).join('');
+
+  const billable = Math.max(profile.weight, r.dimWt);
+  const freight = Math.round(billable * 8.5 + 45);
+  const ins = Math.round(p.value * 0.005);
+  const cif = p.value + freight + ins;
+  const dutyAmt = Math.round(cif * (p.duty / 100));
+  const vat = Math.round((cif + dutyAmt) * 0.20);
+  document.getElementById('detail-uk-calc').textContent = 'Declared $' + p.value + ' | CIF ~$' + Math.round(cif) + ' | Duty ~$' + dutyAmt;
+  document.getElementById('detail-vat').textContent = '£' + vat + ' (PVA if UK VAT-registered)';
+
+  document.getElementById('detail-why').textContent = buildWhyText(p, r);
+}
+
+const AUTH_USER = 'admin';
+const AUTH_PASS = 'admin';
+const AUTH_KEY = 'tracking_auth';
+
+function checkAuth() { return sessionStorage.getItem(AUTH_KEY) === '1'; }
+function showApp() {
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('app-content').style.display = '';
+}
+function handleLogin(e) {
+  e.preventDefault();
+  const user = document.getElementById('auth-user').value;
+  const pass = document.getElementById('auth-pass').value;
+  const err = document.getElementById('auth-error');
+  if (user === AUTH_USER && pass === AUTH_PASS) {
+    sessionStorage.setItem(AUTH_KEY, '1');
+    err.style.display = 'none';
+    showApp();
+    init();
+  } else {
+    err.style.display = 'block';
+  }
+}
+function boot() {
+  if (checkAuth()) { showApp(); init(); }
+  else { document.getElementById('auth-gate').style.display = 'flex'; }
+}
+
+function init() {
+  populateBoxSelect();
+  document.getElementById('weight-input').value = 75;
+  document.getElementById('box-select').value = 'cube';
+  analyze();
+}
+
+window.onload = boot;
+</script>
+</body>
+</html>
