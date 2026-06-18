@@ -415,6 +415,8 @@
     "warehousingPenalty": 3,
     "inventoryRisk": 2,
     "originPreserved": "US origin retained for UK duty if no substantial transformation in EU (GSP/TCA pref not available)",
-    "formula": "combined = leg1 + leg2 + transitPenalty - hubBonus; delta = combined - directUK"
+    "formula": "SRI = 0.58·RSS + 0.27·Union + 0.15·MaxLeg + chain − hubBonus",
+    "weights": { "rss": 0.58, "union": 0.27, "maxLeg": 0.15, "chain": 2.0, "hubBonus": 0.55 },
+    "note": "RSS treats legs as orthogonal risk vectors (two×13 can beat one×20). Union models sequential clearance exposure. Safety Index = 100 − normalised SRI."
   }
 }

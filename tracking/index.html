@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v6.2 | EU RE-ROUTE</title>
+  <title>TRACKING // RISK ADJUSTER v6.3 | SAFEST ROUTE SRI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -80,7 +80,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.2</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.3</span>
         </div>
         <div class="text-xs text-[#666]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
       </div>
@@ -182,7 +182,7 @@
           </div>
           <div class="panel p-2 border border-[#2a4a2a]" id="detail-reroute-panel">
             <div class="label mb-1">EU RE-ROUTE — SAME CLASSIFICATION</div>
-            <p class="uk-note mb-2">Re-routed shipment through EU hub into UK. Leg 1 = JFK→EU import clearance; Leg 2 = EU→UK post-Brexit re-export.</p>
+            <p class="uk-note mb-2">Statistical Safest Route Index (SRI) — not a raw sum. Two legs at 13 can beat one leg at 20 via RSS vector blend + union exposure model.</p>
             <div class="route-flow mb-2 text-[10px]">
               <span class="px-1 py-0.5 bg-[#1a1a1a] border border-[#333]">JFK</span>
               <span class="route-arrow">→</span>
@@ -190,7 +190,7 @@
               <span class="route-arrow">→</span>
               <span class="px-1 py-0.5 bg-[#1a1a1a] border border-[#333]" id="reroute-uk-entry">UK</span>
             </div>
-            <div class="grid grid-cols-3 gap-1 mb-2">
+            <div class="grid grid-cols-4 gap-1 mb-2">
               <div class="route-leg-box">
                 <div class="text-[8px] text-[#666] uppercase">Leg 1 · NY→EU</div>
                 <div id="reroute-leg1" class="text-2xl font-bold leading-tight">—</div>
@@ -202,14 +202,23 @@
                 <div id="reroute-leg2-label" class="text-[8px] text-[#888]">—</div>
               </div>
               <div class="route-leg-box highlight">
-                <div class="text-[8px] text-[#666] uppercase">Combined</div>
+                <div class="text-[8px] text-[#666] uppercase">SRI · Stat risk</div>
                 <div id="reroute-combined" class="text-2xl font-bold leading-tight">—</div>
                 <div id="reroute-delta" class="text-[8px]">—</div>
+              </div>
+              <div class="route-leg-box highlight">
+                <div class="text-[8px] text-[#666] uppercase">Safety /100</div>
+                <div id="reroute-safety" class="text-2xl font-bold leading-tight">—</div>
+                <div class="text-[8px] text-[#888]">higher = safer</div>
               </div>
             </div>
             <div id="reroute-status" class="text-[8px] text-[#666] mb-1">Awaiting selection…</div>
             <div id="reroute-direct-compare" class="text-[9px] text-[#aaa] mb-2 panel p-1"></div>
             <div class="grid grid-cols-1 gap-1">
+              <div class="panel p-1">
+                <div class="text-[8px] text-[#666] mb-0.5">SRI STATISTICAL MODEL (RSS + UNION + MAX LEG)</div>
+                <div id="reroute-stat-breakdown" class="text-[9px] space-y-0.5"></div>
+              </div>
               <div class="panel p-1">
                 <div class="text-[8px] text-[#666] mb-0.5">LEG 1 BREAKDOWN (NY → EU)</div>
                 <div id="reroute-leg1-breakdown" class="text-[9px] space-y-0.5"></div>
@@ -262,7 +271,7 @@
           <div class="section-title mb-0">ROUTE BLOOMBERG — JFK → EU → UK</div>
           <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN ALL CLASSIFICATIONS FOR HUB ADVANTAGE</button>
         </div>
-        <p class="uk-note mb-2">Compares direct NY→UK risk vs triangular NY→EU hub→UK for all 15 EU jurisdictions. Leg 1 = US import clearance; Leg 2 = post-Brexit EU re-export + UK CDS. Combined score = leg1 + leg2 − hub bonus.</p>
+        <p class="uk-note mb-2">Safest Route Index ranks all paths statistically — SRI = 58% RSS + 27% Union + 15% MaxLeg + chain penalty. Two moderate legs can beat one higher direct score. Safety Index = inverse (higher = safer).</p>
         <div id="route-bloomberg-summary" class="mb-2"></div>
         <div id="route-scan-status" class="text-[9px] text-[#666] mb-1"></div>
         <div id="route-bloomberg-body" class="overflow-auto max-h-[360px]"></div>
@@ -310,8 +319,8 @@
 <script>
 
 const REGIME = {
-  version: '6.2.0',
-  codename: 'EU RE-ROUTE FIX',
+  version: '6.3.0',
+  codename: 'SAFEST ROUTE SRI',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
   route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
@@ -1193,15 +1202,16 @@ async function runTriangularAdvantageScan() {
     table.innerHTML = '<div class="text-[10px] text-[#666]">No hub advantage found at this weight — direct JFK→UK wins for all scanned codes.</div>';
     return;
   }
-  let html = '<table class="text-[10px] w-full"><thead class="text-[#666]"><tr><th>#</th><th>PRODUCT</th><th>HS</th><th>UK</th><th>BEST HUB</th><th>COMB</th><th>SAVE</th></tr></thead><tbody>';
+  let html = '<table class="text-[10px] w-full"><thead class="text-[#666]"><tr><th>#</th><th>PRODUCT</th><th>HS</th><th>DIRECT SRI</th><th>HUB</th><th>HUB SRI</th><th>SAFE</th><th>SAVE</th></tr></thead><tbody>';
   hits.forEach((h, i) => {
     html += '<tr class="option-row border-b border-[#222]" onclick="selectOption(\'' + h.id + '\')">'
       + '<td>' + (i+1) + '</td>'
       + '<td class="max-w-[160px] truncate">' + h.product.name + '</td>'
       + '<td>' + fmtHs(h.product.hs) + '</td>'
-      + '<td class="' + riskClass(h.directScore) + '">' + h.directScore + '</td>'
+      + '<td class="' + riskClass(h.directSRI) + '">' + h.directSRI + '</td>'
       + '<td>' + h.bestHub.hub.code + '</td>'
-      + '<td class="font-bold ' + riskClass(h.bestHub.combined) + '">' + h.bestHub.combined + '</td>'
+      + '<td class="font-bold ' + riskClass(h.bestHub.statistical) + '">' + h.bestHub.statistical + '</td>'
+      + '<td>' + h.bestHub.safetyIndex + '</td>'
       + '<td class="risk-low">-' + h.saving + '</td></tr>';
   });
   html += '</tbody></table>';

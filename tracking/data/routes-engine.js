@@ -143,22 +143,93 @@ function scoreEuToUk(product, hub) {
   };
 }
 
-function compositeTriangular(leg1, leg2, hub, product) {
-  const m = window.JURISDICTIONS.triangularModel;
-  const hubBonus = Math.abs(Math.min(0, hubChapterBonus(hub, product.chapter))) + Math.abs(Math.min(0, hubStrengthMatch(hub, product)));
-  const combined = leg1.score + leg2.score - Math.round(hubBonus * 0.5);
-  return Math.max(4, Math.min(96, Math.round(combined)));
+function riskToStress(score) {
+  return Math.min(0.95, Math.max(0.05, (score - 4) / 92));
+}
+
+function stressToRisk(stress) {
+  return Math.round(Math.max(4, Math.min(96, 4 + stress * 92)));
+}
+
+function safetyIndexFromRisk(score) {
+  return Math.round(Math.max(4, Math.min(99, 100 - riskToStress(score) * 100)));
+}
+
+function hubBonusPts(hub, product) {
+  return Math.abs(Math.min(0, hubChapterBonus(hub, product.chapter)))
+    + Math.abs(Math.min(0, hubStrengthMatch(hub, product)));
+}
+
+function computeRouteStatistics(leg1Score, leg2Score, hub, product, isDirect) {
+  const tm = window.JURISDICTIONS?.triangularModel || {};
+  const w = tm.weights || { rss: 0.58, union: 0.27, maxLeg: 0.15, chain: 2.0, hubBonus: 0.55 };
+
+  if (isDirect) {
+    const statistical = leg1Score;
+    return {
+      statistical,
+      safetyIndex: safetyIndexFromRisk(statistical),
+      linearSum: statistical,
+      rss: statistical,
+      union: statistical,
+      maxLeg: statistical,
+      chainPenalty: 0,
+      hubBonus: 0,
+      model: 'single-leg',
+      explain: 'Single customs event — SRI equals direct clearance risk.',
+    };
+  }
+
+  const l1 = leg1Score;
+  const l2 = leg2Score;
+  const s1 = riskToStress(l1);
+  const s2 = riskToStress(l2);
+  const rss = Math.sqrt(l1 * l1 + l2 * l2);
+  const unionStress = 1 - (1 - s1) * (1 - s2);
+  const union = stressToRisk(unionStress);
+  const maxLeg = Math.max(l1, l2);
+  const hubBonus = hubBonusPts(hub, product);
+  const chainPenalty = w.chain;
+  const linearSum = Math.round(l1 + l2 - hubBonus * 0.5);
+
+  const statistical = Math.round(Math.max(4, Math.min(96,
+    w.rss * rss + w.union * union + w.maxLeg * maxLeg + chainPenalty - hubBonus * w.hubBonus
+  )));
+
+  const vsLinear = statistical - linearSum;
+  let explain = 'SRI blend: RSS ' + Math.round(rss) + ' (vector) · Union ' + union + ' (sequential) · MaxLeg ' + maxLeg;
+  if (rss < linearSum - 2) explain += ' — two moderate legs statistically safer than linear sum';
+  if (statistical < Math.min(l1, l2)) explain += ' — diversification benefit vs single spike';
+
+  return {
+    statistical,
+    safetyIndex: safetyIndexFromRisk(statistical),
+    linearSum,
+    rss: Math.round(rss * 10) / 10,
+    union,
+    maxLeg,
+    chainPenalty,
+    hubBonus,
+    vsLinear,
+    model: 'triangular-sri',
+    explain,
+  };
 }
 
 function analyzeRoutesForProduct(product, inputWeight, inputDims) {
   if (!window.JURISDICTIONS?.euHubs?.length) return null;
 
   const direct = scoreOption(product, inputWeight, inputDims);
+  const directStats = computeRouteStatistics(direct.score, 0, null, product, true);
   const directUk = {
     route: 'JFK → ' + (getFreightConfig().entry || 'LHR') + ' (direct UK)',
     leg1: null,
     leg2: null,
-    combined: direct.score,
+    combined: directStats.statistical,
+    statistical: directStats.statistical,
+    safetyIndex: directStats.safetyIndex,
+    linearSum: directStats.linearSum,
+    stats: directStats,
     delta: 0,
     verdict: 'BASELINE',
     hub: null,
@@ -168,20 +239,24 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
   const hubs = window.JURISDICTIONS.euHubs.map(hub => {
     const leg1 = scoreUsToEu(product, inputWeight, inputDims, hub);
     const leg2 = scoreEuToUk(product, hub);
-    const combined = compositeTriangular(leg1, leg2, hub, product);
-    const delta = combined - direct.score;
+    const stats = computeRouteStatistics(leg1.score, leg2.score, hub, product, false);
+    const delta = stats.statistical - directStats.statistical;
     let verdict = 'NEUTRAL';
-    if (delta <= -6) verdict = 'HUB ADVANTAGE';
+    if (delta <= -5) verdict = 'SAFEST VIA HUB';
     else if (delta <= -2) verdict = 'SLIGHT EDGE';
-    else if (delta >= 10) verdict = 'AVOID HUB';
-    else if (delta >= 5) verdict = 'DIRECT PREFERRED';
+    else if (delta >= 8) verdict = 'AVOID HUB';
+    else if (delta >= 4) verdict = 'DIRECT SAFER';
 
     return {
       hub,
       route: 'JFK → ' + hub.entryAir + ' (' + hub.code + ') → ' + leg2.ukEntry + ' (UK)',
       leg1,
       leg2,
-      combined,
+      combined: stats.statistical,
+      statistical: stats.statistical,
+      safetyIndex: stats.safetyIndex,
+      linearSum: stats.linearSum,
+      stats,
       delta,
       verdict,
       euDuty: leg1.euDuty,
@@ -191,38 +266,43 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
     };
   });
 
-  hubs.sort((a, b) => a.combined - b.combined || a.delta - b.delta);
+  hubs.sort((a, b) => a.statistical - b.statistical || b.safetyIndex - a.safetyIndex);
 
-  const betterThanDirect = hubs.filter(h => h.combined < direct.score);
+  const betterThanDirect = hubs.filter(h => h.statistical < directStats.statistical);
   const bestHub = hubs[0] || null;
+  const safest = bestHub && bestHub.statistical < directStats.statistical ? bestHub : directUk;
 
   return {
     direct: directUk,
     directScore: direct.score,
+    directSRI: directStats.statistical,
+    directSafety: directStats.safetyIndex,
     hubs,
     betterThanDirect,
     bestHub,
-    bestOverall: bestHub && bestHub.combined < direct.score ? bestHub : directUk,
-    recommendation: buildRouteRecommendation(direct.score, bestHub, betterThanDirect),
+    safest,
+    bestOverall: safest,
+    recommendation: buildRouteRecommendation(directStats, bestHub, betterThanDirect),
   };
 }
 
-function buildRouteRecommendation(directScore, bestHub, betterHubs) {
+function buildRouteRecommendation(directStats, bestHub, betterHubs) {
   if (!bestHub) return 'Insufficient route data.';
-  if (bestHub.combined < directScore - 5) {
-    return 'Triangular routing via ' + bestHub.hub.name + ' (' + bestHub.hub.code + ') reduces composite clearance risk by '
-      + Math.abs(bestHub.delta) + ' pts vs direct JFK→UK. First leg scores ' + bestHub.leg1.score
-      + '; EU→UK leg ' + bestHub.leg2.score + '. Verify RoO documentation and UK duty on US origin.';
+  const dSri = directStats.statistical;
+  const dSafe = directStats.safetyIndex;
+  if (bestHub.statistical < dSri - 4) {
+    return 'Statistical safest route: ' + bestHub.hub.code + ' (SRI ' + bestHub.statistical + ', safety ' + bestHub.safetyIndex + '/100) beats direct (SRI ' + dSri + ', safety ' + dSafe + '/100) by '
+      + Math.abs(bestHub.delta) + ' pts. Legs ' + bestHub.leg1.score + '+' + bestHub.leg2.score
+      + ' → linear sum ' + bestHub.linearSum + ' but RSS/union blend favours hub. ' + (bestHub.stats?.explain || '');
   }
   if (betterHubs.length > 0) {
-    return betterHubs.length + ' EU hub(s) beat direct UK on composite score, but margin is modest (best: '
-      + bestHub.hub.code + ' Δ' + bestHub.delta + '). Weigh logistics cost and transit (' + bestHub.transitDays + 'd) before routing.';
+    return betterHubs.length + ' EU hub(s) statistically safer than direct (best ' + bestHub.hub.code + ' SRI ' + bestHub.statistical + ' vs direct ' + dSri + ', Δ' + bestHub.delta + '). Linear sum would be ' + bestHub.linearSum + ' — SRI model weights moderate dual legs differently.';
   }
-  return 'Direct JFK→UK remains lowest composite risk (' + directScore + '). EU hub adds leg-2 post-Brexit customs exposure without sufficient first-leg savings for this classification.';
+  return 'Direct JFK→UK is statistically safest (SRI ' + dSri + ', safety ' + dSafe + '/100). Best hub ' + bestHub.hub.code + ' SRI ' + bestHub.statistical + ' (legs ' + bestHub.leg1.score + '+' + bestHub.leg2.score + ', linear ' + bestHub.linearSum + '). Two-leg chain penalty outweighs RSS benefit for this classification.';
 }
 
 function routeVerdictClass(verdict) {
-  if (verdict === 'HUB ADVANTAGE' || verdict === 'SLIGHT EDGE') return 'risk-low';
+  if (verdict === 'SAFEST VIA HUB' || verdict === 'SLIGHT EDGE' || verdict === 'HUB ADVANTAGE') return 'risk-low';
   if (verdict === 'BASELINE') return 'risk-low';
   if (verdict === 'NEUTRAL') return 'risk-med';
   return 'risk-high';
@@ -257,7 +337,7 @@ function populateRerouteHubSelect(analysis, selectedCode) {
     const opt = document.createElement('option');
     opt.value = h.hub.code;
     const star = i === 0 ? ' ★ ' : ' ';
-    opt.textContent = h.hub.code + star + '· ' + h.hub.name + ' (comb ' + h.combined + ')';
+    opt.textContent = h.hub.code + star + '· ' + h.hub.name + ' (SRI ' + h.statistical + ' · safe ' + h.safetyIndex + ')';
     sel.appendChild(opt);
   });
   sel.value = prev && analysis.hubs.some(h => h.hub.code === prev) ? prev : analysis.hubs[0]?.hub?.code;
@@ -281,7 +361,13 @@ function renderDetailReroute(analysis, product, hubCode) {
   const combEl = document.getElementById('reroute-combined');
   if (leg1El) { leg1El.textContent = route.leg1.score; leg1El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg1.score); }
   if (leg2El) { leg2El.textContent = route.leg2.score; leg2El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg2.score); }
-  if (combEl) { combEl.textContent = route.combined; combEl.className = 'text-2xl font-bold leading-tight ' + riskClass(route.combined); }
+  if (combEl) { combEl.textContent = route.statistical; combEl.className = 'text-2xl font-bold leading-tight ' + riskClass(route.statistical); }
+
+  const safetyEl = document.getElementById('reroute-safety');
+  if (safetyEl) {
+    safetyEl.textContent = route.safetyIndex;
+    safetyEl.className = 'text-lg font-bold ' + (route.safetyIndex >= 75 ? 'risk-low' : route.safetyIndex >= 55 ? 'risk-med' : 'risk-high');
+  }
 
   const l1Label = document.getElementById('reroute-leg1-label');
   const l2Label = document.getElementById('reroute-leg2-label');
@@ -294,18 +380,33 @@ function renderDetailReroute(analysis, product, hubCode) {
   const deltaEl = document.getElementById('reroute-delta');
   if (deltaEl) {
     const d = route.delta;
-    deltaEl.textContent = (d >= 0 ? '+' : '') + d + ' vs direct';
-    deltaEl.className = 'text-[8px] ' + (d < 0 ? 'risk-low' : d > 5 ? 'risk-high' : 'text-[#888]');
+    deltaEl.textContent = 'SRI ' + (d >= 0 ? '+' : '') + d + ' vs direct · linear sum ' + route.linearSum;
+    deltaEl.className = 'text-[8px] ' + (d < 0 ? 'risk-low' : d > 4 ? 'risk-high' : 'text-[#888]');
   }
 
   const cmp = document.getElementById('reroute-direct-compare');
   if (cmp) {
-    const better = route.combined < analysis.directScore;
+    const st = route.stats || {};
     cmp.innerHTML = '<div class="flex justify-between flex-wrap gap-2">'
-      + '<span>Direct JFK→UK: <strong class="' + riskClass(analysis.directScore) + '">' + analysis.directScore + '</strong></span>'
-      + '<span>Re-route via <strong>' + route.hub.name + '</strong>: <strong class="' + riskClass(route.combined) + '">' + route.combined + '</strong></span>'
+      + '<span>Direct SRI: <strong class="' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</strong> (safe ' + analysis.directSafety + ')</span>'
+      + '<span>Hub SRI: <strong class="' + riskClass(route.statistical) + '">' + route.statistical + '</strong> (safe ' + route.safetyIndex + ')</span>'
       + '<span class="' + routeVerdictClass(route.verdict) + '">' + route.verdict + '</span></div>'
-      + '<div class="text-[#666] mt-0.5">' + route.corridor + ' · ~' + route.transitDays + 'd transit · UK duty ' + route.ukDuty + '% (US origin)</div>';
+      + '<div class="text-[#666] mt-0.5">RSS ' + st.rss + ' · Union ' + st.union + ' · MaxLeg ' + st.maxLeg + ' · Chain +' + st.chainPenalty + ' · ' + (st.explain || '') + '</div>'
+      + '<div class="text-[#555]">' + route.corridor + ' · ~' + route.transitDays + 'd · UK duty ' + route.ukDuty + '%</div>';
+  }
+
+  const statBd = document.getElementById('reroute-stat-breakdown');
+  if (statBd && route.stats) {
+    const s = route.stats;
+    statBd.innerHTML = [
+      ['RSS (√(leg₁²+leg₂²))', s.rss],
+      ['Union (sequential exposure)', s.union],
+      ['Max leg (worst checkpoint)', s.maxLeg],
+      ['Chain penalty (2 customs events)', s.chainPenalty],
+      ['Hub bonus', -s.hubBonus],
+      ['Linear sum (reference)', s.linearSum],
+      ['→ Statistical SRI', s.statistical],
+    ].map(([k, v]) => '<div class="flex justify-between"><span>' + k + '</span><span>' + v + '</span></div>').join('');
   }
 
   const b1 = document.getElementById('reroute-leg1-breakdown');
@@ -337,29 +438,32 @@ function renderRouteBloomberg(analysis, product) {
   panel.classList.remove('hidden');
   summary.innerHTML = '<div class="text-[10px] leading-relaxed text-[#aaa]">' + analysis.recommendation + '</div>'
     + '<div class="mt-2 flex gap-4 text-xs flex-wrap">'
-    + '<span>Direct UK: <strong class="' + riskClass(analysis.directScore) + '">' + analysis.directScore + '</strong></span>'
-    + '<span>EU hubs beating direct: <strong>' + analysis.betterThanDirect.length + '</strong> / ' + analysis.hubs.length + '</span>'
-    + (analysis.bestHub ? '<span>Best hub: <strong class="' + riskClass(analysis.bestHub.combined) + '">' + analysis.bestHub.hub.code + ' @ ' + analysis.bestHub.combined + '</strong> (Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ')</span>' : '')
+    + '<span>Direct SRI: <strong class="' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</strong> (safety ' + analysis.directSafety + ')</span>'
+    + '<span>Statistically safer hubs: <strong>' + analysis.betterThanDirect.length + '</strong> / ' + analysis.hubs.length + '</span>'
+    + (analysis.bestHub ? '<span>Safest: <strong class="' + riskClass(analysis.bestHub.statistical) + '">' + analysis.bestHub.hub.code + ' SRI ' + analysis.bestHub.statistical + '</strong> (Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ')</span>' : '')
     + '</div>';
 
   let html = '<table class="text-[10px] w-full"><thead class="text-[#666]"><tr>'
-    + '<th>ROUTE</th><th>LEG 1</th><th>LEG 2</th><th>COMBINED</th><th>Δ vs UK</th><th>VERDICT</th></tr></thead><tbody>';
+    + '<th>ROUTE</th><th>LEG 1</th><th>LEG 2</th><th>SRI</th><th>SAFE</th><th>LINEAR</th><th>Δ SRI</th><th>VERDICT</th></tr></thead><tbody>';
 
   html += '<tr class="border-b border-[#333] bg-[#0d1a0d]">'
     + '<td class="py-1 font-semibold">JFK → UK direct</td>'
     + '<td>—</td><td>—</td>'
-    + '<td class="font-bold ' + riskClass(analysis.directScore) + '">' + analysis.directScore + '</td>'
+    + '<td class="font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</td>'
+    + '<td>' + analysis.directSafety + '</td><td>—</td>'
     + '<td>0</td><td class="risk-low">BASELINE</td></tr>';
 
   analysis.hubs.forEach((h, i) => {
-    const rowCls = h.combined < analysis.directScore ? 'border-b border-[#222] bg-[#141a14]' : 'border-b border-[#222]';
-    const highlight = i === 0 && h.combined < analysis.directScore ? ' ★' : '';
+    const rowCls = h.statistical < analysis.directSRI ? 'border-b border-[#222] bg-[#141a14]' : 'border-b border-[#222]';
+    const highlight = i === 0 && h.statistical < analysis.directSRI ? ' ★' : '';
     html += '<tr class="' + rowCls + '">'
-      + '<td class="py-1 max-w-[140px]" title="' + h.route + '">' + h.hub.flag + ' ' + h.hub.code + ' · ' + h.hub.name + highlight + '</td>'
+      + '<td class="py-1 max-w-[120px]" title="' + h.route + '">' + h.hub.flag + ' ' + h.hub.code + highlight + '</td>'
       + '<td class="' + riskClass(h.leg1.score) + '">' + h.leg1.score + '</td>'
       + '<td class="' + riskClass(h.leg2.score) + '">' + h.leg2.score + '</td>'
-      + '<td class="font-bold ' + riskClass(h.combined) + '">' + h.combined + '</td>'
-      + '<td class="' + (h.delta < 0 ? 'risk-low' : h.delta > 5 ? 'risk-high' : '') + '">' + (h.delta >= 0 ? '+' : '') + h.delta + '</td>'
+      + '<td class="font-bold ' + riskClass(h.statistical) + '">' + h.statistical + '</td>'
+      + '<td>' + h.safetyIndex + '</td>'
+      + '<td class="text-[#666]">' + h.linearSum + '</td>'
+      + '<td class="' + (h.delta < 0 ? 'risk-low' : h.delta > 4 ? 'risk-high' : '') + '">' + (h.delta >= 0 ? '+' : '') + h.delta + '</td>'
       + '<td class="' + routeVerdictClass(h.verdict) + '">' + h.verdict + '</td></tr>';
   });
   html += '</tbody></table>';
@@ -395,12 +499,12 @@ async function scanBestTriangularRoutes(weight, inputDims, limit) {
     const slice = entries.slice(i, i + chunk);
     for (const [id, p] of slice) {
       const analysis = analyzeRoutesForProduct(p, weight, inputDims);
-      if (analysis.bestHub && analysis.bestHub.combined < analysis.directScore) {
-        results.push({ id, product: p, ...analysis, saving: analysis.directScore - analysis.bestHub.combined });
+      if (analysis.bestHub && analysis.bestHub.statistical < analysis.directSRI) {
+        results.push({ id, product: p, ...analysis, saving: analysis.directSRI - analysis.bestHub.statistical });
       }
     }
     await new Promise(r => setTimeout(r, 0));
   }
-  results.sort((a, b) => b.saving - a.saving || a.bestHub.combined - b.bestHub.combined);
+  results.sort((a, b) => b.saving - a.saving || a.bestHub.statistical - b.bestHub.statistical);
   return results.slice(0, limit || 20);
 }
