@@ -1,6 +1,8 @@
-/* Route Bloomberg engine v6 — NY→EU→UK triangular customs risk analysis */
+/* Route Bloomberg engine v6.1 — NY→EU→UK triangular customs risk analysis */
 let JURISDICTIONS = null;
 let EU_CET = null;
+let currentRouteAnalysis = null;
+let currentRouteProduct = null;
 
 async function loadRouteData() {
   if (JURISDICTIONS && EU_CET) return;
@@ -208,6 +210,86 @@ function routeVerdictClass(verdict) {
   if (verdict === 'BASELINE') return 'risk-low';
   if (verdict === 'NEUTRAL') return 'risk-med';
   return 'risk-high';
+}
+
+function breakdownRows(bd, labels) {
+  return Object.entries(bd).map(([k, v]) => {
+    const label = labels?.[k] || k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+    return '<div class="flex justify-between"><span>' + label + '</span><span>' + v + ' pts</span></div>';
+  }).join('');
+}
+
+const LEG1_LABELS = {
+  weight: 'Physical — weight match', dims: 'Physical — dimension fit', shipGap: 'Physical — wt/dim gap',
+  density: 'Physical — density', desc: 'Documentation — desc quality', hs: 'Tariff — HS classification',
+  restricted: 'Compliance — restrictions', flags: 'Compliance — sector flags', used: 'Condition — used goods',
+  valuation: 'Valuation — market band', duty: 'EU CET duty factor', freight: 'Freight mode fit',
+  jurisdiction: 'EU jurisdiction adj', hubFit: 'Hub chapter fit',
+};
+
+const LEG2_LABELS = {
+  leg2Base: 'EU→UK corridor base', roo: 'Rules of origin / US origin', doubleDecl: 'Double declaration',
+  warehouse: 'EU warehousing', inventory: 'Inventory exposure', ukSps: 'UK SPS at GB border', transit: 'Transit time risk',
+};
+
+function populateRerouteHubSelect(analysis, selectedCode) {
+  const sel = document.getElementById('reroute-hub-select');
+  if (!sel || !analysis?.hubs) return;
+  const prev = selectedCode || sel.value || analysis.bestHub?.hub?.code;
+  sel.innerHTML = '';
+  analysis.hubs.forEach((h, i) => {
+    const opt = document.createElement('option');
+    opt.value = h.hub.code;
+    const star = i === 0 ? ' ★ ' : ' ';
+    opt.textContent = h.hub.code + star + '· ' + h.hub.name + ' (comb ' + h.combined + ')';
+    sel.appendChild(opt);
+  });
+  sel.value = prev && analysis.hubs.some(h => h.hub.code === prev) ? prev : analysis.hubs[0]?.hub?.code;
+}
+
+function renderDetailReroute(analysis, product, hubCode) {
+  if (!analysis?.hubs?.length) return;
+  populateRerouteHubSelect(analysis, hubCode);
+  const code = hubCode || document.getElementById('reroute-hub-select')?.value || analysis.bestHub?.hub?.code;
+  const route = analysis.hubs.find(h => h.hub.code === code) || analysis.bestHub;
+  if (!route) return;
+
+  const leg1El = document.getElementById('reroute-leg1');
+  const leg2El = document.getElementById('reroute-leg2');
+  const combEl = document.getElementById('reroute-combined');
+  if (leg1El) { leg1El.textContent = route.leg1.score; leg1El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg1.score); }
+  if (leg2El) { leg2El.textContent = route.leg2.score; leg2El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg2.score); }
+  if (combEl) { combEl.textContent = route.combined; combEl.className = 'text-2xl font-bold leading-tight ' + riskClass(route.combined); }
+
+  const l1Label = document.getElementById('reroute-leg1-label');
+  const l2Label = document.getElementById('reroute-leg2-label');
+  if (l1Label) l1Label.textContent = route.hub.entryAir + ' · ' + route.hub.agency.split('·')[0].trim() + ' · EU duty ' + route.euDuty + '%';
+  if (l2Label) l2Label.textContent = route.leg2.exportSystem + ' → ' + route.leg2.ukEntry;
+
+  const ukEntry = document.getElementById('reroute-uk-entry');
+  if (ukEntry) ukEntry.textContent = route.leg2.ukEntry || 'UK';
+
+  const deltaEl = document.getElementById('reroute-delta');
+  if (deltaEl) {
+    const d = route.delta;
+    deltaEl.textContent = (d >= 0 ? '+' : '') + d + ' vs direct';
+    deltaEl.className = 'text-[8px] ' + (d < 0 ? 'risk-low' : d > 5 ? 'risk-high' : 'text-[#888]');
+  }
+
+  const cmp = document.getElementById('reroute-direct-compare');
+  if (cmp) {
+    const better = route.combined < analysis.directScore;
+    cmp.innerHTML = '<div class="flex justify-between flex-wrap gap-2">'
+      + '<span>Direct JFK→UK: <strong class="' + riskClass(analysis.directScore) + '">' + analysis.directScore + '</strong></span>'
+      + '<span>Re-route via <strong>' + route.hub.name + '</strong>: <strong class="' + riskClass(route.combined) + '">' + route.combined + '</strong></span>'
+      + '<span class="' + routeVerdictClass(route.verdict) + '">' + route.verdict + '</span></div>'
+      + '<div class="text-[#666] mt-0.5">' + route.corridor + ' · ~' + route.transitDays + 'd transit · UK duty ' + route.ukDuty + '% (US origin)</div>';
+  }
+
+  const b1 = document.getElementById('reroute-leg1-breakdown');
+  const b2 = document.getElementById('reroute-leg2-breakdown');
+  if (b1) b1.innerHTML = breakdownRows(route.leg1.breakdown, LEG1_LABELS);
+  if (b2) b2.innerHTML = breakdownRows(route.leg2.breakdown, LEG2_LABELS);
 }
 
 function renderRouteBloomberg(analysis, product) {
