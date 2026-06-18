@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v5.0 | FULL UK TARIFF</title>
+  <title>TRACKING // RISK ADJUSTER v5.1 | FULL UK TARIFF</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -40,6 +40,10 @@
     .quick-pick.active { border-color: #22c55e; background: #1a2a1a; }
     .quick-pick .qp-risk { font-size: 20px; font-weight: 600; }
     input[type="range"] { background: transparent; border: none; padding: 0; }
+    .search-btn { padding: 4px 8px; font-size: 10px; cursor: pointer; border-color: #22c55e; white-space: nowrap; }
+    .search-btn:hover { background: #222; }
+    .search-btn.active { background: #1a2a1a; border-color: #22c55e; }
+    #risk-search, #max-risk { font-size: 11px; }
   </style>
 </head>
 <body class="bg-black text-[#22c55e] p-4">
@@ -69,7 +73,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.0</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v5.1</span>
         </div>
         <div class="text-xs text-[#666]">FULL UK IOT · SLIDE WEIGHT → LOWEST-RISK CLASSIFICATIONS | US → GB · LHR</div>
       </div>
@@ -111,11 +115,23 @@
       </div>
 
       <div class="col-span-12 lg:col-span-6 panel p-3 rounded">
-        <div class="section-title">ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST</div>
+        <div class="section-title" id="results-title">ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST</div>
+        <div class="mb-3 panel p-2">
+          <div class="label mb-1">DIRECT RISK SEARCH</div>
+          <p class="uk-note mb-2">Find lowest-risk codes by HS, chapter, or keyword — no weight scrolling. Global scan ranks all 13k+ codes at their native weight.</p>
+          <div class="flex gap-2 flex-wrap items-center mb-2">
+            <input type="text" id="risk-search" placeholder="HS code, ch 84, keyword…" class="flex-1 min-w-[160px] p-1" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
+            <input type="number" id="max-risk" min="4" max="96" step="1" placeholder="≤ risk" class="w-16 p-1" title="Max risk score (target &lt;28)" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
+            <button type="button" class="search-btn" onclick="runDirectRiskSearch()">SEARCH</button>
+            <button type="button" id="btn-global" class="search-btn" onclick="runGlobalLowestRisk()">LOWEST GLOBAL</button>
+            <button type="button" class="search-btn" onclick="clearDirectSearch()">RESET</button>
+          </div>
+          <div id="search-mode-note" class="text-[9px] text-[#666]"></div>
+        </div>
         <div class="mb-2 flex justify-between items-center text-xs flex-wrap gap-2">
           <span id="result-count" class="text-[#666]">—</span>
           <label class="flex items-center gap-1 text-[#666] cursor-pointer">
-            <input type="checkbox" id="show-all" onchange="analyze()" class="w-3 h-3"> show poor weight matches
+            <input type="checkbox" id="show-all" onchange="clearScanMode(); analyze()" class="w-3 h-3"> show poor weight matches
           </label>
         </div>
         <div class="overflow-auto max-h-[520px]">
@@ -198,7 +214,7 @@
             </ul>
           </div>
         </div>
-        <div class="mt-2 text-[10px] text-[#555]">Full UK tariff database v5.0 — verify measures at trade-tariff.service.gov.uk before CDS filing. Not legal advice.</div>
+        <div class="mt-2 text-[10px] text-[#555]">Full UK tariff database v5.1 — verify measures at trade-tariff.service.gov.uk before CDS filing. Not legal advice.</div>
       </div>
     </div>
 
@@ -211,7 +227,7 @@
 <script>
 
 const REGIME = {
-  version: '5.0.0',
+  version: '5.1.0',
   codename: 'FULL TARIFF',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
@@ -298,8 +314,85 @@ let rankedResults = [];
 let selectedId = null;
 let profile = { weight: 75, dims: [24, 24, 24] };
 let boxManual = false;
+let scanMode = 'weight';
 const QUICK_PICK_COUNT = 4;
 const WEIGHT_MATCH_CUTOFF = 15;
+
+function getSearchQuery() {
+  return (document.getElementById('risk-search')?.value || '').trim();
+}
+
+function getMaxRiskFilter() {
+  const v = parseFloat(document.getElementById('max-risk')?.value);
+  return Number.isFinite(v) ? v : null;
+}
+
+function filterBySearch(entries) {
+  const q = getSearchQuery().toLowerCase();
+  if (!q) return entries;
+  const qHs = normHs(q);
+  const qCh = q.replace(/^ch\s*/i, '').replace(/^0+/, '');
+  return entries.filter(([id, p]) => {
+    const n = normHs(p.hs);
+    if (qHs.length >= 2 && n.includes(qHs)) return true;
+    if (/^\d{1,2}$/.test(qCh) && String(p.chapter) === qCh) return true;
+    if (/^\d{4}$/.test(qHs) && n.startsWith(qHs)) return true;
+    if ((p.name || '').toLowerCase().includes(q)) return true;
+    if ((p.desc || '').toLowerCase().includes(q)) return true;
+    if (String(p.heading).includes(qHs)) return true;
+    return false;
+  });
+}
+
+function applyMaxRiskFilter(results) {
+  const max = getMaxRiskFilter();
+  return max != null ? results.filter(r => r.score <= max) : results;
+}
+
+function updateSearchModeUI() {
+  const note = document.getElementById('search-mode-note');
+  const title = document.getElementById('results-title');
+  const btn = document.getElementById('btn-global');
+  if (scanMode === 'global') {
+    title.textContent = 'GLOBAL LOWEST RISK — NATIVE WEIGHT PER CODE';
+    note.textContent = 'Scoring each code at its own gross weight + best-fit box. WT Δ vs your shipment weight shown for reference.';
+    btn?.classList.add('active');
+  } else if (getSearchQuery() || getMaxRiskFilter() != null) {
+    title.textContent = 'DIRECT SEARCH RESULTS — LOWEST RISK FIRST';
+    note.textContent = 'Full-database search at your current weight (' + profile.weight + ' lbs) and box.';
+    btn?.classList.remove('active');
+  } else {
+    title.textContent = 'ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST';
+    note.textContent = '';
+    btn?.classList.remove('active');
+  }
+}
+
+function clearScanMode() {
+  scanMode = 'weight';
+}
+
+function clearDirectSearch() {
+  scanMode = 'weight';
+  document.getElementById('risk-search').value = '';
+  document.getElementById('max-risk').value = '';
+  document.getElementById('show-all').checked = false;
+  updateSearchModeUI();
+  analyze();
+}
+
+function runDirectRiskSearch() {
+  scanMode = 'weight';
+  document.getElementById('show-all').checked = true;
+  updateSearchModeUI();
+  analyze();
+}
+
+function runGlobalLowestRisk() {
+  scanMode = 'global';
+  updateSearchModeUI();
+  analyzeGlobalAsync();
+}
 
 function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
 function fmtHs(hs) {
@@ -534,6 +627,8 @@ function onWeightSlide() {
   const w = parseFloat(document.getElementById('weight-slider').value);
   syncWeightUI(w);
   if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
+  if (scanMode === 'global') scanMode = 'weight';
+  updateSearchModeUI();
   scheduleAnalyze();
 }
 
@@ -541,6 +636,8 @@ function onWeightInput() {
   const w = parseFloat(document.getElementById('weight-input').value) || 0.5;
   syncWeightUI(w);
   if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
+  if (scanMode === 'global') scanMode = 'weight';
+  updateSearchModeUI();
   analyze();
 }
 
@@ -568,9 +665,7 @@ function renderQuickPicks() {
   });
 }
 
-function analyze() {
-  const weight = parseFloat(document.getElementById('weight-input').value) || 0.5;
-  const box = getSelectedBox();
+function syncProfileUI(weight, box) {
   profile = { weight, dims: [...box.dims] };
   const dimWt = (box.dims[0]*box.dims[1]*box.dims[2]) / REGIME.dimDivisor;
   const billable = Math.max(weight, dimWt);
@@ -583,20 +678,72 @@ function analyze() {
   document.getElementById('doc-weight').textContent = weight.toFixed(1);
   document.getElementById('doc-dims').textContent = box.dims.join(' × ') + ' in';
   document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs';
-  const showAll = document.getElementById('show-all')?.checked;
-  const candidates = getCandidates(weight, showAll);
-  const allRanked = candidates.map(([id,p]) => {
-    const scored = scoreOption(p, weight, box.dims);
-    return { id, product: p, ...scored };
-  }).sort((a,b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf||0) - (a.product.conf||0));
-  rankedResults = showAll ? allRanked : allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
-  if (!rankedResults.length) rankedResults = allRanked.slice(0, 10);
-  const prev = selectedId;
-  const still = prev && rankedResults.some(r => r.id === prev);
+}
+
+function finishAnalyze(allRanked, prevId) {
+  rankedResults = applyMaxRiskFilter(allRanked);
+  if (!rankedResults.length && allRanked.length) rankedResults = allRanked.slice(0, 10);
+  const still = prevId && rankedResults.some(r => r.id === prevId);
   renderQuickPicks();
   renderOptions();
-  if (still) selectOption(prev);
+  if (still) selectOption(prevId);
   else if (rankedResults.length) selectOption(rankedResults[0].id);
+}
+
+let globalScanGen = 0;
+
+async function analyzeGlobalAsync() {
+  const weight = parseFloat(document.getElementById('weight-input').value) || 0.5;
+  const box = getSelectedBox();
+  syncProfileUI(weight, box);
+  updateSearchModeUI();
+  const gen = ++globalScanGen;
+  const prev = selectedId;
+  let entries = filterBySearch(Object.entries(PRODUCTS));
+  const allRanked = [];
+  const chunk = 2000;
+  document.getElementById('result-count').textContent = 'Scanning 0 / ' + entries.length + '…';
+  for (let i = 0; i < entries.length; i += chunk) {
+    if (gen !== globalScanGen) return;
+    const slice = entries.slice(i, i + chunk);
+    for (const [id, p] of slice) {
+      const nativeBox = nearestPresetForDims(p.dims);
+      const scored = scoreOption(p, p.weight, nativeBox.dims);
+      allRanked.push({ id, product: p, ...scored, wtDelta: Math.abs(p.weight - weight), nativeWeight: p.weight });
+    }
+    document.getElementById('result-count').textContent = 'Scanning ' + Math.min(i + chunk, entries.length) + ' / ' + entries.length + '…';
+    await new Promise(r => setTimeout(r, 0));
+  }
+  if (gen !== globalScanGen) return;
+  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
+  finishAnalyze(allRanked, prev);
+}
+
+function analyze() {
+  if (scanMode === 'global') {
+    analyzeGlobalAsync();
+    return;
+  }
+  const weight = parseFloat(document.getElementById('weight-input').value) || 0.5;
+  const box = getSelectedBox();
+  syncProfileUI(weight, box);
+  updateSearchModeUI();
+
+  const showAll = document.getElementById('show-all')?.checked;
+  const directSearch = getSearchQuery() || getMaxRiskFilter() != null;
+  const candidates = directSearch || showAll ? Object.entries(PRODUCTS) : getCandidates(weight, showAll);
+  const filtered = filterBySearch(candidates);
+  let allRanked = filtered.map(([id, p]) => {
+    const scored = scoreOption(p, weight, box.dims);
+    return { id, product: p, ...scored };
+  }).sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
+
+  if (!directSearch && !showAll) {
+    const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
+    allRanked = matched.length ? matched : allRanked.slice(0, 10);
+  }
+
+  finishAnalyze(allRanked, selectedId);
 }
 
 function productFlags(p) {
@@ -612,7 +759,9 @@ function renderOptions() {
   const body = document.getElementById('options-body');
   body.innerHTML = '';
   const suffix = rankedResults.length > DISPLAY_LIMIT ? ' (showing top '+DISPLAY_LIMIT+')' : '';
-  document.getElementById('result-count').textContent = rankedResults.length + ' of ' + REGIME.entries + ' classifications ranked' + suffix;
+  const pool = scanMode === 'global' ? 'global scan' : (getSearchQuery() ? 'search' : 'weight');
+  const maxNote = getMaxRiskFilter() != null ? ' · risk ≤ ' + getMaxRiskFilter() : '';
+  document.getElementById('result-count').textContent = rankedResults.length + ' matched (' + pool + ')' + maxNote + suffix;
   const display = rankedResults.slice(0, DISPLAY_LIMIT);
   display.forEach((r, i) => {
     const tr = document.createElement('tr');
