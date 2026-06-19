@@ -1,11 +1,11 @@
 {
-  "version": "6.0.0",
+  "version": "6.4.0",
   "asOf": "2026-06-18",
   "origin": {
     "code": "US",
     "port": "JFK",
     "label": "New York (JFK/EWR)",
-    "preference": "Third country — no US-EU FTA"
+    "preference": "Third country \u2014 no US-EU FTA"
   },
   "directUk": {
     "code": "GB",
@@ -14,7 +14,7 @@
     "agency": "HMRC / Border Force",
     "entryAir": "LHR",
     "entrySea": "FXT",
-    "vatRate": 0.20,
+    "vatRate": 0.2,
     "preferenceCode": "100",
     "preferenceLabel": "Third country duty (US origin)"
   },
@@ -24,7 +24,7 @@
       "name": "Germany",
       "flag": "DE",
       "tariff": "EU TARIC / EZT (Bundeszoll)",
-      "agency": "Bundeszollverwaltung · ATLAS",
+      "agency": "Bundeszollverwaltung \u00b7 ATLAS",
       "entryAir": "FRA",
       "entrySea": "HAM",
       "vatRate": 0.19,
@@ -32,17 +32,38 @@
       "scrutinyBase": -2,
       "firstLegAdj": -3,
       "transitDays": 2,
-      "ukCorridor": "NL/BE → Dover / Eurotunnel",
-      "hubStrength": ["machinery", "electronics", "industrial", "automotive"],
-      "chapterAdj": { "84": -4, "85": -3, "87": -3, "90": -2, "39": -2, "73": -2 },
-      "restrictionMap": { "SPS": "BVL/BAH", "REACH": "BAuA", "PHYTO": "BVL", "EXCISE": "Hauptzollamt" },
+      "ukCorridor": "NL/BE \u2192 Dover / Eurotunnel",
+      "hubStrength": [
+        "machinery",
+        "electronics",
+        "industrial",
+        "automotive"
+      ],
+      "chapterAdj": {
+        "84": -4,
+        "85": -3,
+        "87": -3,
+        "90": -2,
+        "39": -2,
+        "73": -2
+      },
+      "restrictionMap": {
+        "SPS": "BVL/BAH",
+        "REACH": "BAuA",
+        "PHYTO": "BVL",
+        "EXCISE": "Hauptzollamt"
+      },
       "euToUk": {
         "leg2Base": 13,
         "rooPenalty": 7,
         "exportSystem": "ATLAS EXS",
         "ukEntry": "Dover / Felixstowe",
         "ferryHours": 18,
-        "notes": "Strong ATLAS automation; US-origin preserved if no substantial transformation. UK duty still due at GB entry."
+        "notes": "Strong ATLAS automation; US-origin preserved if no substantial transformation. UK duty still due at GB entry.",
+        "leg2BaseEuOrigin": 7,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Germany EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (ATLAS EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -58,17 +79,38 @@
       "scrutinyBase": -4,
       "firstLegAdj": -4,
       "transitDays": 1,
-      "ukCorridor": "Rotterdam → Harwich/Felixstowe",
-      "hubStrength": ["sea-freight", "consolidation", "general", "chemicals"],
-      "chapterAdj": { "84": -3, "85": -3, "39": -3, "29": -2, "38": -2, "44": -2 },
-      "restrictionMap": { "SPS": "NVWA", "REACH": "ILT", "PHYTO": "NVWA", "EXCISE": "Douane" },
+      "ukCorridor": "Rotterdam \u2192 Harwich/Felixstowe",
+      "hubStrength": [
+        "sea-freight",
+        "consolidation",
+        "general",
+        "chemicals"
+      ],
+      "chapterAdj": {
+        "84": -3,
+        "85": -3,
+        "39": -3,
+        "29": -2,
+        "38": -2,
+        "44": -2
+      },
+      "restrictionMap": {
+        "SPS": "NVWA",
+        "REACH": "ILT",
+        "PHYTO": "NVWA",
+        "EXCISE": "Douane"
+      },
       "euToUk": {
         "leg2Base": 11,
         "rooPenalty": 6,
         "exportSystem": "DMS EXS",
         "ukEntry": "Felixstowe / Harwich",
         "ferryHours": 12,
-        "notes": "Lowest-friction EU hub for sea consolidation; shortest EU→UK sea leg. Post-Brexit UK import declaration still mandatory."
+        "notes": "Lowest-friction EU hub for sea consolidation; shortest EU\u2192UK sea leg. Post-Brexit UK import declaration still mandatory.",
+        "leg2BaseEuOrigin": 5,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Netherlands EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (DMS EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -79,22 +121,43 @@
       "agency": "DGDDI",
       "entryAir": "CDG",
       "entrySea": "LEH",
-      "vatRate": 0.20,
+      "vatRate": 0.2,
       "preferenceCode": "100",
       "scrutinyBase": 0,
       "firstLegAdj": -1,
       "transitDays": 2,
-      "ukCorridor": "Calais → Dover",
-      "hubStrength": ["luxury", "wine", "food", "aerospace"],
-      "chapterAdj": { "22": -3, "71": -2, "88": -2, "33": -2, "18": -2, "21": -1 },
-      "restrictionMap": { "SPS": "DGAL", "REACH": "ANSES", "PHYTO": "DGAL", "EXCISE": "DGDDI" },
+      "ukCorridor": "Calais \u2192 Dover",
+      "hubStrength": [
+        "luxury",
+        "wine",
+        "food",
+        "aerospace"
+      ],
+      "chapterAdj": {
+        "22": -3,
+        "71": -2,
+        "88": -2,
+        "33": -2,
+        "18": -2,
+        "21": -1
+      },
+      "restrictionMap": {
+        "SPS": "DGAL",
+        "REACH": "ANSES",
+        "PHYTO": "DGAL",
+        "EXCISE": "DGDDI"
+      },
       "euToUk": {
         "leg2Base": 12,
         "rooPenalty": 7,
         "exportSystem": "DELTA EXS",
         "ukEntry": "Dover / Eurotunnel",
         "ferryHours": 8,
-        "notes": "Short Channel crossing; SPS/BCP checks can be strict for agri-food. US origin retained for UK tariff."
+        "notes": "Short Channel crossing; SPS/BCP checks can be strict for agri-food. US origin retained for UK tariff.",
+        "leg2BaseEuOrigin": 6,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as France EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (DELTA EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -102,7 +165,7 @@
       "name": "Belgium",
       "flag": "BE",
       "tariff": "EU TARIC (Douane)",
-      "agency": "FOD Financiën · Douane",
+      "agency": "FOD Financi\u00ebn \u00b7 Douane",
       "entryAir": "BRU",
       "entrySea": "ANR",
       "vatRate": 0.21,
@@ -110,17 +173,37 @@
       "scrutinyBase": -2,
       "firstLegAdj": -2,
       "transitDays": 1,
-      "ukCorridor": "Zeebrugge / Antwerp → UK east coast",
-      "hubStrength": ["sea-freight", "pharma", "diamonds", "transit"],
-      "chapterAdj": { "71": -3, "30": -2, "84": -2, "85": -2, "39": -1 },
-      "restrictionMap": { "SPS": "FASFC", "REACH": "FAGG", "PHYTO": "FASFC", "EXCISE": "Douane" },
+      "ukCorridor": "Zeebrugge / Antwerp \u2192 UK east coast",
+      "hubStrength": [
+        "sea-freight",
+        "pharma",
+        "diamonds",
+        "transit"
+      ],
+      "chapterAdj": {
+        "71": -3,
+        "30": -2,
+        "84": -2,
+        "85": -2,
+        "39": -1
+      },
+      "restrictionMap": {
+        "SPS": "FASFC",
+        "REACH": "FAGG",
+        "PHYTO": "FASFC",
+        "EXCISE": "Douane"
+      },
       "euToUk": {
         "leg2Base": 11,
         "rooPenalty": 6,
         "exportSystem": "PLDA EXS",
         "ukEntry": "Felixstowe / Purfleet",
         "ferryHours": 14,
-        "notes": "Antwerp transit hub; efficient for sea→UK corridor. UK CDS filing required on GB arrival."
+        "notes": "Antwerp transit hub; efficient for sea\u2192UK corridor. UK CDS filing required on GB arrival.",
+        "leg2BaseEuOrigin": 5,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Belgium EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (PLDA EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -128,7 +211,7 @@
       "name": "Ireland",
       "flag": "IE",
       "tariff": "EU TARIC (Revenue)",
-      "agency": "Revenue Commissioners · AEP",
+      "agency": "Revenue Commissioners \u00b7 AEP",
       "entryAir": "DUB",
       "entrySea": "DUB",
       "vatRate": 0.23,
@@ -136,17 +219,35 @@
       "scrutinyBase": 1,
       "firstLegAdj": 0,
       "transitDays": 1,
-      "ukCorridor": "Dublin → Holyhead / Liverpool",
-      "hubStrength": ["pharma", "tech", "air-express"],
-      "chapterAdj": { "30": -3, "85": -2, "84": -1, "90": -2 },
-      "restrictionMap": { "SPS": "DAFM", "REACH": "HSA", "PHYTO": "DAFM", "EXCISE": "Revenue" },
+      "ukCorridor": "Dublin \u2192 Holyhead / Liverpool",
+      "hubStrength": [
+        "pharma",
+        "tech",
+        "air-express"
+      ],
+      "chapterAdj": {
+        "30": -3,
+        "85": -2,
+        "84": -1,
+        "90": -2
+      },
+      "restrictionMap": {
+        "SPS": "DAFM",
+        "REACH": "HSA",
+        "PHYTO": "DAFM",
+        "EXCISE": "Revenue"
+      },
       "euToUk": {
         "leg2Base": 14,
         "rooPenalty": 8,
         "exportSystem": "AEP EXS",
         "ukEntry": "Holyhead / Liverpool",
         "ferryHours": 6,
-        "notes": "Shortest ferry to GB but post-Brexit full UK customs on US-origin goods. NI Windsor Framework does not bypass GB mainland duty."
+        "notes": "Shortest ferry to GB but post-Brexit full UK customs on US-origin goods. NI Windsor Framework does not bypass GB mainland duty.",
+        "leg2BaseEuOrigin": 7,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Ireland EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (AEP EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -154,7 +255,7 @@
       "name": "Italy",
       "flag": "IT",
       "tariff": "EU TARIC (Agenzia Dogane)",
-      "agency": "Agenzia delle Dogane · ADM",
+      "agency": "Agenzia delle Dogane \u00b7 ADM",
       "entryAir": "MXP",
       "entrySea": "GOA",
       "vatRate": 0.22,
@@ -162,17 +263,38 @@
       "scrutinyBase": 1,
       "firstLegAdj": 0,
       "transitDays": 3,
-      "ukCorridor": "North Italy → CH/FR → UK",
-      "hubStrength": ["luxury", "food", "machinery", "furniture"],
-      "chapterAdj": { "94": -3, "71": -2, "84": -2, "39": -1, "22": -2, "62": -2 },
-      "restrictionMap": { "SPS": "MASE", "REACH": "ISS", "PHYTO": "MASE", "EXCISE": "ADM" },
+      "ukCorridor": "North Italy \u2192 CH/FR \u2192 UK",
+      "hubStrength": [
+        "luxury",
+        "food",
+        "machinery",
+        "furniture"
+      ],
+      "chapterAdj": {
+        "94": -3,
+        "71": -2,
+        "84": -2,
+        "39": -1,
+        "22": -2,
+        "62": -2
+      },
+      "restrictionMap": {
+        "SPS": "MASE",
+        "REACH": "ISS",
+        "PHYTO": "MASE",
+        "EXCISE": "ADM"
+      },
       "euToUk": {
         "leg2Base": 15,
         "rooPenalty": 8,
         "exportSystem": "ADM EXS",
         "ukEntry": "Dover (via FR corridor)",
         "ferryHours": 36,
-        "notes": "Longer EU→UK transit; strong for fashion/furniture classifications. US origin for UK duty."
+        "notes": "Longer EU\u2192UK transit; strong for fashion/furniture classifications. US origin for UK duty.",
+        "leg2BaseEuOrigin": 8,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Italy EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (ADM EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -180,7 +302,7 @@
       "name": "Spain",
       "flag": "ES",
       "tariff": "EU TARIC (AEAT)",
-      "agency": "Agencia Tributaria · ADT",
+      "agency": "Agencia Tributaria \u00b7 ADT",
       "entryAir": "MAD",
       "entrySea": "BCN",
       "vatRate": 0.21,
@@ -188,17 +310,37 @@
       "scrutinyBase": 2,
       "firstLegAdj": 1,
       "transitDays": 3,
-      "ukCorridor": "Barcelona → FR → UK",
-      "hubStrength": ["food", "olive", "wine", "textiles"],
-      "chapterAdj": { "22": -2, "12": -2, "62": -2, "63": -2, "20": -1 },
-      "restrictionMap": { "SPS": "MAPA", "REACH": "MITECO", "PHYTO": "MAPA", "EXCISE": "AEAT" },
+      "ukCorridor": "Barcelona \u2192 FR \u2192 UK",
+      "hubStrength": [
+        "food",
+        "olive",
+        "wine",
+        "textiles"
+      ],
+      "chapterAdj": {
+        "22": -2,
+        "12": -2,
+        "62": -2,
+        "63": -2,
+        "20": -1
+      },
+      "restrictionMap": {
+        "SPS": "MAPA",
+        "REACH": "MITECO",
+        "PHYTO": "MAPA",
+        "EXCISE": "AEAT"
+      },
       "euToUk": {
         "leg2Base": 16,
         "rooPenalty": 9,
         "exportSystem": "AES EXS",
         "ukEntry": "Felixstowe (via FR)",
         "ferryHours": 48,
-        "notes": "Iberian routing adds transit risk; agri-food SPS controls notable at EU BCP."
+        "notes": "Iberian routing adds transit risk; agri-food SPS controls notable at EU BCP.",
+        "leg2BaseEuOrigin": 9,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Spain EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (AES EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -214,17 +356,35 @@
       "scrutinyBase": 3,
       "firstLegAdj": 2,
       "transitDays": 4,
-      "ukCorridor": "PL → DE/NL → UK",
-      "hubStrength": ["furniture", "manufacturing", "sea-baltic"],
-      "chapterAdj": { "94": -2, "84": -1, "39": -1, "44": -2 },
-      "restrictionMap": { "SPS": "GIW", "REACH": "CIOP", "PHYTO": "GIW", "EXCISE": "KAS" },
+      "ukCorridor": "PL \u2192 DE/NL \u2192 UK",
+      "hubStrength": [
+        "furniture",
+        "manufacturing",
+        "sea-baltic"
+      ],
+      "chapterAdj": {
+        "94": -2,
+        "84": -1,
+        "39": -1,
+        "44": -2
+      },
+      "restrictionMap": {
+        "SPS": "GIW",
+        "REACH": "CIOP",
+        "PHYTO": "GIW",
+        "EXCISE": "KAS"
+      },
       "euToUk": {
         "leg2Base": 17,
         "rooPenalty": 9,
         "exportSystem": "NCTS EXS",
         "ukEntry": "Felixstowe (via DE/NL)",
         "ferryHours": 60,
-        "notes": "Eastern EU hub — longer corridor to UK; documentation chain more complex."
+        "notes": "Eastern EU hub \u2014 longer corridor to UK; documentation chain more complex.",
+        "leg2BaseEuOrigin": 10,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Poland EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (NCTS EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -232,25 +392,43 @@
       "name": "Austria",
       "flag": "AT",
       "tariff": "EU TARIC (BMF)",
-      "agency": "BMF Zoll · ATLAS",
+      "agency": "BMF Zoll \u00b7 ATLAS",
       "entryAir": "VIE",
       "entrySea": null,
-      "vatRate": 0.20,
+      "vatRate": 0.2,
       "preferenceCode": "100",
       "scrutinyBase": 0,
       "firstLegAdj": 0,
       "transitDays": 3,
-      "ukCorridor": "AT → DE → NL → UK",
-      "hubStrength": ["machinery", "precision", "medtech"],
-      "chapterAdj": { "90": -3, "84": -2, "85": -2, "30": -2 },
-      "restrictionMap": { "SPS": "AGES", "REACH": "BAES", "PHYTO": "AGES", "EXCISE": "BMF" },
+      "ukCorridor": "AT \u2192 DE \u2192 NL \u2192 UK",
+      "hubStrength": [
+        "machinery",
+        "precision",
+        "medtech"
+      ],
+      "chapterAdj": {
+        "90": -3,
+        "84": -2,
+        "85": -2,
+        "30": -2
+      },
+      "restrictionMap": {
+        "SPS": "AGES",
+        "REACH": "BAES",
+        "PHYTO": "AGES",
+        "EXCISE": "BMF"
+      },
       "euToUk": {
         "leg2Base": 15,
         "rooPenalty": 8,
         "exportSystem": "ATLAS EXS",
         "ukEntry": "Felixstowe (via DE)",
         "ferryHours": 42,
-        "notes": "Landlocked — relies on DE/NL corridor for UK leg."
+        "notes": "Landlocked \u2014 relies on DE/NL corridor for UK leg.",
+        "leg2BaseEuOrigin": 8,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Austria EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (ATLAS EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -258,7 +436,7 @@
       "name": "Portugal",
       "flag": "PT",
       "tariff": "EU TARIC (AT)",
-      "agency": "Autoridade Tributária · Alfândegas",
+      "agency": "Autoridade Tribut\u00e1ria \u00b7 Alf\u00e2ndegas",
       "entryAir": "LIS",
       "entrySea": "LIS",
       "vatRate": 0.23,
@@ -266,17 +444,36 @@
       "scrutinyBase": 2,
       "firstLegAdj": 1,
       "transitDays": 4,
-      "ukCorridor": "Lisbon → ES → FR → UK",
-      "hubStrength": ["sea-freight", "cork", "textiles", "wine"],
-      "chapterAdj": { "22": -2, "44": -2, "62": -1, "63": -1 },
-      "restrictionMap": { "SPS": "ASAE", "REACH": "APA", "PHYTO": "ASAE", "EXCISE": "AT" },
+      "ukCorridor": "Lisbon \u2192 ES \u2192 FR \u2192 UK",
+      "hubStrength": [
+        "sea-freight",
+        "cork",
+        "textiles",
+        "wine"
+      ],
+      "chapterAdj": {
+        "22": -2,
+        "44": -2,
+        "62": -1,
+        "63": -1
+      },
+      "restrictionMap": {
+        "SPS": "ASAE",
+        "REACH": "APA",
+        "PHYTO": "ASAE",
+        "EXCISE": "AT"
+      },
       "euToUk": {
         "leg2Base": 17,
         "rooPenalty": 9,
         "exportSystem": "AT EXS",
         "ukEntry": "Felixstowe",
         "ferryHours": 72,
-        "notes": "Atlantic routing — high transit penalty for UK-bound US goods."
+        "notes": "Atlantic routing \u2014 high transit penalty for UK-bound US goods.",
+        "leg2BaseEuOrigin": 10,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Portugal EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (AT EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -292,17 +489,35 @@
       "scrutinyBase": 1,
       "firstLegAdj": 1,
       "transitDays": 4,
-      "ukCorridor": "SE → DK/DE → UK",
-      "hubStrength": ["paper", "timber", "industrial"],
-      "chapterAdj": { "44": -3, "47": -3, "84": -1, "48": -2 },
-      "restrictionMap": { "SPS": "SVA", "REACH": "KEMI", "PHYTO": "SVA", "EXCISE": "Tullverket" },
+      "ukCorridor": "SE \u2192 DK/DE \u2192 UK",
+      "hubStrength": [
+        "paper",
+        "timber",
+        "industrial"
+      ],
+      "chapterAdj": {
+        "44": -3,
+        "47": -3,
+        "84": -1,
+        "48": -2
+      },
+      "restrictionMap": {
+        "SPS": "SVA",
+        "REACH": "KEMI",
+        "PHYTO": "SVA",
+        "EXCISE": "Tullverket"
+      },
       "euToUk": {
         "leg2Base": 16,
         "rooPenalty": 8,
         "exportSystem": "TDS EXS",
         "ukEntry": "Immingham / Felixstowe",
         "ferryHours": 54,
-        "notes": "Nordic routing — rarely optimal for US→UK triangular unless timber/paper classification advantage."
+        "notes": "Nordic routing \u2014 rarely optimal for US\u2192UK triangular unless timber/paper classification advantage.",
+        "leg2BaseEuOrigin": 9,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Sweden EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (TDS EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -310,7 +525,7 @@
       "name": "Denmark",
       "flag": "DK",
       "tariff": "EU TARIC (Skat)",
-      "agency": "Skattestyrelsen · Told",
+      "agency": "Skattestyrelsen \u00b7 Told",
       "entryAir": "CPH",
       "entrySea": "AAR",
       "vatRate": 0.25,
@@ -318,25 +533,44 @@
       "scrutinyBase": 0,
       "firstLegAdj": 0,
       "transitDays": 3,
-      "ukCorridor": "DK → DE/NL → UK",
-      "hubStrength": ["pharma", "food", "wind", "design"],
-      "chapterAdj": { "30": -2, "84": -2, "85": -1, "94": -1 },
-      "restrictionMap": { "SPS": "FVST", "REACH": "Miljøstyrelsen", "PHYTO": "FVST", "EXCISE": "Told" },
+      "ukCorridor": "DK \u2192 DE/NL \u2192 UK",
+      "hubStrength": [
+        "pharma",
+        "food",
+        "wind",
+        "design"
+      ],
+      "chapterAdj": {
+        "30": -2,
+        "84": -2,
+        "85": -1,
+        "94": -1
+      },
+      "restrictionMap": {
+        "SPS": "FVST",
+        "REACH": "Milj\u00f8styrelsen",
+        "PHYTO": "FVST",
+        "EXCISE": "Told"
+      },
       "euToUk": {
         "leg2Base": 14,
         "rooPenalty": 7,
         "exportSystem": "Told EXS",
         "ukEntry": "Immingham",
         "ferryHours": 36,
-        "notes": "Efficient customs but northern routing adds leg-2 cost."
+        "notes": "Efficient customs but northern routing adds leg-2 cost.",
+        "leg2BaseEuOrigin": 8,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Denmark EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (Told EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
       "code": "CZ",
       "name": "Czech Republic",
       "flag": "CZ",
-      "tariff": "EU TARIC (Celní správa)",
-      "agency": "Celní správa ČR",
+      "tariff": "EU TARIC (Celn\u00ed spr\u00e1va)",
+      "agency": "Celn\u00ed spr\u00e1va \u010cR",
       "entryAir": "PRG",
       "entrySea": null,
       "vatRate": 0.21,
@@ -344,17 +578,35 @@
       "scrutinyBase": 2,
       "firstLegAdj": 1,
       "transitDays": 3,
-      "ukCorridor": "CZ → DE → UK",
-      "hubStrength": ["automotive", "industrial", "glass"],
-      "chapterAdj": { "87": -2, "84": -2, "70": -2, "85": -1 },
-      "restrictionMap": { "SPS": "SZPI", "REACH": "MŽP", "PHYTO": "SZPI", "EXCISE": "Celní správa" },
+      "ukCorridor": "CZ \u2192 DE \u2192 UK",
+      "hubStrength": [
+        "automotive",
+        "industrial",
+        "glass"
+      ],
+      "chapterAdj": {
+        "87": -2,
+        "84": -2,
+        "70": -2,
+        "85": -1
+      },
+      "restrictionMap": {
+        "SPS": "SZPI",
+        "REACH": "M\u017dP",
+        "PHYTO": "SZPI",
+        "EXCISE": "Celn\u00ed spr\u00e1va"
+      },
       "euToUk": {
         "leg2Base": 16,
         "rooPenalty": 8,
-        "exportSystem": "Celní EXS",
+        "exportSystem": "Celn\u00ed EXS",
         "ukEntry": "Felixstowe (via DE)",
         "ferryHours": 48,
-        "notes": "Central EU manufacturing hub — leg-2 via Germany."
+        "notes": "Central EU manufacturing hub \u2014 leg-2 via Germany.",
+        "leg2BaseEuOrigin": 9,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Czech Republic EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (Celn\u00ed EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -362,7 +614,7 @@
       "name": "Hungary",
       "flag": "HU",
       "tariff": "EU TARIC (NAV)",
-      "agency": "Nemzeti Adó- és Vámhivatal",
+      "agency": "Nemzeti Ad\u00f3- \u00e9s V\u00e1mhivatal",
       "entryAir": "BUD",
       "entrySea": null,
       "vatRate": 0.27,
@@ -370,17 +622,33 @@
       "scrutinyBase": 3,
       "firstLegAdj": 2,
       "transitDays": 4,
-      "ukCorridor": "HU → AT/DE → UK",
-      "hubStrength": ["electronics", "automotive"],
-      "chapterAdj": { "85": -1, "87": -1, "84": -1 },
-      "restrictionMap": { "SPS": "NÉBIH", "REACH": "KEH", "PHYTO": "NÉBIH", "EXCISE": "NAV" },
+      "ukCorridor": "HU \u2192 AT/DE \u2192 UK",
+      "hubStrength": [
+        "electronics",
+        "automotive"
+      ],
+      "chapterAdj": {
+        "85": -1,
+        "87": -1,
+        "84": -1
+      },
+      "restrictionMap": {
+        "SPS": "N\u00c9BIH",
+        "REACH": "KEH",
+        "PHYTO": "N\u00c9BIH",
+        "EXCISE": "NAV"
+      },
       "euToUk": {
         "leg2Base": 18,
         "rooPenalty": 10,
         "exportSystem": "NAV EXS",
         "ukEntry": "Felixstowe",
         "ferryHours": 60,
-        "notes": "Eastern EU — higher documentation chain risk for UK-bound re-export."
+        "notes": "Eastern EU \u2014 higher documentation chain risk for UK-bound re-export.",
+        "leg2BaseEuOrigin": 11,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Hungary EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (NAV EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     },
     {
@@ -388,7 +656,7 @@
       "name": "Romania",
       "flag": "RO",
       "tariff": "EU TARIC (ANAF)",
-      "agency": "ANAF · Direcția Vamală",
+      "agency": "ANAF \u00b7 Direc\u021bia Vamal\u0103",
       "entryAir": "OTP",
       "entrySea": "CND",
       "vatRate": 0.19,
@@ -396,27 +664,51 @@
       "scrutinyBase": 4,
       "firstLegAdj": 3,
       "transitDays": 5,
-      "ukCorridor": "RO → HU/DE → UK",
-      "hubStrength": ["textiles", "furniture"],
-      "chapterAdj": { "62": -1, "63": -1, "94": -1 },
-      "restrictionMap": { "SPS": "ANSVSA", "REACH": "MMFT", "PHYTO": "ANSVSA", "EXCISE": "ANAF" },
+      "ukCorridor": "RO \u2192 HU/DE \u2192 UK",
+      "hubStrength": [
+        "textiles",
+        "furniture"
+      ],
+      "chapterAdj": {
+        "62": -1,
+        "63": -1,
+        "94": -1
+      },
+      "restrictionMap": {
+        "SPS": "ANSVSA",
+        "REACH": "MMFT",
+        "PHYTO": "ANSVSA",
+        "EXCISE": "ANAF"
+      },
       "euToUk": {
         "leg2Base": 19,
         "rooPenalty": 10,
         "exportSystem": "ANAF EXS",
         "ukEntry": "Felixstowe",
         "ferryHours": 72,
-        "notes": "Black Sea corridor — highest triangular friction for US→UK routing."
+        "notes": "Black Sea corridor \u2014 highest triangular friction for US\u2192UK routing.",
+        "leg2BaseEuOrigin": 12,
+        "preferenceCode": "300",
+        "preferenceLabel": "UK-EU TCA preferential (EU originating goods)",
+        "notesEuOrigin": "Goods declared as Romania EU origin into UK under TCA \u2014 preference code 300, REX/statement of origin, standard EU export (ANAF EXS) + UK CDS. Not US pass-through; third-country UK duty does not apply if origin criteria met."
       }
     }
   ],
   "triangularModel": {
-    "doubleDeclarationPenalty": 5,
-    "warehousingPenalty": 3,
-    "inventoryRisk": 2,
-    "originPreserved": "US origin retained for UK duty if no substantial transformation in EU (GSP/TCA pref not available)",
-    "formula": "SRI = 0.58·RSS + 0.27·Union + 0.15·MaxLeg + chain − hubBonus",
-    "weights": { "rss": 0.58, "union": 0.27, "maxLeg": 0.15, "chain": 2.0, "hubBonus": 0.55 },
-    "note": "RSS treats legs as orthogonal risk vectors (two×13 can beat one×20). Union models sequential clearance exposure. Safety Index = 100 − normalised SRI."
+    "leg2Mode": "eu_origin",
+    "doubleDeclarationPenalty": 0,
+    "warehousingPenalty": 0,
+    "inventoryRisk": 0,
+    "chainPenalty": 1.0,
+    "euOriginAssumption": "Leg 2 treats goods as EU-origin from hub country \u2014 UK-EU TCA preferential lane, not US re-export.",
+    "formula": "SRI = 0.58\u00b7RSS + 0.27\u00b7Union + 0.15\u00b7MaxLeg + chain; Leg2 = EU-origin\u2192UK TCA clearance",
+    "weights": {
+      "rss": 0.58,
+      "union": 0.27,
+      "maxLeg": 0.15,
+      "chain": 1.0,
+      "hubBonus": 0.55
+    },
+    "note": "Leg 1: US third-country into EU. Leg 2: EU hub country origin into UK under TCA."
   }
 }

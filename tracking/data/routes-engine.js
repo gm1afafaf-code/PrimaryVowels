@@ -110,36 +110,67 @@ function scoreUsToEu(product, inputWeight, inputDims, hub) {
   return { score, breakdown, ...phys, euDuty, hub: hub.code };
 }
 
-function scoreEuToUk(product, hub) {
-  const m = window.JURISDICTIONS.triangularModel;
+function euOriginUkRestrictionRisk(product, hub) {
+  if (!product.restrictions?.length) return 0;
+  let pts = 0;
+  product.restrictions.forEach(r => {
+    if (r.type === 'SPS' || r.type === 'PHYTO') pts += 5;
+    else if (r.type === 'EXCISE') pts += 6;
+    else if (r.type === 'REACH') pts += 3;
+    else pts += 4;
+  });
+  if (hub.code === 'IE') pts += 2;
+  return Math.min(28, pts);
+}
+
+function scoreEuOriginToUk(product, hub, inputWeight, inputDims) {
   const e2u = hub.euToUk;
-  const breakdown = {
-    leg2Base: e2u.leg2Base,
-    roo: e2u.rooPenalty,
-    doubleDecl: m.doubleDeclarationPenalty,
-    warehouse: m.warehousingPenalty,
-    inventory: m.inventoryRisk,
-    ukSps: 0,
-    transit: Math.min(8, Math.round((e2u.ferryHours || 24) / 12)),
-  };
+  const phys = physicalCoherence(product, inputWeight, inputDims);
+  const breakdown = {};
 
-  if (product.restrictions?.length) {
-    breakdown.ukSps = 6;
-    if (product.restrictions.some(r => r.type === 'SPS' || r.type === 'PHYTO')) breakdown.ukSps = 10;
-    if (product.restrictions.some(r => r.type === 'EXCISE')) breakdown.ukSps += 4;
+  breakdown.tcaBase = e2u.leg2BaseEuOrigin ?? Math.max(4, (e2u.leg2Base || 12) - 6);
+  breakdown.weight = Math.round((phys.breakdown.weight || 0) * 0.55);
+  breakdown.dims = Math.round((phys.breakdown.dims || 0) * 0.55);
+  breakdown.shipGap = Math.round((phys.breakdown.shipGap || 0) * 0.45);
+  breakdown.density = Math.round((phys.breakdown.density || 0) * 0.5);
+
+  const dq = descQualityScore(product);
+  breakdown.desc = dq >= 7 ? 0 : dq >= 5 ? 2 : 6;
+  breakdown.hs = Math.max(0, classificationRisk(product) - 5);
+  breakdown.restricted = euOriginUkRestrictionRisk(product, hub);
+  breakdown.flags = Math.round(flagRisk(product) * 0.65);
+  breakdown.duty = product.duty > 0 ? 1 : 0;
+  breakdown.originDoc = (product.conf || 0) >= 0.9 ? 0 : (product.conf || 0) >= 0.85 ? 2 : 5;
+  breakdown.tcaFiling = 3;
+  breakdown.transit = Math.min(4, Math.round((e2u.ferryHours || 24) / 22));
+
+  if (product.used) breakdown.used = 4;
+  else breakdown.used = 0;
+
+  let risk = 3 + Object.values(breakdown).reduce((a, b) => a + b, 0);
+  if (product.chapter >= 84 && product.chapter <= 96) risk -= 2;
+  if (['NL', 'FR', 'BE', 'DE'].includes(hub.code)) risk -= 2;
+  if (hub.chapterAdj?.[product.chapter] || hub.chapterAdj?.[String(product.chapter)]) {
+    risk += Math.max(0, hub.chapterAdj[product.chapter] || hub.chapterAdj[String(product.chapter)] || 0) * 0.3;
   }
-  if (product.flags?.dualUse) breakdown.ukSps += 5;
-  if ((product.conf || 0) < 0.85) breakdown.roo += 3;
 
-  const risk = Object.values(breakdown).reduce((a, b) => a + b, 0);
   const score = Math.max(4, Math.min(96, Math.round(risk)));
+  const ukDutyPref = product.duty > 0 ? 0 : 0;
+
   return {
     score,
     breakdown,
-    notes: e2u.notes,
+    origin: hub.code,
+    originLabel: hub.name + ' (EU origin)',
+    preferenceCode: e2u.preferenceCode || '300',
+    preferenceLabel: e2u.preferenceLabel || 'UK-EU TCA preferential',
+    ukDuty: ukDutyPref,
+    ukDutyNote: 'TCA pref — 0% duty if EU origin criteria met (not US third-country)',
+    notes: e2u.notesEuOrigin || e2u.notes,
     ukEntry: e2u.ukEntry,
     exportSystem: e2u.exportSystem,
     corridor: hub.ukCorridor,
+    mode: 'eu_origin',
   };
 }
 
@@ -162,7 +193,7 @@ function hubBonusPts(hub, product) {
 
 function computeRouteStatistics(leg1Score, leg2Score, hub, product, isDirect) {
   const tm = window.JURISDICTIONS?.triangularModel || {};
-  const w = tm.weights || { rss: 0.58, union: 0.27, maxLeg: 0.15, chain: 2.0, hubBonus: 0.55 };
+  const w = tm.weights || { rss: 0.58, union: 0.27, maxLeg: 0.15, chain: tm.chainPenalty ?? 1.0, hubBonus: 0.55 };
 
   if (isDirect) {
     const statistical = leg1Score;
@@ -189,7 +220,7 @@ function computeRouteStatistics(leg1Score, leg2Score, hub, product, isDirect) {
   const union = stressToRisk(unionStress);
   const maxLeg = Math.max(l1, l2);
   const hubBonus = hubBonusPts(hub, product);
-  const chainPenalty = w.chain;
+  const chainPenalty = tm.chainPenalty ?? w.chain ?? 1.0;
   const linearSum = Math.round(l1 + l2 - hubBonus * 0.5);
 
   const statistical = Math.round(Math.max(4, Math.min(96,
@@ -238,7 +269,7 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
 
   const hubs = window.JURISDICTIONS.euHubs.map(hub => {
     const leg1 = scoreUsToEu(product, inputWeight, inputDims, hub);
-    const leg2 = scoreEuToUk(product, hub);
+    const leg2 = scoreEuOriginToUk(product, hub, inputWeight, inputDims);
     const stats = computeRouteStatistics(leg1.score, leg2.score, hub, product, false);
     const delta = stats.statistical - directStats.statistical;
     let verdict = 'NEUTRAL';
@@ -249,7 +280,7 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
 
     return {
       hub,
-      route: 'JFK → ' + hub.entryAir + ' (' + hub.code + ') → ' + leg2.ukEntry + ' (UK)',
+      route: 'JFK → ' + hub.entryAir + ' (US→EU) → UK (' + hub.code + ' EU-origin)',
       leg1,
       leg2,
       combined: stats.statistical,
@@ -260,7 +291,9 @@ function analyzeRoutesForProduct(product, inputWeight, inputDims) {
       delta,
       verdict,
       euDuty: leg1.euDuty,
-      ukDuty: product.duty,
+      ukDuty: leg2.ukDuty,
+      ukDutyNote: leg2.ukDutyNote,
+      euOrigin: hub.code,
       corridor: hub.ukCorridor,
       transitDays: hub.transitDays,
     };
@@ -298,7 +331,7 @@ function buildRouteRecommendation(directStats, bestHub, betterHubs) {
   if (betterHubs.length > 0) {
     return betterHubs.length + ' EU hub(s) statistically safer than direct (best ' + bestHub.hub.code + ' SRI ' + bestHub.statistical + ' vs direct ' + dSri + ', Δ' + bestHub.delta + '). Linear sum would be ' + bestHub.linearSum + ' — SRI model weights moderate dual legs differently.';
   }
-  return 'Direct JFK→UK is statistically safest (SRI ' + dSri + ', safety ' + dSafe + '/100). Best hub ' + bestHub.hub.code + ' SRI ' + bestHub.statistical + ' (legs ' + bestHub.leg1.score + '+' + bestHub.leg2.score + ', linear ' + bestHub.linearSum + '). Two-leg chain penalty outweighs RSS benefit for this classification.';
+  return 'Direct JFK→UK is statistically safest (SRI ' + dSri + ', safety ' + dSafe + '/100). Best hub ' + bestHub.hub.code + ' SRI ' + bestHub.statistical + ' (US→EU ' + bestHub.leg1.score + ' + EU-origin→UK ' + bestHub.leg2.score + '). Leg 2 assumes ' + bestHub.hub.name + ' origin under TCA — not US pass-through.';
 }
 
 function routeVerdictClass(verdict) {
@@ -324,8 +357,11 @@ const LEG1_LABELS = {
 };
 
 const LEG2_LABELS = {
-  leg2Base: 'EU→UK corridor base', roo: 'Rules of origin / US origin', doubleDecl: 'Double declaration',
-  warehouse: 'EU warehousing', inventory: 'Inventory exposure', ukSps: 'UK SPS at GB border', transit: 'Transit time risk',
+  tcaBase: 'TCA corridor base (EU-origin)', weight: 'Physical — weight match', dims: 'Physical — dimension fit',
+  shipGap: 'Physical — wt/dim gap', density: 'Physical — density', desc: 'Documentation — invoice/desc',
+  hs: 'Tariff — HS & classification', restricted: 'Compliance — UK/EU controls', flags: 'Sector flags',
+  duty: 'TCA preferential duty factor', originDoc: 'EU origin statement / REX', tcaFiling: 'UK CDS TCA filing',
+  used: 'Used goods', transit: 'Transit time',
 };
 
 function populateRerouteHubSelect(analysis, selectedCode) {
@@ -372,7 +408,7 @@ function renderDetailReroute(analysis, product, hubCode) {
   const l1Label = document.getElementById('reroute-leg1-label');
   const l2Label = document.getElementById('reroute-leg2-label');
   if (l1Label) l1Label.textContent = route.hub.entryAir + ' · ' + route.hub.agency.split('·')[0].trim() + ' · EU duty ' + route.euDuty + '%';
-  if (l2Label) l2Label.textContent = route.leg2.exportSystem + ' → ' + route.leg2.ukEntry;
+  if (l2Label) l2Label.textContent = route.leg2.originLabel + ' · pref ' + route.leg2.preferenceCode + ' · ' + route.leg2.exportSystem + ' → ' + route.leg2.ukEntry;
 
   const ukEntry = document.getElementById('reroute-uk-entry');
   if (ukEntry) ukEntry.textContent = route.leg2.ukEntry || 'UK';
@@ -392,7 +428,7 @@ function renderDetailReroute(analysis, product, hubCode) {
       + '<span>Hub SRI: <strong class="' + riskClass(route.statistical) + '">' + route.statistical + '</strong> (safe ' + route.safetyIndex + ')</span>'
       + '<span class="' + routeVerdictClass(route.verdict) + '">' + route.verdict + '</span></div>'
       + '<div class="text-[#666] mt-0.5">RSS ' + st.rss + ' · Union ' + st.union + ' · MaxLeg ' + st.maxLeg + ' · Chain +' + st.chainPenalty + ' · ' + (st.explain || '') + '</div>'
-      + '<div class="text-[#555]">' + route.corridor + ' · ~' + route.transitDays + 'd · UK duty ' + route.ukDuty + '%</div>';
+      + '<div class="text-[#555]">' + route.corridor + ' · ~' + route.transitDays + 'd · ' + (route.ukDutyNote || ('UK duty ' + route.ukDuty + '%')) + '</div>';
   }
 
   const statBd = document.getElementById('reroute-stat-breakdown');
@@ -475,7 +511,7 @@ function renderRouteBloomberg(analysis, product) {
       + '<div>Corridor: ' + best.corridor + ' · Transit ~' + best.transitDays + 'd · EU duty ' + best.euDuty + '% · UK duty ' + best.ukDuty + '%</div>'
       + '<div>Leg 1 agency: ' + best.hub.agency + ' · Entry ' + best.hub.entryAir + '/' + (best.hub.entrySea || '—') + '</div>'
       + '<div>Leg 2: ' + best.leg2.exportSystem + ' → ' + best.leg2.ukEntry + ' · ' + best.leg2.notes + '</div>'
-      + '<div class="text-[#666]">' + window.JURISDICTIONS.triangularModel.originPreserved + '</div></div>';
+      + '<div class="text-[#666]">' + (window.JURISDICTIONS.triangularModel.euOriginAssumption || '') + '</div></div>';
   }
 
   body.innerHTML = html;
