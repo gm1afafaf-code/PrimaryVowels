@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v6.4 | EU-ORIGIN LEG 2</title>
+  <title>TRACKING // RISK ADJUSTER v6.5 | ROUTE UI REORG</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -51,6 +51,13 @@
     .route-leg-box.highlight { border-color: #22c55e; background: #0d1a0d; }
     .route-arrow { color: #555; font-size: 14px; padding: 0 4px; }
     .route-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .route-tab { padding: 4px 10px; font-size: 10px; cursor: pointer; border: 1px solid #333; background: #0d0d0d; color: #666; }
+    .route-tab.active { border-color: #22c55e; color: #22c55e; background: #1a2a1a; }
+    .route-tab-panel { display: none; }
+    .route-tab-panel.active { display: block; }
+    .route-compare-card { flex: 1; min-width: 140px; padding: 10px; border: 1px solid #333; background: #0d0d0d; }
+    .route-compare-card.winner { border-color: #22c55e; background: #0d1a0d; }
+    .route-score-lg { font-size: 28px; font-weight: 600; line-height: 1.1; }
   </style>
 </head>
 <body class="bg-black text-[#22c55e] p-4">
@@ -80,7 +87,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.4</span>
+          <span class="text-xs text-[#666] self-end mb-0.5">RISK ADJUSTER v6.5</span>
         </div>
         <div class="text-xs text-[#666]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
       </div>
@@ -181,53 +188,30 @@
             <span id="detail-risk-label" class="text-[10px]"></span>
           </div>
           <div class="panel p-2 border border-[#2a4a2a]" id="detail-reroute-panel">
-            <div class="label mb-1">EU RE-ROUTE — SAME CLASSIFICATION</div>
-            <p class="uk-note mb-2">Leg 1: US→EU (third country). Leg 2: <strong>EU-origin into UK</strong> under TCA pref 300 — goods originate from hub country, not US pass-through. SRI ranks safest statistical path.</p>
-            <div class="route-flow mb-2 text-[10px]">
-              <span class="px-1 py-0.5 bg-[#1a1a1a] border border-[#333]">JFK</span>
-              <span class="route-arrow">→</span>
-              <select id="reroute-hub-select" class="p-1 text-[10px] min-w-[120px]" onchange="onRerouteHubChange()"></select>
-              <span class="route-arrow">→</span>
-              <span class="px-1 py-0.5 bg-[#1a1a1a] border border-[#333]" id="reroute-uk-entry">UK</span>
+            <div class="label mb-1">ROUTE QUICK VIEW</div>
+            <div class="flex gap-2 mb-2 flex-wrap items-center text-[10px]">
+              <span class="text-[#888]">EU hub:</span>
+              <select id="reroute-hub-select" class="p-1 text-[10px] flex-1 min-w-[100px]" onchange="onRerouteHubChange()"></select>
             </div>
-            <div class="grid grid-cols-4 gap-1 mb-2">
-              <div class="route-leg-box">
-                <div class="text-[8px] text-[#666] uppercase">Leg 1 · NY→EU</div>
-                <div id="reroute-leg1" class="text-2xl font-bold leading-tight">—</div>
-                <div id="reroute-leg1-label" class="text-[8px] text-[#888]">—</div>
+            <div class="flex gap-2 mb-2 flex-wrap">
+              <div class="route-compare-card" id="card-direct">
+                <div class="text-[8px] text-[#666]">DIRECT · JFK→UK</div>
+                <div id="reroute-direct-score" class="route-score-lg">—</div>
               </div>
-              <div class="route-leg-box">
-                <div class="text-[8px] text-[#666] uppercase">Leg 2 · EU-origin→UK</div>
-                <div id="reroute-leg2" class="text-2xl font-bold leading-tight">—</div>
-                <div id="reroute-leg2-label" class="text-[8px] text-[#888]">—</div>
-              </div>
-              <div class="route-leg-box highlight">
-                <div class="text-[8px] text-[#666] uppercase">SRI · Stat risk</div>
-                <div id="reroute-combined" class="text-2xl font-bold leading-tight">—</div>
-                <div id="reroute-delta" class="text-[8px]">—</div>
-              </div>
-              <div class="route-leg-box highlight">
-                <div class="text-[8px] text-[#666] uppercase">Safety /100</div>
-                <div id="reroute-safety" class="text-2xl font-bold leading-tight">—</div>
-                <div class="text-[8px] text-[#888]">higher = safer</div>
+              <div class="route-compare-card" id="card-hub">
+                <div class="text-[8px] text-[#666]">VIA EU HUB · SRI</div>
+                <div id="reroute-combined" class="route-score-lg">—</div>
+                <div class="text-[9px] mt-1"><span id="reroute-leg1">—</span> + <span id="reroute-leg2">—</span></div>
               </div>
             </div>
-            <div id="reroute-status" class="text-[8px] text-[#666] mb-1">Awaiting selection…</div>
-            <div id="reroute-direct-compare" class="text-[9px] text-[#aaa] mb-2 panel p-1"></div>
-            <div class="grid grid-cols-1 gap-1">
-              <div class="panel p-1">
-                <div class="text-[8px] text-[#666] mb-0.5">SRI STATISTICAL MODEL (RSS + UNION + MAX LEG)</div>
-                <div id="reroute-stat-breakdown" class="text-[9px] space-y-0.5"></div>
-              </div>
-              <div class="panel p-1">
-                <div class="text-[8px] text-[#666] mb-0.5">LEG 1 BREAKDOWN (NY → EU)</div>
-                <div id="reroute-leg1-breakdown" class="text-[9px] space-y-0.5"></div>
-              </div>
-              <div class="panel p-1">
-                <div class="text-[8px] text-[#666] mb-0.5">LEG 2 BREAKDOWN (EU-ORIGIN → UK · TCA)</div>
-                <div id="reroute-leg2-breakdown" class="text-[9px] space-y-0.5"></div>
-              </div>
-            </div>
+            <div id="reroute-verdict" class="text-[10px] mb-1">—</div>
+            <div id="reroute-status" class="text-[8px] text-[#555]">Full leg breakdowns in Route Analysis panel below ↓</div>
+            <span id="reroute-leg1-label" class="hidden"></span>
+            <span id="reroute-leg2-label" class="hidden"></span>
+            <span id="reroute-safety" class="hidden"></span>
+            <span id="reroute-delta" class="hidden"></span>
+            <span id="reroute-uk-entry" class="hidden"></span>
+            <span id="reroute-direct-compare" class="hidden"></span>
           </div>
           <div class="panel p-2">
             <div class="label mb-1">HS / TARIFF</div>
@@ -268,16 +252,34 @@
 
       <div class="col-span-12 panel p-3 rounded hidden" id="route-bloomberg">
         <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-          <div class="section-title mb-0">ROUTE BLOOMBERG — JFK → EU → UK</div>
-          <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN ALL CLASSIFICATIONS FOR HUB ADVANTAGE</button>
+          <div class="section-title mb-0">ROUTE ANALYSIS — JFK → EU → UK</div>
+          <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN DB FOR SAFER HUBS</button>
         </div>
-        <p class="uk-note mb-2">Leg 2 models EU hub country as country of origin into UK (TCA preference 300). Not a US re-export pass-through. SRI = 58% RSS + 27% Union + 15% MaxLeg + chain.</p>
-        <div id="route-bloomberg-summary" class="mb-2"></div>
-        <div id="route-scan-status" class="text-[9px] text-[#666] mb-1"></div>
-        <div id="route-bloomberg-body" class="overflow-auto max-h-[360px]"></div>
+        <div class="flex gap-1 mb-3 flex-wrap" id="route-tabs">
+          <button type="button" class="route-tab active" data-tab="summary" onclick="switchRouteTab('summary')">SUMMARY</button>
+          <button type="button" class="route-tab" data-tab="leg1" onclick="switchRouteTab('leg1')">LEG 1 · US→EU</button>
+          <button type="button" class="route-tab" data-tab="leg2" onclick="switchRouteTab('leg2')">LEG 2 · EU→UK</button>
+          <button type="button" class="route-tab" data-tab="hubs" onclick="switchRouteTab('hubs')">ALL 15 HUBS</button>
+        </div>
+        <div id="route-tab-summary" class="route-tab-panel active">
+          <div id="route-bloomberg-summary" class="mb-2"></div>
+          <div id="route-sri-math" class="panel p-2 text-[10px]"></div>
+        </div>
+        <div id="route-tab-leg1" class="route-tab-panel">
+          <p class="uk-note mb-2">US third-country import into selected EU hub. Only non-zero factors shown.</p>
+          <div id="reroute-leg1-breakdown" class="text-[10px]"></div>
+        </div>
+        <div id="route-tab-leg2" class="route-tab-panel">
+          <p class="uk-note mb-2">EU-origin goods into UK under TCA preference 300 (not US pass-through).</p>
+          <div id="reroute-leg2-breakdown" class="text-[10px]"></div>
+        </div>
+        <div id="route-tab-hubs" class="route-tab-panel">
+          <div id="route-bloomberg-body" class="overflow-auto max-h-[320px]"></div>
+        </div>
+        <div id="route-scan-status" class="text-[9px] text-[#666] mt-2"></div>
         <div id="route-scan-results" class="hidden mt-3">
-          <div class="label mb-1">TOP TRIANGULAR ADVANTAGES (FULL DB SCAN)</div>
-          <div class="overflow-auto max-h-[240px]" id="route-scan-table"></div>
+          <div class="label mb-1">HUB ADVANTAGE SCAN RESULTS</div>
+          <div class="overflow-auto max-h-[200px]" id="route-scan-table"></div>
         </div>
       </div>
 
@@ -319,8 +321,8 @@
 <script>
 
 const REGIME = {
-  version: '6.4.0',
-  codename: 'EU-ORIGIN LEG 2',
+  version: '6.5.0',
+  codename: 'ROUTE UI REORG',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
   route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
@@ -1128,8 +1130,11 @@ function selectOption(id) {
     ['Compliance — restrictions', bd.restricted], ['Compliance — sector flags', bd.flags||0],
     ['Condition — used goods', bd.used], ['Valuation — market band', bd.valuation], ['Duty rate factor', bd.duty],
     ['Lane — ' + cfg.label + ' mode fit', bd.freight || 0],
-  ];
-  document.getElementById('detail-breakdown').innerHTML = rows.map(([k,v])=>'<div class="flex justify-between"><span>'+k+'</span><span>'+v+' pts</span></div>').join('');
+  ].filter(([, v]) => v > 0);
+  document.getElementById('detail-breakdown').innerHTML = rows.length
+    ? '<div class="flex justify-between border-b border-[#333] pb-1 mb-1 font-semibold"><span>UK direct score</span><span class="'+riskClass(r.score)+'">'+r.score+'</span></div>'
+      + rows.map(([k,v])=>'<div class="flex justify-between"><span>'+k+'</span><span>+'+v+'</span></div>').join('')
+    : '<div class="text-[#22c55e]">✓ No risk factors flagged — clean direct clearance match.</div>';
   const billable = cfg.useDimWeight ? Math.max(profile.weight, r.dimWt) : profile.weight;
   const calc = ukImportCalc(p, billable);
   document.getElementById('detail-uk-calc').textContent = 'FOB $'+p.value+' + '+cfg.label.toLowerCase()+' freight $'+calc.freight+' + ins $'+calc.ins+' → CIF ~$'+Math.round(calc.cifUsd)+' (~£'+Math.round(calc.cifGbp)+') | Duty ~£'+Math.round(calc.dutyGbp);
@@ -1138,19 +1143,31 @@ function selectOption(id) {
   void updateRouteBloomberg(p, r);
 }
 
+function switchRouteTab(tab) {
+  document.querySelectorAll('.route-tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.route-tab-panel').forEach(el => el.classList.toggle('active', el.id === 'route-tab-' + tab));
+}
+
 function onRerouteHubChange() {
   const RB = window.RouteBloomberg;
   const code = document.getElementById('reroute-hub-select')?.value;
   if (code && window.currentRouteAnalysis && RB) {
     RB.renderDetailReroute(window.currentRouteAnalysis, window.currentRouteProduct, code);
+    RB.renderRouteBloomberg(window.currentRouteAnalysis, window.currentRouteProduct, code);
   }
 }
 
 function setRerouteLoading() {
-  ['reroute-leg1','reroute-leg2','reroute-combined'].forEach(id => {
+  ['reroute-direct-score','reroute-combined'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.textContent = '…'; el.className = 'text-2xl font-bold leading-tight text-[#666]'; }
+    if (el) { el.textContent = '…'; el.className = 'route-score-lg text-[#666]'; }
   });
+  ['reroute-leg1','reroute-leg2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '…'; el.className = 'text-[#666]'; }
+  });
+  const verdict = document.getElementById('reroute-verdict');
+  if (verdict) verdict.textContent = 'Computing routes…';
   const st = document.getElementById('reroute-status');
   if (st) st.textContent = 'Computing EU leg scores…';
 }

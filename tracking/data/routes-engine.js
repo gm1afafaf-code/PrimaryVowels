@@ -1,4 +1,4 @@
-/* Route Bloomberg engine v6.2 — NY→EU→UK triangular customs risk analysis */
+/* Route Bloomberg engine v6.5 — NY→EU→UK triangular customs risk analysis */
 window.JURISDICTIONS = window.JURISDICTIONS || null;
 window.EU_CET = window.EU_CET || null;
 window.currentRouteAnalysis = window.currentRouteAnalysis || null;
@@ -341,28 +341,78 @@ function routeVerdictClass(verdict) {
   return 'risk-high';
 }
 
-function breakdownRows(bd, labels) {
-  return Object.entries(bd).map(([k, v]) => {
-    const label = labels?.[k] || k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
-    return '<div class="flex justify-between"><span>' + label + '</span><span>' + v + ' pts</span></div>';
-  }).join('');
-}
-
 const LEG1_LABELS = {
-  weight: 'Physical — weight match', dims: 'Physical — dimension fit', shipGap: 'Physical — wt/dim gap',
-  density: 'Physical — density', desc: 'Documentation — desc quality', hs: 'Tariff — HS classification',
-  restricted: 'Compliance — restrictions', flags: 'Compliance — sector flags', used: 'Condition — used goods',
-  valuation: 'Valuation — market band', duty: 'EU CET duty factor', freight: 'Freight mode fit',
+  weight: 'Weight match', dims: 'Dimension fit', shipGap: 'Wt/dim gap',
+  density: 'Density plausibility', desc: 'Description quality', hs: 'HS classification',
+  restricted: 'Restrictions', flags: 'Sector flags', used: 'Used goods',
+  valuation: 'Market valuation', duty: 'EU CET duty factor', freight: 'Freight mode fit',
   jurisdiction: 'EU jurisdiction adj', hubFit: 'Hub chapter fit',
 };
 
 const LEG2_LABELS = {
-  tcaBase: 'TCA corridor base (EU-origin)', weight: 'Physical — weight match', dims: 'Physical — dimension fit',
-  shipGap: 'Physical — wt/dim gap', density: 'Physical — density', desc: 'Documentation — invoice/desc',
-  hs: 'Tariff — HS & classification', restricted: 'Compliance — UK/EU controls', flags: 'Sector flags',
-  duty: 'TCA preferential duty factor', originDoc: 'EU origin statement / REX', tcaFiling: 'UK CDS TCA filing',
+  tcaBase: 'TCA corridor base', weight: 'Weight match', dims: 'Dimension fit',
+  shipGap: 'Wt/dim gap', density: 'Density', desc: 'Invoice / description',
+  hs: 'HS classification', restricted: 'UK/EU controls', flags: 'Sector flags',
+  duty: 'TCA duty factor', originDoc: 'EU origin statement', tcaFiling: 'UK CDS TCA filing',
   used: 'Used goods', transit: 'Transit time',
 };
+
+const BREAKDOWN_GROUPS = [
+  { id: 'physical', label: 'Physical', keys: ['weight', 'dims', 'shipGap', 'density'] },
+  { id: 'documentation', label: 'Documentation', keys: ['desc', 'originDoc', 'tcaFiling'] },
+  { id: 'tariff', label: 'Tariff', keys: ['hs', 'duty', 'tcaBase'] },
+  { id: 'compliance', label: 'Compliance', keys: ['restricted', 'flags'] },
+  { id: 'condition', label: 'Condition', keys: ['used'] },
+  { id: 'valuation', label: 'Valuation', keys: ['valuation'] },
+  { id: 'lane', label: 'Lane / Hub', keys: ['freight', 'jurisdiction', 'hubFit', 'transit'] },
+];
+
+function formatGroupedBreakdown(bd, labels, legScore) {
+  if (!bd || typeof bd !== 'object') return '<div class="text-[#666]">No breakdown available.</div>';
+
+  const sections = [];
+  let totalShown = 0;
+
+  BREAKDOWN_GROUPS.forEach(group => {
+    const rows = group.keys
+      .filter(k => bd[k] != null && bd[k] !== 0)
+      .map(k => {
+        const v = bd[k];
+        totalShown += v;
+        const label = labels?.[k] || k;
+        return '<div class="flex justify-between py-0.5"><span class="text-[#aaa]">' + label + '</span><span class="font-medium">+' + v + '</span></div>';
+      });
+    if (!rows.length) return;
+    const subtotal = group.keys.reduce((s, k) => s + (bd[k] || 0), 0);
+    sections.push(
+      '<div class="mb-2">'
+      + '<div class="text-[9px] text-[#666] uppercase tracking-wide mb-1">' + group.label + ' <span class="text-[#555]">(' + subtotal + ')</span></div>'
+      + rows.join('')
+      + '</div>'
+    );
+  });
+
+  const orphanKeys = Object.keys(bd).filter(k => !BREAKDOWN_GROUPS.some(g => g.keys.includes(k)) && bd[k] !== 0);
+  if (orphanKeys.length) {
+    const rows = orphanKeys.map(k => {
+      totalShown += bd[k];
+      const label = labels?.[k] || k;
+      return '<div class="flex justify-between py-0.5"><span class="text-[#aaa]">' + label + '</span><span class="font-medium">+' + bd[k] + '</span></div>';
+    }).join('');
+    sections.push('<div class="mb-2"><div class="text-[9px] text-[#666] uppercase tracking-wide mb-1">Other</div>' + rows + '</div>');
+  }
+
+  if (!sections.length) {
+    return '<div class="text-[#22c55e] py-2">✓ No risk factors flagged — clean match on this leg.</div>';
+  }
+
+  const header = legScore != null
+    ? '<div class="flex justify-between border-b border-[#333] pb-1 mb-2 font-semibold"><span>Leg score</span><span class="' + (typeof riskClass === 'function' ? riskClass(legScore) : '') + '">' + legScore + '</span></div>'
+    : '';
+
+  return header + sections.join('')
+    + '<div class="flex justify-between border-t border-[#333] pt-1 mt-1 text-[#888]"><span>Factors shown</span><span>' + totalShown + ' pts</span></div>';
+}
 
 function populateRerouteHubSelect(analysis, selectedCode) {
   const sel = document.getElementById('reroute-hub-select');
@@ -392,17 +442,43 @@ function renderDetailReroute(analysis, product, hubCode) {
     return;
   }
 
+  const directEl = document.getElementById('reroute-direct-score');
+  if (directEl) {
+    directEl.textContent = analysis.directSRI;
+    directEl.className = 'route-score-lg ' + riskClass(analysis.directSRI);
+  }
+
   const leg1El = document.getElementById('reroute-leg1');
   const leg2El = document.getElementById('reroute-leg2');
   const combEl = document.getElementById('reroute-combined');
-  if (leg1El) { leg1El.textContent = route.leg1.score; leg1El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg1.score); }
-  if (leg2El) { leg2El.textContent = route.leg2.score; leg2El.className = 'text-2xl font-bold leading-tight ' + riskClass(route.leg2.score); }
-  if (combEl) { combEl.textContent = route.statistical; combEl.className = 'text-2xl font-bold leading-tight ' + riskClass(route.statistical); }
+  if (leg1El) {
+    leg1El.textContent = route.leg1.score;
+    leg1El.className = riskClass(route.leg1.score);
+  }
+  if (leg2El) {
+    leg2El.textContent = route.leg2.score;
+    leg2El.className = riskClass(route.leg2.score);
+  }
+  if (combEl) {
+    combEl.textContent = route.statistical;
+    combEl.className = 'route-score-lg ' + riskClass(route.statistical);
+  }
 
-  const safetyEl = document.getElementById('reroute-safety');
-  if (safetyEl) {
-    safetyEl.textContent = route.safetyIndex;
-    safetyEl.className = 'text-lg font-bold ' + (route.safetyIndex >= 75 ? 'risk-low' : route.safetyIndex >= 55 ? 'risk-med' : 'risk-high');
+  const hubWins = route.statistical < analysis.directSRI;
+  const tie = route.statistical === analysis.directSRI;
+  const cardDirect = document.getElementById('card-direct');
+  const cardHub = document.getElementById('card-hub');
+  if (cardDirect) cardDirect.classList.toggle('winner', !hubWins && !tie);
+  if (cardHub) cardHub.classList.toggle('winner', hubWins);
+
+  const verdictEl = document.getElementById('reroute-verdict');
+  if (verdictEl) {
+    const d = route.delta;
+    const deltaTxt = (d >= 0 ? '+' : '') + d + ' vs direct';
+    verdictEl.innerHTML = '<span class="' + routeVerdictClass(route.verdict) + ' font-semibold">' + route.verdict + '</span>'
+      + ' · <span class="' + (d < 0 ? 'risk-low' : d > 4 ? 'risk-high' : 'text-[#888]') + '">' + deltaTxt + '</span>'
+      + ' · safety ' + route.safetyIndex + '/100'
+      + ' · ' + route.hub.code + ' (' + route.hub.entryAir + ' → ' + (route.leg2.ukEntry || 'UK') + ')';
   }
 
   const l1Label = document.getElementById('reroute-leg1-label');
@@ -410,109 +486,97 @@ function renderDetailReroute(analysis, product, hubCode) {
   if (l1Label) l1Label.textContent = route.hub.entryAir + ' · ' + route.hub.agency.split('·')[0].trim() + ' · EU duty ' + route.euDuty + '%';
   if (l2Label) l2Label.textContent = route.leg2.originLabel + ' · pref ' + route.leg2.preferenceCode + ' · ' + route.leg2.exportSystem + ' → ' + route.leg2.ukEntry;
 
-  const ukEntry = document.getElementById('reroute-uk-entry');
-  if (ukEntry) ukEntry.textContent = route.leg2.ukEntry || 'UK';
-
-  const deltaEl = document.getElementById('reroute-delta');
-  if (deltaEl) {
-    const d = route.delta;
-    deltaEl.textContent = 'SRI ' + (d >= 0 ? '+' : '') + d + ' vs direct · linear sum ' + route.linearSum;
-    deltaEl.className = 'text-[8px] ' + (d < 0 ? 'risk-low' : d > 4 ? 'risk-high' : 'text-[#888]');
-  }
-
-  const cmp = document.getElementById('reroute-direct-compare');
-  if (cmp) {
-    const st = route.stats || {};
-    cmp.innerHTML = '<div class="flex justify-between flex-wrap gap-2">'
-      + '<span>Direct SRI: <strong class="' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</strong> (safe ' + analysis.directSafety + ')</span>'
-      + '<span>Hub SRI: <strong class="' + riskClass(route.statistical) + '">' + route.statistical + '</strong> (safe ' + route.safetyIndex + ')</span>'
-      + '<span class="' + routeVerdictClass(route.verdict) + '">' + route.verdict + '</span></div>'
-      + '<div class="text-[#666] mt-0.5">RSS ' + st.rss + ' · Union ' + st.union + ' · MaxLeg ' + st.maxLeg + ' · Chain +' + st.chainPenalty + ' · ' + (st.explain || '') + '</div>'
-      + '<div class="text-[#555]">' + route.corridor + ' · ~' + route.transitDays + 'd · ' + (route.ukDutyNote || ('UK duty ' + route.ukDuty + '%')) + '</div>';
-  }
-
-  const statBd = document.getElementById('reroute-stat-breakdown');
-  if (statBd && route.stats) {
-    const s = route.stats;
-    statBd.innerHTML = [
-      ['RSS (√(leg₁²+leg₂²))', s.rss],
-      ['Union (sequential exposure)', s.union],
-      ['Max leg (worst checkpoint)', s.maxLeg],
-      ['Chain penalty (2 customs events)', s.chainPenalty],
-      ['Hub bonus', -s.hubBonus],
-      ['Linear sum (reference)', s.linearSum],
-      ['→ Statistical SRI', s.statistical],
-    ].map(([k, v]) => '<div class="flex justify-between"><span>' + k + '</span><span>' + v + '</span></div>').join('');
-  }
-
   const b1 = document.getElementById('reroute-leg1-breakdown');
   const b2 = document.getElementById('reroute-leg2-breakdown');
-  if (b1) b1.innerHTML = breakdownRows(route.leg1.breakdown, LEG1_LABELS);
-  if (b2) b2.innerHTML = breakdownRows(route.leg2.breakdown, LEG2_LABELS);
+  if (b1) {
+    b1.innerHTML = '<div class="mb-2 text-[9px] text-[#888]">' + route.hub.flag + ' ' + route.hub.name + ' · ' + (l1Label?.textContent || route.hub.entryAir) + '</div>'
+      + formatGroupedBreakdown(route.leg1.breakdown, LEG1_LABELS, route.leg1.score);
+  }
+  if (b2) {
+    b2.innerHTML = '<div class="mb-2 text-[9px] text-[#888]">' + route.leg2.originLabel + ' · pref ' + route.leg2.preferenceCode + ' · ' + (route.ukDutyNote || '') + '</div>'
+      + formatGroupedBreakdown(route.leg2.breakdown, LEG2_LABELS, route.leg2.score);
+  }
 
   const status = document.getElementById('reroute-status');
-  if (status) status.textContent = '15 EU hubs loaded · showing ' + route.hub.code;
+  if (status) status.textContent = analysis.hubs.length + ' EU hubs · ' + route.hub.code + ' selected · see Route Analysis tabs below';
 }
 
 function showRerouteLegsError(msg) {
-  ['reroute-leg1', 'reroute-leg2', 'reroute-combined'].forEach(id => {
+  ['reroute-direct-score', 'reroute-leg1', 'reroute-leg2', 'reroute-combined'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.textContent = '!'; el.className = 'text-2xl font-bold leading-tight risk-high'; }
+    if (el) { el.textContent = '!'; el.className = (id.includes('score') || id === 'reroute-combined' ? 'route-score-lg ' : '') + 'risk-high'; }
   });
-  const cmp = document.getElementById('reroute-direct-compare');
-  if (cmp) cmp.innerHTML = '<span class="risk-high">' + msg + '</span>';
+  const verdictEl = document.getElementById('reroute-verdict');
+  if (verdictEl) verdictEl.innerHTML = '<span class="risk-high">' + msg + '</span>';
   const status = document.getElementById('reroute-status');
   if (status) status.textContent = msg;
 }
 
-function renderRouteBloomberg(analysis, product) {
+function renderRouteBloomberg(analysis, product, hubCode) {
   const panel = document.getElementById('route-bloomberg');
   const body = document.getElementById('route-bloomberg-body');
   const summary = document.getElementById('route-bloomberg-summary');
+  const sriMath = document.getElementById('route-sri-math');
   if (!panel || !body || !analysis) return;
 
+  const code = hubCode || document.getElementById('reroute-hub-select')?.value || analysis.bestHub?.hub?.code;
+  const route = analysis.hubs.find(h => h.hub.code === code) || analysis.bestHub;
+
   panel.classList.remove('hidden');
+
   summary.innerHTML = '<div class="text-[10px] leading-relaxed text-[#aaa]">' + analysis.recommendation + '</div>'
-    + '<div class="mt-2 flex gap-4 text-xs flex-wrap">'
-    + '<span>Direct SRI: <strong class="' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</strong> (safety ' + analysis.directSafety + ')</span>'
-    + '<span>Statistically safer hubs: <strong>' + analysis.betterThanDirect.length + '</strong> / ' + analysis.hubs.length + '</span>'
-    + (analysis.bestHub ? '<span>Safest: <strong class="' + riskClass(analysis.bestHub.statistical) + '">' + analysis.bestHub.hub.code + ' SRI ' + analysis.bestHub.statistical + '</strong> (Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ')</span>' : '')
+    + '<div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">'
+    + '<div class="panel p-2"><div class="text-[#666]">Direct SRI</div><div class="text-lg font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</div><div class="text-[#555]">safety ' + analysis.directSafety + '</div></div>'
+    + (route ? '<div class="panel p-2"><div class="text-[#666]">Hub ' + route.hub.code + ' SRI</div><div class="text-lg font-bold ' + riskClass(route.statistical) + '">' + route.statistical + '</div><div class="text-[#555]">leg ' + route.leg1.score + ' + ' + route.leg2.score + ' · safety ' + route.safetyIndex + '</div></div>' : '')
+    + '<div class="panel p-2"><div class="text-[#666]">Safer hubs</div><div class="text-lg font-bold">' + analysis.betterThanDirect.length + '</div><div class="text-[#555]">of ' + analysis.hubs.length + ' beat direct</div></div>'
+    + (analysis.bestHub ? '<div class="panel p-2"><div class="text-[#666]">Best hub</div><div class="text-lg font-bold ' + riskClass(analysis.bestHub.statistical) + '">' + analysis.bestHub.hub.code + '</div><div class="text-[#555]">Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ' SRI</div></div>' : '<div class="panel p-2"><div class="text-[#666]">Best hub</div><div>—</div></div>')
     + '</div>';
 
-  let html = '<table class="text-[10px] w-full"><thead class="text-[#666]"><tr>'
-    + '<th>ROUTE</th><th>LEG 1</th><th>LEG 2</th><th>SRI</th><th>SAFE</th><th>LINEAR</th><th>Δ SRI</th><th>VERDICT</th></tr></thead><tbody>';
+  if (sriMath && route?.stats) {
+    const s = route.stats;
+    sriMath.innerHTML = '<div class="label mb-2">SRI MODEL — ' + route.hub.code + ' (' + route.hub.name + ')</div>'
+      + '<div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">'
+      + [
+        ['RSS √(leg₁² + leg₂²)', s.rss, '58% weight — vector blend of both legs'],
+        ['Union (sequential exposure)', s.union, '27% weight — compounded checkpoint risk'],
+        ['Max leg (worst checkpoint)', s.maxLeg, '15% weight — single spike floor'],
+        ['Chain penalty', '+' + s.chainPenalty, 'Two customs events'],
+        ['Hub bonus', s.hubBonus ? '−' + s.hubBonus : '0', 'Chapter / strength fit at hub'],
+        ['Linear sum (reference only)', s.linearSum, 'leg₁ + leg₂ − bonus — not used as SRI'],
+        ['→ Statistical SRI', s.statistical, s.explain || ''],
+      ].map(([k, v, note]) => '<div class="flex justify-between gap-2"><span class="text-[#aaa]">' + k + '</span><span class="font-medium shrink-0">' + v + '</span></div>'
+        + (note ? '<div class="text-[#555] mb-1 col-span-1 md:col-span-2">' + note + '</div>' : '')).join('')
+      + '</div>'
+      + '<div class="mt-2 text-[#666] border-t border-[#333] pt-2">' + route.corridor + ' · ~' + route.transitDays + 'd transit · ' + (route.ukDutyNote || '') + '</div>';
+  } else if (sriMath) {
+    sriMath.innerHTML = '<div class="text-[#666]">Select a hub to view SRI calculation.</div>';
+  }
+
+  let html = '<table class="text-[10px] w-full"><thead class="text-[#666] sticky top-0 bg-[#111]"><tr>'
+    + '<th>HUB</th><th>LEG 1</th><th>LEG 2</th><th>SRI</th><th>SAFE</th><th>Δ</th><th>VERDICT</th></tr></thead><tbody>';
 
   html += '<tr class="border-b border-[#333] bg-[#0d1a0d]">'
-    + '<td class="py-1 font-semibold">JFK → UK direct</td>'
+    + '<td class="py-1 font-semibold">Direct JFK→UK</td>'
     + '<td>—</td><td>—</td>'
     + '<td class="font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</td>'
-    + '<td>' + analysis.directSafety + '</td><td>—</td>'
+    + '<td>' + analysis.directSafety + '</td>'
     + '<td>0</td><td class="risk-low">BASELINE</td></tr>';
 
   analysis.hubs.forEach((h, i) => {
-    const rowCls = h.statistical < analysis.directSRI ? 'border-b border-[#222] bg-[#141a14]' : 'border-b border-[#222]';
+    const selected = h.hub.code === code;
+    const rowCls = (selected ? 'border-b border-[#2a4a2a] bg-[#0d1a0d] ' : h.statistical < analysis.directSRI ? 'border-b border-[#222] bg-[#141a14] ' : 'border-b border-[#222] ');
     const highlight = i === 0 && h.statistical < analysis.directSRI ? ' ★' : '';
-    html += '<tr class="' + rowCls + '">'
-      + '<td class="py-1 max-w-[120px]" title="' + h.route + '">' + h.hub.flag + ' ' + h.hub.code + highlight + '</td>'
+    html += '<tr class="' + rowCls + (selected ? 'font-semibold' : '') + '" style="cursor:pointer" onclick="document.getElementById(\'reroute-hub-select\').value=\'' + h.hub.code + '\';onRerouteHubChange();">'
+      + '<td class="py-1" title="' + h.route + '">' + h.hub.flag + ' ' + h.hub.code + highlight + (selected ? ' ◀' : '') + '</td>'
       + '<td class="' + riskClass(h.leg1.score) + '">' + h.leg1.score + '</td>'
       + '<td class="' + riskClass(h.leg2.score) + '">' + h.leg2.score + '</td>'
       + '<td class="font-bold ' + riskClass(h.statistical) + '">' + h.statistical + '</td>'
       + '<td>' + h.safetyIndex + '</td>'
-      + '<td class="text-[#666]">' + h.linearSum + '</td>'
       + '<td class="' + (h.delta < 0 ? 'risk-low' : h.delta > 4 ? 'risk-high' : '') + '">' + (h.delta >= 0 ? '+' : '') + h.delta + '</td>'
       + '<td class="' + routeVerdictClass(h.verdict) + '">' + h.verdict + '</td></tr>';
   });
   html += '</tbody></table>';
-
-  const best = analysis.bestHub;
-  if (best) {
-    html += '<div class="mt-3 panel p-2 text-[9px] text-[#888] space-y-1">'
-      + '<div class="label mb-1">BEST HUB DETAIL — ' + best.hub.name.toUpperCase() + '</div>'
-      + '<div>Corridor: ' + best.corridor + ' · Transit ~' + best.transitDays + 'd · EU duty ' + best.euDuty + '% · UK duty ' + best.ukDuty + '%</div>'
-      + '<div>Leg 1 agency: ' + best.hub.agency + ' · Entry ' + best.hub.entryAir + '/' + (best.hub.entrySea || '—') + '</div>'
-      + '<div>Leg 2: ' + best.leg2.exportSystem + ' → ' + best.leg2.ukEntry + ' · ' + best.leg2.notes + '</div>'
-      + '<div class="text-[#666]">' + (window.JURISDICTIONS.triangularModel.euOriginAssumption || '') + '</div></div>';
-  }
+  html += '<div class="text-[8px] text-[#555] mt-1">Click a row to select hub · Leg 2 = EU-origin TCA import (not US pass-through)</div>';
 
   body.innerHTML = html;
 }
@@ -522,6 +586,7 @@ window.RouteBloomberg = {
   analyzeRoutesForProduct,
   renderDetailReroute,
   renderRouteBloomberg,
+  formatGroupedBreakdown,
   scanBestTriangularRoutes,
   showRerouteLegsError,
 };
