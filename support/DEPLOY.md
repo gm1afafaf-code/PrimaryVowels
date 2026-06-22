@@ -9,7 +9,7 @@
 ## 2. Deploy to Vercel
 
 1. [vercel.com/new](https://vercel.com/new) → Import **PrimaryVowels** from GitHub
-2. **Root Directory** → `service` (click Edit)
+2. **Root Directory** → `support` (click Edit)
 3. **Environment Variables**:
 
 ```
@@ -23,7 +23,7 @@ FEDEX_ENV=sandbox
 
 ## 3. Connect the frontend
 
-Edit `service/config.js`:
+Edit `support/config.js`:
 
 ```javascript
 window.PV_API_URL = 'https://your-app.vercel.app';
@@ -38,7 +38,7 @@ curl "https://your-app.vercel.app/api/health"
 curl "https://your-app.vercel.app/api/track?trackingNumber=123456789012"
 ```
 
-Then visit [primaryvowels.com/service/](https://www.primaryvowels.com/service/) and track `123456789012`.
+Then visit [primaryvowels.com/support/](https://www.primaryvowels.com/support/) and track `123456789012`.
 
 ## Production
 
