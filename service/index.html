@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Package Tracker — PrimaryVowels</title>
+  <title>FedEx Tracker — PrimaryVowels</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,92 +18,57 @@
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/tracking/">Tracking</a></li>
-      <li><a href="/service/">Service</a></li>
+      <li><a href="/service/">FedEx</a></li>
     </ul>
   </nav>
 
   <section class="service-hero">
-    <span class="formula-badge">FedEx API + Grok</span>
-    <h1>FedEx Package Investigator</h1>
-    <p>
-      Enter a FedEx tracking number. We query your FedEx account via the official Track API,
-      then Grok analyzes scan history and explains why your package hasn't moved.
-      Stale shipments get automatic re-checks.
-    </p>
+    <span class="formula-badge">FedEx Developer API</span>
+    <h1>Package Tracker</h1>
+    <p>Full detailed tracking via the official FedEx Track API — every scan, delay, ETA, and delivery detail.</p>
     <div class="server-status">
       <span class="server-dot" id="server-dot"></span>
-      <span id="server-status-text">Checking agent server…</span>
+      <span id="server-status-text">Checking API…</span>
     </div>
   </section>
 
-  <div class="service-layout">
+  <div class="service-layout single-col">
     <div class="panel">
-      <h2>Track Package</h2>
-      <form id="investigate-form">
-        <div class="field">
+      <form id="track-form" class="track-form">
+        <div class="field" style="flex:1;margin-bottom:0">
           <label for="tracking">FedEx Tracking Number</label>
-          <input type="text" id="tracking" name="tracking" placeholder="e.g. 7946 1234 5678" required
+          <input type="text" id="tracking" placeholder="e.g. 7946 1234 5678" required
                  pattern="[0-9\s]{12,20}" autocomplete="off">
-          <p class="field-hint">12–15 digit FedEx tracking number</p>
         </div>
-        <div class="field">
-          <label for="context">What's wrong?</label>
-          <textarea id="context" name="context" placeholder="Package stuck in Memphis for 5 days, no scans since Tuesday…"></textarea>
-        </div>
-        <div class="field">
-          <label for="callback">Your Phone (for SMS updates)</label>
-          <input type="tel" id="callback" name="callback" placeholder="+1 555 123 4567">
-          <p class="field-hint">Optional — texts on findings, analysis, and completion</p>
-        </div>
-        <div class="field">
-          <label for="api-url">Agent Server URL</label>
-          <input type="url" id="api-url" name="api-url" placeholder="https://your-app.up.railway.app">
-          <p class="field-hint">Deploy <code>service/server</code> to Railway — auto-fills from config.js</p>
-        </div>
-        <div class="btn-row">
-          <button type="submit" class="btn" id="start-btn">Investigate Package</button>
-        </div>
+        <button type="submit" class="btn" id="track-btn">Track</button>
       </form>
-
-      <div class="arch-diagram">
-        <span class="highlight">Flow:</span> Browser → Agent Server → FedEx Track API (your account)<br>
-        FedEx scan data → Grok analysis → findings + SMS
-      </div>
-    </div>
-
-    <div class="panel">
-      <h2>Investigation Status</h2>
-      <div id="status-area">
-        <div class="empty-state">No active investigation. Enter a tracking number to begin.</div>
-      </div>
-      <div id="summary-area" style="margin-top:1rem;font-size:0.9rem;color:#a0a0b8;line-height:1.6"></div>
+      <p class="field-hint" style="margin-top:0.75rem">Sandbox test: <code>123456789012</code></p>
     </div>
   </div>
 
-  <div class="service-layout" style="padding-top:0">
-    <div class="panel">
-      <h2>Activity Log</h2>
-      <div class="transcript" id="transcript">
-        <div class="empty-state">Activity will appear here during investigation.</div>
+  <div id="results" class="results hidden">
+    <div class="service-layout">
+      <div class="panel">
+        <div id="status-header"></div>
+        <div class="detail-grid" id="details"></div>
+      </div>
+      <div class="panel">
+        <h2>Shipment Info</h2>
+        <div class="detail-grid" id="shipment-info"></div>
       </div>
     </div>
-    <div class="panel">
-      <h2>Findings</h2>
-      <ul class="findings-list" id="findings">
-        <li class="empty-state" style="list-style:none">Status, location, delays, and Grok analysis appear here.</li>
-      </ul>
+    <div class="service-layout" style="padding-top:0">
+      <div class="panel" style="grid-column:1/-1">
+        <h2>Scan History <span id="scan-count" class="scan-count"></span></h2>
+        <div class="timeline" id="timeline"></div>
+      </div>
     </div>
   </div>
 
-  <div class="service-layout" style="padding-top:0">
-    <div class="panel" style="grid-column: 1 / -1">
-      <h2>Past Investigations</h2>
-      <div id="history"></div>
-    </div>
-  </div>
+  <div id="error-area" class="error-banner hidden"></div>
 
   <footer>
-    <p>PrimaryVowels Package Tracker — FedEx Track API &amp; Grok</p>
+    <p>PrimaryVowels — FedEx Track API</p>
   </footer>
 
   <script src="config.js"></script>

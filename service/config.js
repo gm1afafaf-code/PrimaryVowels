@@ -1,3 +1,3 @@
-// Railway agent server URL — set after deploying service/server to Railway
-// Example: https://pv-fedex-agent-production.up.railway.app
-window.PV_AGENT_URL = '';
+// Set to your Vercel deployment URL after deploying the service/ folder
+// Example: https://pv-fedex-tracker.vercel.app
+window.PV_API_URL = '';

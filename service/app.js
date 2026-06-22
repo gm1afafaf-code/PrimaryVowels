@@ -1,6 +1,3 @@
-const STORAGE_KEY = 'pv-fedex-investigations';
-const API_URL_KEY = 'pv-agent-api-url';
-
 const $ = (sel) => document.querySelector(sel);
 
 function normalizeTracking(raw) {
@@ -8,253 +5,165 @@ function normalizeTracking(raw) {
 }
 
 function getApiBase() {
-  const input = $('#api-url').value.trim();
-  if (input) {
-    localStorage.setItem(API_URL_KEY, input.replace(/\/$/, ''));
-    return input.replace(/\/$/, '');
-  }
-  const stored = localStorage.getItem(API_URL_KEY);
-  if (stored) return stored;
-  if (window.PV_AGENT_URL) return window.PV_AGENT_URL.replace(/\/$/, '');
+  if (window.PV_API_URL) return window.PV_API_URL.replace(/\/$/, '');
   return '';
 }
 
-function loadHistory() {
+function escapeHtml(str) {
+  return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return new Date(iso).toLocaleString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+    });
   } catch {
-    return [];
+    return iso;
   }
 }
 
-function saveHistory(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(0, 20)));
+function statusClass(code, isDelayed) {
+  if (code === 'DL') return 'delivered';
+  if (isDelayed) return 'delayed';
+  if (code === 'IT') return 'transit';
+  return 'default';
 }
 
-function statusBadge(status) {
-  const labels = {
-    queued: 'Queued',
-    checking: 'Querying FedEx API…',
-    analyzing: 'Grok analyzing…',
-    calling: 'Calling FedEx…',
-    'on-call': 'On Call',
-    complete: 'Complete',
-    followup: 'Monitoring — re-check scheduled',
-    error: 'Error',
-  };
-  return `<span class="status-badge status-${status}">${labels[status] || status}</span>`;
-}
+function renderResult(data) {
+  $('#error-area').classList.add('hidden');
+  $('#results').classList.remove('hidden');
 
-function renderStatus(inv) {
-  $('#status-area').innerHTML = `
-    ${statusBadge(inv.status)}
-    <div style="font-family:monospace;font-size:1.1rem;margin-bottom:0.5rem">${inv.trackingNumber}</div>
-    <div style="font-size:0.85rem;color:#7070a0">Started ${new Date(inv.createdAt).toLocaleString()}</div>
-    ${inv.lastUpdate ? `<div style="font-size:0.85rem;color:#7070a0;margin-top:0.25rem">Updated ${new Date(inv.lastUpdate).toLocaleString()}</div>` : ''}
-    ${inv.followupAt && inv.status === 'followup' ? `<div style="font-size:0.85rem;color:#eab308;margin-top:0.25rem">Re-check at ${new Date(inv.followupAt).toLocaleString()}</div>` : ''}
-    ${inv.error ? `<div style="color:#ef4444;font-size:0.85rem;margin-top:0.5rem">${inv.error}</div>` : ''}
+  const cls = statusClass(data.statusCode, data.isDelayed);
+  $('#status-header').innerHTML = `
+    <div class="status-header ${cls}">
+      <div class="status-code">${escapeHtml(data.status)}</div>
+      <div class="tracking-num">${escapeHtml(data.trackingNumber)}</div>
+      ${data.isDelayed ? '<span class="delay-tag">Delayed</span>' : ''}
+    </div>
   `;
 
-  const summaryEl = $('#summary-area');
-  if (inv.summary) {
-    summaryEl.innerHTML = `<strong style="color:#e8e8f0">Grok analysis:</strong><br>${escapeHtml(inv.summary)}`;
-  } else {
-    summaryEl.innerHTML = '';
-  }
-}
+  const details = [
+    ['Service', data.service],
+    ['Estimated delivery', fmtDate(data.estimatedDelivery)],
+    ['Delivered', fmtDate(data.actualDelivery)],
+    ['Days since last scan', data.daysSinceLastScan ?? '—'],
+    ['Delay reason', data.delayReason],
+    ['Last scan', data.lastScan ? `${data.lastScan.description} — ${data.lastScan.location}` : null],
+  ].filter(([, v]) => v);
 
-function renderTranscript(entries) {
-  const el = $('#transcript');
-  if (!entries || entries.length === 0) {
-    el.innerHTML = '<div class="empty-state">Activity will appear here during investigation.</div>';
-    return;
-  }
-  el.innerHTML = entries.map((e) => `
-    <div class="transcript-entry ${e.role}">
-      <div class="role">${e.role}</div>
-      <div>${escapeHtml(e.text)}</div>
-    </div>
-  `).join('');
-  el.scrollTop = el.scrollHeight;
-}
-
-function renderFindings(findings) {
-  const el = $('#findings');
-  if (!findings || findings.length === 0) {
-    el.innerHTML = '<li class="empty-state" style="list-style:none">Status, location, delays, and Grok analysis appear here.</li>';
-    return;
-  }
-  el.innerHTML = findings.map((f) => `
-    <li>
-      <div><span style="color:#7070a0;font-size:0.75rem;text-transform:uppercase">${escapeHtml(f.category)}</span><br>${escapeHtml(f.text)}</div>
-      <div class="time">${new Date(f.at).toLocaleString()}</div>
-    </li>
-  `).join('');
-}
-
-function renderHistory(items, activeId) {
-  const el = $('#history');
-  if (items.length === 0) {
-    el.innerHTML = '<div class="empty-state">No past investigations yet.</div>';
-    return;
-  }
-  el.innerHTML = items.map((inv) => `
-    <div class="investigation-card ${inv.id === activeId ? 'active' : ''}" data-id="${inv.id}">
-      <div class="tracking">${inv.trackingNumber}</div>
-      <div class="meta">${statusBadge(inv.status)} · ${new Date(inv.createdAt).toLocaleDateString()}</div>
+  $('#details').innerHTML = details.map(([k, v]) => `
+    <div class="detail-item">
+      <div class="detail-label">${k}</div>
+      <div class="detail-value">${escapeHtml(v)}</div>
     </div>
   `).join('');
 
-  el.querySelectorAll('.investigation-card').forEach((card) => {
-    card.addEventListener('click', () => selectInvestigation(card.dataset.id));
-  });
+  const info = [
+    ['Shipper', data.shipper],
+    ['Recipient', data.recipient],
+    ['Weight', data.weight],
+    ['Packaging', data.packaging],
+    ['Shipped', fmtDate(data.shipped)],
+    ['Delivery attempts', data.deliveryAttempts],
+    ['Received by', data.receivedBy],
+    ['Special handling', data.specialHandling?.join(', ')],
+  ].filter(([, v]) => v);
+
+  $('#shipment-info').innerHTML = info.length
+    ? info.map(([k, v]) => `
+        <div class="detail-item">
+          <div class="detail-label">${k}</div>
+          <div class="detail-value">${escapeHtml(v)}</div>
+        </div>
+      `).join('')
+    : '<div class="empty-state">No additional shipment details</div>';
+
+  $('#scan-count').textContent = `(${data.scanCount} events)`;
+
+  $('#timeline').innerHTML = data.scans.length
+    ? data.scans.map((s, i) => `
+        <div class="timeline-item ${i === 0 ? 'latest' : ''}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-date">${fmtDate(s.date)}</div>
+            <div class="timeline-desc">${escapeHtml(s.description)}</div>
+            <div class="timeline-loc">${escapeHtml(s.location)}${s.facility ? ` · ${escapeHtml(s.facility)}` : ''}</div>
+            ${s.exception ? `<div class="timeline-exception">${escapeHtml(s.exception)}</div>` : ''}
+            ${s.delay ? `<div class="timeline-delay">Delay: ${escapeHtml([s.delay.type, s.delay.subtype].filter(Boolean).join(' — '))}</div>` : ''}
+          </div>
+        </div>
+      `).join('')
+    : '<div class="empty-state">No scan events</div>';
+
+  $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function showError(msg) {
+  $('#results').classList.add('hidden');
+  $('#error-area').textContent = msg;
+  $('#error-area').classList.remove('hidden');
 }
 
-let pollTimer = null;
-let activeId = null;
-
-async function checkServer() {
+async function checkApi() {
   const base = getApiBase();
   const dot = $('#server-dot');
   const text = $('#server-status-text');
   if (!base) {
     dot.className = 'server-dot offline';
-    text.textContent = 'Agent server not configured — enter URL above';
+    text.textContent = 'API URL not set in config.js';
     return false;
   }
   try {
-    const res = await fetch(`${base}/health`, { signal: AbortSignal.timeout(5000) });
-    if (res.ok) {
-      const data = await res.json();
+    const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(5000) });
+    const data = await res.json();
+    if (res.ok && data.fedexApi) {
       dot.className = 'server-dot online';
-      const extras = [];
-      if (data.fedexApi) extras.push('FedEx API');
-      if (data.grok) extras.push('Grok');
-      if (data.sms) extras.push('SMS');
-      text.textContent = `Server online — ${base}${extras.length ? ` (${extras.join(', ')})` : ''}`;
+      text.textContent = `FedEx API ready (${data.env})`;
       return true;
     }
-  } catch { /* offline */ }
-  dot.className = 'server-dot offline';
-  text.textContent = `Server offline — ${base}`;
-  return false;
+    dot.className = 'server-dot offline';
+    text.textContent = data.fedexApi ? 'API reachable' : 'FedEx credentials not configured on server';
+    return false;
+  } catch {
+    dot.className = 'server-dot offline';
+    text.textContent = `Cannot reach API at ${base}`;
+    return false;
+  }
 }
 
-async function startInvestigation(e) {
+async function track(e) {
   e.preventDefault();
   const tracking = normalizeTracking($('#tracking').value);
   if (tracking.length < 12) {
-    alert('Please enter a valid FedEx tracking number (12+ digits).');
+    showError('Enter a valid 12–15 digit FedEx tracking number.');
     return;
   }
 
   const base = getApiBase();
   if (!base) {
-    alert('Please enter your agent server URL. Deploy service/server to Railway first.');
+    showError('Set PV_API_URL in service/config.js to your Vercel deployment URL.');
     return;
   }
 
-  const btn = $('#start-btn');
+  const btn = $('#track-btn');
   btn.disabled = true;
-  btn.textContent = 'Investigating…';
+  btn.textContent = 'Tracking…';
 
   try {
-    const res = await fetch(`${base}/api/investigate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        trackingNumber: tracking,
-        context: $('#context').value.trim(),
-        callbackPhone: $('#callback').value.trim() || undefined,
-      }),
-    });
-
+    const res = await fetch(`${base}/api/track?trackingNumber=${tracking}`);
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to start investigation');
-
-    activeId = data.id;
-    const history = loadHistory();
-    history.unshift(data);
-    saveHistory(history);
-    renderStatus(data);
-    renderHistory(history, activeId);
-    startPolling();
+    if (!res.ok) throw new Error(data.error || 'Lookup failed');
+    renderResult(data);
   } catch (err) {
-    alert(err.message);
+    showError(err.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Investigate Package';
+    btn.textContent = 'Track';
   }
 }
 
-async function pollInvestigation() {
-  if (!activeId) return;
-  const base = getApiBase();
-  if (!base) return;
-
-  try {
-    const res = await fetch(`${base}/api/investigations/${activeId}`);
-    if (!res.ok) return;
-    const inv = await res.json();
-    renderStatus(inv);
-    renderTranscript(inv.transcript);
-    renderFindings(inv.findings);
-
-    const history = loadHistory();
-    const idx = history.findIndex((h) => h.id === inv.id);
-    if (idx >= 0) history[idx] = { ...history[idx], ...inv };
-    saveHistory(history);
-    renderHistory(history, activeId);
-
-    if (['complete', 'error', 'followup'].includes(inv.status)) {
-      stopPolling();
-    }
-  } catch { /* retry next tick */ }
-}
-
-function startPolling() {
-  stopPolling();
-  pollTimer = setInterval(pollInvestigation, 1500);
-  pollInvestigation();
-}
-
-function stopPolling() {
-  if (pollTimer) {
-    clearInterval(pollTimer);
-    pollTimer = null;
-  }
-}
-
-function selectInvestigation(id) {
-  activeId = id;
-  const inv = loadHistory().find((h) => h.id === id);
-  if (inv) {
-    renderStatus(inv);
-    renderTranscript(inv.transcript || []);
-    renderFindings(inv.findings || []);
-    renderHistory(loadHistory(), activeId);
-    if (!['complete', 'error', 'followup'].includes(inv.status)) startPolling();
-    else stopPolling();
-  }
-}
-
-function init() {
-  const savedUrl = localStorage.getItem(API_URL_KEY) || window.PV_AGENT_URL || '';
-  if (savedUrl) $('#api-url').value = savedUrl;
-
-  $('#investigate-form').addEventListener('submit', startInvestigation);
-  $('#api-url').addEventListener('change', checkServer);
-
-  const history = loadHistory();
-  renderHistory(history, null);
-  if (history.length > 0) selectInvestigation(history[0].id);
-
-  checkServer();
-  setInterval(checkServer, 30000);
-}
-
-init();
+$('#track-form').addEventListener('submit', track);
+checkApi();
