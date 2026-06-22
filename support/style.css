@@ -300,3 +300,108 @@
 .server-dot.online { background: #22c55e; }
 .server-dot.sandbox { background: #f59e0b; }
 .server-dot.offline { background: #ef4444; }
+
+.status-meta {
+  font-size: 0.8rem;
+  color: #7070a0;
+  margin-top: 0.35rem;
+}
+
+.sections-stack {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.api-section h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a78bfa;
+}
+
+.section-hint {
+  font-size: 0.8rem;
+  color: #505070;
+  margin: -0.5rem 0 1rem;
+}
+
+.detail-item-full { grid-column: 1 / -1; }
+
+.nested-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nested-block {
+  background: #0a0a0f;
+  border: 1px solid #1e1e30;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+}
+
+.nested-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7070a0;
+  margin-bottom: 0.5rem;
+}
+
+.nested-grid {
+  margin-top: 0.25rem;
+}
+
+.detail-value.muted { color: #505070; }
+
+.scan-fields {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.scan-field {
+  background: #0a0a0f;
+  border: 1px solid #1e1e30;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+}
+
+.scan-field-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #505070;
+  margin-bottom: 0.15rem;
+}
+
+.scan-field-value {
+  font-size: 0.85rem;
+  color: #c8c8d8;
+  line-height: 1.4;
+}
+
+.scan-field-nested { margin-top: 0.25rem; }
+
+.raw-json {
+  background: #0a0a0f;
+  border: 1px solid #1e1e30;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: #a0a0b8;
+  max-height: 600px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

@@ -1,7 +1,31 @@
-// API on Vercel; UI on GitHub Pages at primaryvowels.com/support
 const FEDEX_API_BASE = 'https://primaryvowels-support.vercel.app';
 
 const $ = (sel) => document.querySelector(sel);
+
+const API_SECTIONS = [
+  ['Tracking Number Info', 'trackingNumberInfo'],
+  ['Latest Status', 'latestStatusDetail'],
+  ['Dates & Times', 'dateAndTimes'],
+  ['Service', 'serviceDetail'],
+  ['Service Commit Message', 'serviceCommitMessage'],
+  ['Standard Transit Window', 'standardTransitTimeWindow'],
+  ['Estimated Delivery Window', 'estimatedDeliveryTimeWindow'],
+  ['Shipper', 'shipperInformation'],
+  ['Recipient', 'recipientInformation'],
+  ['Origin Location', 'originLocation'],
+  ['Hold At Location', 'holdAtLocation'],
+  ['Last Updated Destination', 'lastUpdatedDestinationAddress'],
+  ['Package Details', 'packageDetails'],
+  ['Shipment Details', 'shipmentDetails'],
+  ['Delivery Details', 'deliveryDetails'],
+  ['Custom Delivery Options', 'customDeliveryOptions'],
+  ['Special Handlings', 'specialHandlings'],
+  ['Additional Tracking Info', 'additionalTrackingInfo'],
+  ['Available Notifications', 'availableNotifications'],
+  ['Available Images', 'availableImages'],
+  ['Return Detail', 'returnDetail'],
+  ['Goods Classification', 'goodsClassificationCode'],
+];
 
 function normalizeTracking(raw) {
   return raw.replace(/\s+/g, '').replace(/[^0-9]/g, '');
@@ -28,11 +52,115 @@ function fmtDate(iso) {
   }
 }
 
+function labelize(key) {
+  return String(key)
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function isEmpty(value) {
+  if (value === null || value === undefined || value === '') return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === 'object') return Object.keys(value).length === 0;
+  return false;
+}
+
+function formatPrimitive(value) {
+  if (value === null || value === undefined) return '—';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) return fmtDate(value);
+  return String(value);
+}
+
+function renderValue(value, depth = 0) {
+  if (value === null || value === undefined) {
+    return '<span class="detail-value muted">—</span>';
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '<span class="detail-value muted">Empty</span>';
+    if (value.every((item) => item === null || typeof item !== 'object')) {
+      return `<span class="detail-value">${escapeHtml(value.map(formatPrimitive).join(', '))}</span>`;
+    }
+    return `<div class="nested-list">${value.map((item, index) => `
+      <div class="nested-block">
+        <div class="nested-title">${index + 1}</div>
+        ${renderValue(item, depth + 1)}
+      </div>
+    `).join('')}</div>`;
+  }
+
+  if (typeof value === 'object') {
+    const entries = Object.entries(value);
+    if (entries.length === 0) return '<span class="detail-value muted">Empty</span>';
+    return `<div class="detail-grid ${depth > 0 ? 'nested-grid' : ''}">
+      ${entries.map(([key, val]) => {
+        const primitive = val === null || val === undefined || typeof val !== 'object';
+        const flat = primitive || (Array.isArray(val) && val.every((item) => item === null || typeof item !== 'object'));
+        if (flat) {
+          return `<div class="detail-item">
+            <div class="detail-label">${escapeHtml(labelize(key))}</div>
+            <div class="detail-value">${escapeHtml(formatPrimitive(val))}</div>
+          </div>`;
+        }
+        return `<div class="detail-item detail-item-full">
+          <div class="detail-label">${escapeHtml(labelize(key))}</div>
+          ${renderValue(val, depth + 1)}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  return `<span class="detail-value">${escapeHtml(formatPrimitive(value))}</span>`;
+}
+
+function renderSection(title, data) {
+  if (isEmpty(data)) return '';
+  return `
+    <div class="panel api-section">
+      <h2>${escapeHtml(title)}</h2>
+      ${renderValue(data)}
+    </div>
+  `;
+}
+
 function statusClass(code, isDelayed) {
   if (code === 'DL') return 'delivered';
   if (isDelayed) return 'delayed';
   if (code === 'IT') return 'transit';
   return 'default';
+}
+
+function renderScanTimeline(scans) {
+  if (!scans?.length) return '<div class="empty-state">No scan events</div>';
+  return scans.map((s, i) => {
+    const fields = Object.entries(s)
+      .filter(([, v]) => !isEmpty(v))
+      .map(([k, v]) => {
+        if (typeof v === 'object') {
+          return `<div class="scan-field">
+            <span class="scan-field-label">${escapeHtml(labelize(k))}</span>
+            <div class="scan-field-nested">${renderValue(v, 1)}</div>
+          </div>`;
+        }
+        return `<div class="scan-field">
+          <span class="scan-field-label">${escapeHtml(labelize(k))}</span>
+          <span class="scan-field-value">${escapeHtml(formatPrimitive(v))}</span>
+        </div>`;
+      }).join('');
+
+    return `
+      <div class="timeline-item ${i === 0 ? 'latest' : ''}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-date">${fmtDate(s.date)}</div>
+          <div class="timeline-desc">${escapeHtml(s.eventDescription || s.description || 'Scan')}</div>
+          <div class="scan-fields">${fields}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderResult(data) {
@@ -48,62 +176,26 @@ function renderResult(data) {
     <div class="status-header ${cls}">
       <div class="status-code">${escapeHtml(data.status)}</div>
       <div class="tracking-num">${escapeHtml(data.trackingNumber)}</div>
+      ${data.statusCode ? `<div class="status-meta">Code: ${escapeHtml(data.statusCode)} · ${data.scanCount} scan events</div>` : ''}
       ${data.isDelayed ? '<span class="delay-tag">Delayed</span>' : ''}
     </div>
   `;
 
-  const details = [
-    ['Service', data.service],
-    ['Estimated delivery', fmtDate(data.estimatedDelivery)],
-    ['Delivered', fmtDate(data.actualDelivery)],
-    ['Days since last scan', data.daysSinceLastScan ?? '—'],
-    ['Delay reason', data.delayReason],
-    ['Last scan', data.lastScan ? `${data.lastScan.description} — ${data.lastScan.location}` : null],
-  ].filter(([, v]) => v);
-
-  $('#details').innerHTML = details.map(([k, v]) => `
-    <div class="detail-item">
-      <div class="detail-label">${k}</div>
-      <div class="detail-value">${escapeHtml(v)}</div>
-    </div>
-  `).join('');
-
-  const info = [
-    ['Shipper', data.shipper],
-    ['Recipient', data.recipient],
-    ['Weight', data.weight],
-    ['Packaging', data.packaging],
-    ['Shipped', fmtDate(data.shipped)],
-    ['Delivery attempts', data.deliveryAttempts],
-    ['Received by', data.receivedBy],
-    ['Special handling', data.specialHandling?.join(', ')],
-  ].filter(([, v]) => v);
-
-  $('#shipment-info').innerHTML = info.length
-    ? info.map(([k, v]) => `
-        <div class="detail-item">
-          <div class="detail-label">${k}</div>
-          <div class="detail-value">${escapeHtml(v)}</div>
-        </div>
-      `).join('')
-    : '<div class="empty-state">No additional shipment details</div>';
-
   $('#scan-count').textContent = `(${data.scanCount} events)`;
+  $('#timeline').innerHTML = renderScanTimeline(data.scanEvents);
 
-  $('#timeline').innerHTML = data.scans.length
-    ? data.scans.map((s, i) => `
-        <div class="timeline-item ${i === 0 ? 'latest' : ''}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <div class="timeline-date">${fmtDate(s.date)}</div>
-            <div class="timeline-desc">${escapeHtml(s.description)}</div>
-            <div class="timeline-loc">${escapeHtml(s.location)}${s.facility ? ` · ${escapeHtml(s.facility)}` : ''}</div>
-            ${s.exception ? `<div class="timeline-exception">${escapeHtml(s.exception)}</div>` : ''}
-            ${s.delay ? `<div class="timeline-delay">Delay: ${escapeHtml([s.delay.type, s.delay.subtype].filter(Boolean).join(' — '))}</div>` : ''}
-          </div>
-        </div>
-      `).join('')
-    : '<div class="empty-state">No scan events</div>';
+  const sections = API_SECTIONS
+    .map(([title, key]) => renderSection(title, data[key]))
+    .filter(Boolean)
+    .join('');
+
+  $('#all-sections').innerHTML = sections + `
+    <div class="panel api-section raw-section">
+      <h2>Complete FedEx API Response</h2>
+      <p class="section-hint">Unmodified JSON returned by FedEx Track API for this lookup.</p>
+      <pre class="raw-json">${escapeHtml(JSON.stringify(data.raw, null, 2))}</pre>
+    </div>
+  `;
 
   $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

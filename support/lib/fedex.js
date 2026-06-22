@@ -44,10 +44,30 @@ function formatWeight(packageDetails) {
   return unit ? `${primary.value} ${unit}` : String(primary.value);
 }
 
+function formatDimensions(packageDetails) {
+  const raw = packageDetails?.weightAndDimensions?.dimensions;
+  if (!raw) return null;
+  const dims = Array.isArray(raw) ? raw : [raw];
+  const primary = dims.find((d) => d.units === "IN") || dims[0];
+  if (!primary?.length) return null;
+  const { length, width, height, units } = primary;
+  return `${length} × ${width} × ${height} ${units || ""}`.trim();
+}
+
 function parseScan(s) {
   return {
     date: s.date || "",
-    type: s.eventType || "",
+    eventType: s.eventType || "",
+    eventDescription: s.eventDescription || "",
+    exceptionCode: s.exceptionCode || null,
+    exceptionDescription: s.exceptionDescription || null,
+    scanLocation: s.scanLocation || null,
+    locationId: s.locationId || null,
+    locationType: s.locationType || null,
+    derivedStatusCode: s.derivedStatusCode || "",
+    derivedStatus: s.derivedStatus || "",
+    delayDetail: s.delayDetail || null,
+    ancillaryDetails: s.ancillaryDetails || null,
     description: s.eventDescription || s.derivedStatus || s.eventType || "Scan",
     status: s.derivedStatus || "",
     location: formatLocation(s),
@@ -94,8 +114,6 @@ export function parseTrackResult(trackingNumber, trackResult) {
     delayReason = latest.description;
   }
 
-  const edtw = trackResult?.estimatedDeliveryTimeWindow?.window;
-
   return {
     trackingNumber,
     status: latest.statusByLocale || latest.description || "Unknown",
@@ -105,12 +123,12 @@ export function parseTrackResult(trackingNumber, trackResult) {
     shipper: formatAddress(trackResult?.shipperInformation?.address),
     recipient: formatAddress(trackResult?.recipientInformation?.address),
     weight: formatWeight(trackResult?.packageDetails),
+    dimensions: formatDimensions(trackResult?.packageDetails),
     packaging: trackResult?.packageDetails?.packagingDescription?.description,
     shipped,
     estimatedDelivery,
-    estimatedDeliveryWindow: edtw?.begins && edtw?.ends
-      ? { begins: edtw.begins, ends: edtw.ends }
-      : null,
+    estimatedDeliveryWindow: trackResult?.estimatedDeliveryTimeWindow || null,
+    standardTransitTimeWindow: trackResult?.standardTransitTimeWindow || null,
     actualDelivery,
     isDelayed,
     delayReason,
@@ -120,7 +138,30 @@ export function parseTrackResult(trackingNumber, trackResult) {
     scanCount: scans.length,
     deliveryAttempts: trackResult?.deliveryDetails?.deliveryAttempts,
     receivedBy: trackResult?.deliveryDetails?.receivedByName,
-    specialHandling: trackResult?.specialHandlings?.map((h) => h.description).filter(Boolean) || [],
+
+    trackingNumberInfo: trackResult?.trackingNumberInfo || null,
+    additionalTrackingInfo: trackResult?.additionalTrackingInfo || null,
+    shipperInformation: trackResult?.shipperInformation || null,
+    recipientInformation: trackResult?.recipientInformation || null,
+    latestStatusDetail: trackResult?.latestStatusDetail || null,
+    dateAndTimes: trackResult?.dateAndTimes || [],
+    availableImages: trackResult?.availableImages || [],
+    specialHandlings: trackResult?.specialHandlings || [],
+    packageDetails: trackResult?.packageDetails || null,
+    shipmentDetails: trackResult?.shipmentDetails || null,
+    scanEvents: scans,
+    availableNotifications: trackResult?.availableNotifications || [],
+    deliveryDetails: trackResult?.deliveryDetails || null,
+    originLocation: trackResult?.originLocation || null,
+    holdAtLocation: trackResult?.holdAtLocation || null,
+    lastUpdatedDestinationAddress: trackResult?.lastUpdatedDestinationAddress || null,
+    serviceCommitMessage: trackResult?.serviceCommitMessage || null,
+    serviceDetail: trackResult?.serviceDetail || null,
+    customDeliveryOptions: trackResult?.customDeliveryOptions || [],
+    goodsClassificationCode: trackResult?.goodsClassificationCode || null,
+    returnDetail: trackResult?.returnDetail || null,
+    raw: trackResult,
+
     sandbox: FEDEX_ENV !== "production",
     sandboxNotice:
       FEDEX_ENV !== "production"

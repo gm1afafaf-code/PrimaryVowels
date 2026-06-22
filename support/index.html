@@ -25,7 +25,7 @@
   <section class="service-hero">
     <span class="formula-badge">FedEx Developer API</span>
     <h1>Package Support</h1>
-    <p>Track your FedEx shipment with full scan history, delays, ETAs, and delivery details via the official FedEx Developer API.</p>
+    <p>Track your FedEx shipment — every field returned by the official FedEx Track API, including scans, locations, delivery options, and the complete raw response.</p>
     <div class="server-status">
       <span class="server-dot" id="server-dot"></span>
       <span id="server-status-text">Checking API…</span>
@@ -47,22 +47,16 @@
   </div>
 
   <div id="results" class="results hidden">
-    <div class="service-layout">
-      <div class="panel">
-        <div id="status-header"></div>
-        <div class="detail-grid" id="details"></div>
-      </div>
-      <div class="panel">
-        <h2>Shipment Info</h2>
-        <div class="detail-grid" id="shipment-info"></div>
-      </div>
+    <div class="service-layout single-col" style="padding-bottom:1rem">
+      <div class="panel" id="status-header"></div>
     </div>
-    <div class="service-layout" style="padding-top:0">
+    <div class="service-layout" style="padding-top:0;padding-bottom:1rem">
       <div class="panel" style="grid-column:1/-1">
-        <h2>Scan History <span id="scan-count" class="scan-count"></span></h2>
+        <h2>Scan Events <span id="scan-count" class="scan-count"></span></h2>
         <div class="timeline" id="timeline"></div>
       </div>
     </div>
+    <div id="all-sections" class="sections-stack"></div>
   </div>
 
   <div id="error-area" class="error-banner hidden"></div>
