@@ -368,7 +368,7 @@ const BREAKDOWN_GROUPS = [
 ];
 
 function formatGroupedBreakdown(bd, labels, legScore) {
-  if (!bd || typeof bd !== 'object') return '<div class="text-[#666]">No breakdown available.</div>';
+  if (!bd || typeof bd !== 'object') return '<div class="text-[#4b5563]">No breakdown available.</div>';
 
   const sections = [];
   let totalShown = 0;
@@ -380,13 +380,13 @@ function formatGroupedBreakdown(bd, labels, legScore) {
         const v = bd[k];
         totalShown += v;
         const label = labels?.[k] || k;
-        return '<div class="flex justify-between py-0.5"><span class="text-[#aaa]">' + label + '</span><span class="font-medium">+' + v + '</span></div>';
+        return '<div class="flex justify-between py-0.5"><span class="text-[#6b7280]">' + label + '</span><span class="font-medium">+' + v + '</span></div>';
       });
     if (!rows.length) return;
     const subtotal = group.keys.reduce((s, k) => s + (bd[k] || 0), 0);
     sections.push(
       '<div class="mb-2">'
-      + '<div class="text-[9px] text-[#666] uppercase tracking-wide mb-1">' + group.label + ' <span class="text-[#555]">(' + subtotal + ')</span></div>'
+      + '<div class="text-[9px] text-[#4b5563] uppercase tracking-wide mb-1">' + group.label + ' <span class="text-[#6b7280]">(' + subtotal + ')</span></div>'
       + rows.join('')
       + '</div>'
     );
@@ -397,21 +397,21 @@ function formatGroupedBreakdown(bd, labels, legScore) {
     const rows = orphanKeys.map(k => {
       totalShown += bd[k];
       const label = labels?.[k] || k;
-      return '<div class="flex justify-between py-0.5"><span class="text-[#aaa]">' + label + '</span><span class="font-medium">+' + bd[k] + '</span></div>';
+      return '<div class="flex justify-between py-0.5"><span class="text-[#6b7280]">' + label + '</span><span class="font-medium">+' + bd[k] + '</span></div>';
     }).join('');
-    sections.push('<div class="mb-2"><div class="text-[9px] text-[#666] uppercase tracking-wide mb-1">Other</div>' + rows + '</div>');
+    sections.push('<div class="mb-2"><div class="text-[9px] text-[#4b5563] uppercase tracking-wide mb-1">Other</div>' + rows + '</div>');
   }
 
   if (!sections.length) {
-    return '<div class="text-[#22c55e] py-2">✓ No risk factors flagged — clean match on this leg.</div>';
+    return '<div class="text-[#111827] py-2">✓ No risk factors flagged — clean match on this leg.</div>';
   }
 
   const header = legScore != null
-    ? '<div class="flex justify-between border-b border-[#333] pb-1 mb-2 font-semibold"><span>Leg score</span><span class="' + (typeof riskClass === 'function' ? riskClass(legScore) : '') + '">' + legScore + '</span></div>'
+    ? '<div class="flex justify-between border-b border-[#e5e7eb] pb-1 mb-2 font-semibold"><span>Leg score</span><span class="' + (typeof riskClass === 'function' ? riskClass(legScore) : '') + '">' + legScore + '</span></div>'
     : '';
 
   return header + sections.join('')
-    + '<div class="flex justify-between border-t border-[#333] pt-1 mt-1 text-[#888]"><span>Factors shown</span><span>' + totalShown + ' pts</span></div>';
+    + '<div class="flex justify-between border-t border-[#e5e7eb] pt-1 mt-1 text-[#6b7280]"><span>Factors shown</span><span>' + totalShown + ' pts</span></div>';
 }
 
 function populateRerouteHubSelect(analysis, selectedCode) {
@@ -429,7 +429,7 @@ function populateRerouteHubSelect(analysis, selectedCode) {
   sel.value = prev && analysis.hubs.some(h => h.hub.code === prev) ? prev : analysis.hubs[0]?.hub?.code;
 }
 
-function renderDetailReroute(analysis, product, hubCode) {
+function renderDetailReroute(analysis, product, hubCode, selectedScore) {
   if (!analysis?.hubs?.length) {
     showRerouteLegsError('No EU hub routes computed for this classification.');
     return;
@@ -443,9 +443,10 @@ function renderDetailReroute(analysis, product, hubCode) {
   }
 
   const directEl = document.getElementById('reroute-direct-score');
+  const displayDirect = (selectedScore != null) ? selectedScore : analysis.directSRI;
   if (directEl) {
-    directEl.textContent = analysis.directSRI;
-    directEl.className = 'route-score-lg ' + riskClass(analysis.directSRI);
+    directEl.textContent = displayDirect;
+    directEl.className = 'route-score-lg ' + riskClass(displayDirect);
   }
 
   const leg1El = document.getElementById('reroute-leg1');
@@ -476,7 +477,7 @@ function renderDetailReroute(analysis, product, hubCode) {
     const d = route.delta;
     const deltaTxt = (d >= 0 ? '+' : '') + d + ' vs direct';
     verdictEl.innerHTML = '<span class="' + routeVerdictClass(route.verdict) + ' font-semibold">' + route.verdict + '</span>'
-      + ' · <span class="' + (d < 0 ? 'risk-low' : d > 4 ? 'risk-high' : 'text-[#888]') + '">' + deltaTxt + '</span>'
+      + ' · <span class="' + (d < 0 ? 'risk-low' : d > 4 ? 'risk-high' : 'text-[#6b7280]') + '">' + deltaTxt + '</span>'
       + ' · safety ' + route.safetyIndex + '/100'
       + ' · ' + route.hub.code + ' (' + route.hub.entryAir + ' → ' + (route.leg2.ukEntry || 'UK') + ')';
   }
@@ -489,11 +490,11 @@ function renderDetailReroute(analysis, product, hubCode) {
   const b1 = document.getElementById('reroute-leg1-breakdown');
   const b2 = document.getElementById('reroute-leg2-breakdown');
   if (b1) {
-    b1.innerHTML = '<div class="mb-2 text-[9px] text-[#888]">' + route.hub.flag + ' ' + route.hub.name + ' · ' + (l1Label?.textContent || route.hub.entryAir) + '</div>'
+    b1.innerHTML = '<div class="mb-2 text-[9px] text-[#6b7280]">' + route.hub.flag + ' ' + route.hub.name + ' · ' + (l1Label?.textContent || route.hub.entryAir) + '</div>'
       + formatGroupedBreakdown(route.leg1.breakdown, LEG1_LABELS, route.leg1.score);
   }
   if (b2) {
-    b2.innerHTML = '<div class="mb-2 text-[9px] text-[#888]">' + route.leg2.originLabel + ' · pref ' + route.leg2.preferenceCode + ' · ' + (route.ukDutyNote || '') + '</div>'
+    b2.innerHTML = '<div class="mb-2 text-[9px] text-[#6b7280]">' + route.leg2.originLabel + ' · pref ' + route.leg2.preferenceCode + ' · ' + (route.ukDutyNote || '') + '</div>'
       + formatGroupedBreakdown(route.leg2.breakdown, LEG2_LABELS, route.leg2.score);
   }
 
@@ -524,12 +525,12 @@ function renderRouteBloomberg(analysis, product, hubCode) {
 
   panel.classList.remove('hidden');
 
-  summary.innerHTML = '<div class="text-[10px] leading-relaxed text-[#aaa]">' + analysis.recommendation + '</div>'
+  summary.innerHTML = '<div class="text-[10px] leading-relaxed text-[#6b7280]">' + analysis.recommendation + '</div>'
     + '<div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">'
-    + '<div class="panel p-2"><div class="text-[#666]">Direct SRI</div><div class="text-lg font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</div><div class="text-[#555]">safety ' + analysis.directSafety + '</div></div>'
-    + (route ? '<div class="panel p-2"><div class="text-[#666]">Hub ' + route.hub.code + ' SRI</div><div class="text-lg font-bold ' + riskClass(route.statistical) + '">' + route.statistical + '</div><div class="text-[#555]">leg ' + route.leg1.score + ' + ' + route.leg2.score + ' · safety ' + route.safetyIndex + '</div></div>' : '')
-    + '<div class="panel p-2"><div class="text-[#666]">Safer hubs</div><div class="text-lg font-bold">' + analysis.betterThanDirect.length + '</div><div class="text-[#555]">of ' + analysis.hubs.length + ' beat direct</div></div>'
-    + (analysis.bestHub ? '<div class="panel p-2"><div class="text-[#666]">Best hub</div><div class="text-lg font-bold ' + riskClass(analysis.bestHub.statistical) + '">' + analysis.bestHub.hub.code + '</div><div class="text-[#555]">Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ' SRI</div></div>' : '<div class="panel p-2"><div class="text-[#666]">Best hub</div><div>—</div></div>')
+    + '<div class="panel p-2"><div class="text-[#4b5563]">Direct SRI</div><div class="text-lg font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</div><div class="text-[#6b7280]">safety ' + analysis.directSafety + '</div></div>'
+    + (route ? '<div class="panel p-2"><div class="text-[#4b5563]">Hub ' + route.hub.code + ' SRI</div><div class="text-lg font-bold ' + riskClass(route.statistical) + '">' + route.statistical + '</div><div class="text-[#6b7280]">leg ' + route.leg1.score + ' + ' + route.leg2.score + ' · safety ' + route.safetyIndex + '</div></div>' : '')
+    + '<div class="panel p-2"><div class="text-[#4b5563]">Safer hubs</div><div class="text-lg font-bold">' + analysis.betterThanDirect.length + '</div><div class="text-[#6b7280]">of ' + analysis.hubs.length + ' beat direct</div></div>'
+    + (analysis.bestHub ? '<div class="panel p-2"><div class="text-[#4b5563]">Best hub</div><div class="text-lg font-bold ' + riskClass(analysis.bestHub.statistical) + '">' + analysis.bestHub.hub.code + '</div><div class="text-[#6b7280]">Δ' + (analysis.bestHub.delta >= 0 ? '+' : '') + analysis.bestHub.delta + ' SRI</div></div>' : '<div class="panel p-2"><div class="text-[#4b5563]">Best hub</div><div>—</div></div>')
     + '</div>';
 
   if (sriMath && route?.stats) {
@@ -544,18 +545,18 @@ function renderRouteBloomberg(analysis, product, hubCode) {
         ['Hub bonus', s.hubBonus ? '−' + s.hubBonus : '0', 'Chapter / strength fit at hub'],
         ['Linear sum (reference only)', s.linearSum, 'leg₁ + leg₂ − bonus — not used as SRI'],
         ['→ Statistical SRI', s.statistical, s.explain || ''],
-      ].map(([k, v, note]) => '<div class="flex justify-between gap-2"><span class="text-[#aaa]">' + k + '</span><span class="font-medium shrink-0">' + v + '</span></div>'
-        + (note ? '<div class="text-[#555] mb-1 col-span-1 md:col-span-2">' + note + '</div>' : '')).join('')
+      ].map(([k, v, note]) => '<div class="flex justify-between gap-2"><span class="text-[#6b7280]">' + k + '</span><span class="font-medium shrink-0">' + v + '</span></div>'
+        + (note ? '<div class="text-[#6b7280] mb-1 col-span-1 md:col-span-2">' + note + '</div>' : '')).join('')
       + '</div>'
-      + '<div class="mt-2 text-[#666] border-t border-[#333] pt-2">' + route.corridor + ' · ~' + route.transitDays + 'd transit · ' + (route.ukDutyNote || '') + '</div>';
+      + '<div class="mt-2 text-[#4b5563] border-t border-[#e5e7eb] pt-2">' + route.corridor + ' · ~' + route.transitDays + 'd transit · ' + (route.ukDutyNote || '') + '</div>';
   } else if (sriMath) {
-    sriMath.innerHTML = '<div class="text-[#666]">Select a hub to view SRI calculation.</div>';
+    sriMath.innerHTML = '<div class="text-[#4b5563]">Select a hub to view SRI calculation.</div>';
   }
 
-  let html = '<table class="text-[10px] w-full"><thead class="text-[#666] sticky top-0 bg-[#111]"><tr>'
+  let html = '<table class="text-[10px] w-full"><thead class="text-[#4b5563] sticky top-0 bg-[#f8fafc]"><tr>'
     + '<th>HUB</th><th>LEG 1</th><th>LEG 2</th><th>SRI</th><th>SAFE</th><th>Δ</th><th>VERDICT</th></tr></thead><tbody>';
 
-  html += '<tr class="border-b border-[#333] bg-[#0d1a0d]">'
+  html += '<tr class="border-b border-[#e5e7eb] bg-[#f0fdf4]">'
     + '<td class="py-1 font-semibold">Direct JFK→UK</td>'
     + '<td>—</td><td>—</td>'
     + '<td class="font-bold ' + riskClass(analysis.directSRI) + '">' + analysis.directSRI + '</td>'
@@ -564,7 +565,7 @@ function renderRouteBloomberg(analysis, product, hubCode) {
 
   analysis.hubs.forEach((h, i) => {
     const selected = h.hub.code === code;
-    const rowCls = (selected ? 'border-b border-[#2a4a2a] bg-[#0d1a0d] ' : h.statistical < analysis.directSRI ? 'border-b border-[#222] bg-[#141a14] ' : 'border-b border-[#222] ');
+    const rowCls = (selected ? 'border-b border-[#86efac] bg-[#f0fdf4] ' : h.statistical < analysis.directSRI ? 'border-b border-[#d1d5db] bg-[#f8fafc] ' : 'border-b border-[#d1d5db] ');
     const highlight = i === 0 && h.statistical < analysis.directSRI ? ' ★' : '';
     html += '<tr class="' + rowCls + (selected ? 'font-semibold' : '') + '" style="cursor:pointer" onclick="document.getElementById(\'reroute-hub-select\').value=\'' + h.hub.code + '\';onRerouteHubChange();">'
       + '<td class="py-1" title="' + h.route + '">' + h.hub.flag + ' ' + h.hub.code + highlight + (selected ? ' ◀' : '') + '</td>'
@@ -576,7 +577,7 @@ function renderRouteBloomberg(analysis, product, hubCode) {
       + '<td class="' + routeVerdictClass(h.verdict) + '">' + h.verdict + '</td></tr>';
   });
   html += '</tbody></table>';
-  html += '<div class="text-[8px] text-[#555] mt-1">Click a row to select hub · Leg 2 = EU-origin TCA import (not US pass-through)</div>';
+  html += '<div class="text-[8px] text-[#6b7280] mt-1">Click a row to select hub · Leg 2 = EU-origin TCA import (not US pass-through)</div>';
 
   body.innerHTML = html;
 }
