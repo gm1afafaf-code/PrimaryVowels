@@ -1,4 +1,6 @@
-const FEDEX_API_BASE = 'https://primaryvowels-support.vercel.app';
+// Use relative API when deployed under the main site (protected).
+// Falls back to the old external host only if needed for separate deployments.
+const FEDEX_API_BASE = '';  // relative by default → calls /api/track etc under current origin
 const HISTORY_KEY = 'pv-support-history';
 const HISTORY_MAX = 30;
 
@@ -113,8 +115,13 @@ function renderHistory() {
 }
 
 function apiUrl(path) {
+  // When FEDEX_API_BASE is empty we use relative paths under the current site.
+  // The API lives in support/api/ in this repo, so we call /support/api/...
+  if (!FEDEX_API_BASE) {
+    return `/support${path}`;   // e.g. /support/api/track
+  }
   const base = FEDEX_API_BASE.replace(/\/$/, '');
-  return base ? `${base}${path}` : path;
+  return `${base}${path}`;
 }
 
 function escapeHtml(str) {
