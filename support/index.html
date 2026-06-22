@@ -25,20 +25,26 @@
   <section class="service-hero">
     <span class="formula-badge">FedEx Developer API</span>
     <h1>Package Support</h1>
-    <p>Track your FedEx shipment — every field returned by the official FedEx Track API, including scans, locations, delivery options, and the complete raw response.</p>
+    <p>Track your FedEx shipment in real time. Paste a tracking number (12–15 digits) or try a demo. See scans, status, full details, and raw API response.</p>
     <div class="server-status">
       <span class="server-dot" id="server-dot"></span>
       <span id="server-status-text">Checking API…</span>
     </div>
+    <div class="demo-buttons" style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+      <button type="button" class="btn btn-outline demo-btn" data-demo="449044304137821">Demo: In transit</button>
+      <button type="button" class="btn btn-outline demo-btn" data-demo="449044304137822">Demo: Delivered</button>
+      <button type="button" class="btn btn-outline demo-btn" data-demo="781414306467">Demo: Exception</button>
+    </div>
+    <p style="font-size:0.75rem; color:#606080; margin-top:0.5rem;">Demos use sandbox data when live credentials not configured.</p>
   </section>
 
   <div class="service-layout single-col">
     <div class="panel">
       <form id="track-form" class="track-form">
         <div class="field" style="flex:1;margin-bottom:0">
-          <label for="tracking">FedEx Tracking Number</label>
+          <label for="tracking">FedEx Tracking Number <span style="font-weight:400; color:#606080;">(auto-formats)</span></label>
           <input type="text" id="tracking" placeholder="e.g. 7946 1234 5678" required
-                 pattern="[0-9\s]{12,20}" autocomplete="off">
+                 pattern="[0-9\s]{12,20}" autocomplete="off" style="font-family: monospace; letter-spacing: 1px;">
         </div>
         <button type="submit" class="btn" id="track-btn">Track</button>
       </form>
