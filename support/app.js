@@ -1,6 +1,5 @@
-// If the API runs on a different host than this page, paste your Vercel URL here.
-// Leave empty when the whole support/ folder is deployed on Vercel (recommended).
-const FEDEX_API_BASE = '';
+// API on Vercel; UI on GitHub Pages at primaryvowels.com/support
+const FEDEX_API_BASE = 'https://primaryvowels-support.vercel.app';
 
 const $ = (sel) => document.querySelector(sel);
 
