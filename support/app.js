@@ -1,4 +1,6 @@
 const FEDEX_API_BASE = 'https://primaryvowels-support.vercel.app';
+const HISTORY_KEY = 'pv-support-history';
+const HISTORY_MAX = 30;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -29,6 +31,74 @@ const API_SECTIONS = [
 
 function normalizeTracking(raw) {
   return raw.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+}
+
+function formatTrackingDisplay(num) {
+  return num.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+}
+
+function loadHistory() {
+  try {
+    const entries = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    return Array.isArray(entries) ? entries : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(entries) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, HISTORY_MAX)));
+}
+
+function upsertHistory(entry) {
+  const history = loadHistory().filter((h) => h.tracking !== entry.tracking);
+  history.unshift({ ...entry, searchedAt: Date.now() });
+  saveHistory(history);
+  renderHistory();
+}
+
+function removeFromHistory(tracking) {
+  saveHistory(loadHistory().filter((h) => h.tracking !== tracking));
+  renderHistory();
+}
+
+function clearHistory() {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+}
+
+function fmtRelative(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return fmtDate(new Date(ts).toISOString());
+}
+
+function renderHistory() {
+  const container = $('#search-history');
+  const history = loadHistory();
+  if (!history.length) {
+    container.classList.add('hidden');
+    $('#history-list').innerHTML = '';
+    return;
+  }
+
+  container.classList.remove('hidden');
+  $('#history-list').innerHTML = history.map((h) => `
+    <div class="history-item">
+      <button type="button" class="history-track-btn" data-tracking="${escapeHtml(h.tracking)}">
+        <span class="history-num">${escapeHtml(formatTrackingDisplay(h.tracking))}</span>
+        ${h.status ? `<span class="history-status">${escapeHtml(h.status)}</span>` : ''}
+        <span class="history-time">${escapeHtml(fmtRelative(h.searchedAt))}</span>
+      </button>
+      <button type="button" class="history-remove" data-tracking="${escapeHtml(h.tracking)}" aria-label="Remove from history">×</button>
+    </div>
+  `).join('');
 }
 
 function apiUrl(path) {
@@ -244,14 +314,7 @@ async function checkApi() {
   }
 }
 
-async function track(e) {
-  e.preventDefault();
-  const tracking = normalizeTracking($('#tracking').value);
-  if (tracking.length < 12) {
-    showError('Enter a valid 12–15 digit FedEx tracking number.');
-    return;
-  }
-
+async function runTrack(tracking) {
   const btn = $('#track-btn');
   btn.disabled = true;
   btn.textContent = 'Tracking…';
@@ -259,7 +322,15 @@ async function track(e) {
   try {
     const res = await fetch(apiUrl(`/api/track?trackingNumber=${tracking}`));
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Lookup failed');
+    if (!res.ok) {
+      upsertHistory({ tracking, status: 'Lookup failed', statusCode: '' });
+      throw new Error(data.error || 'Lookup failed');
+    }
+    upsertHistory({
+      tracking,
+      status: data.status,
+      statusCode: data.statusCode || '',
+    });
     renderResult(data);
   } catch (err) {
     showError(err.message);
@@ -269,5 +340,34 @@ async function track(e) {
   }
 }
 
+async function track(e) {
+  e.preventDefault();
+  const tracking = normalizeTracking($('#tracking').value);
+  if (tracking.length < 12) {
+    showError('Enter a valid 12–15 digit FedEx tracking number.');
+    return;
+  }
+  await runTrack(tracking);
+}
+
 $('#track-form').addEventListener('submit', track);
+
+$('#search-history').addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('.history-remove');
+  if (removeBtn) {
+    removeFromHistory(removeBtn.dataset.tracking);
+    return;
+  }
+
+  const trackBtn = e.target.closest('.history-track-btn');
+  if (trackBtn) {
+    const tracking = trackBtn.dataset.tracking;
+    $('#tracking').value = formatTrackingDisplay(tracking);
+    runTrack(tracking);
+  }
+});
+
+$('#history-clear').addEventListener('click', clearHistory);
+
+renderHistory();
 checkApi();

@@ -204,6 +204,107 @@
 
 .track-form .btn { flex-shrink: 0; margin-top: 1.5rem; }
 
+.search-history {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #1e1e30;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.history-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7070a0;
+}
+
+.history-clear {
+  background: none;
+  border: none;
+  color: #7070a0;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  font-family: inherit;
+}
+
+.history-clear:hover { color: #ef4444; }
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.history-track-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  text-align: left;
+  background: #0a0a0f;
+  border: 1px solid #1e1e30;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.history-track-btn:hover {
+  border-color: #a78bfa44;
+  background: #0e0e18;
+}
+
+.history-num {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: #e8e8f0;
+}
+
+.history-status {
+  font-size: 0.8rem;
+  color: #a78bfa;
+}
+
+.history-time {
+  font-size: 0.75rem;
+  color: #505070;
+  margin-left: auto;
+}
+
+.history-remove {
+  flex-shrink: 0;
+  width: 2rem;
+  background: #0a0a0f;
+  border: 1px solid #1e1e30;
+  border-radius: 8px;
+  color: #505070;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.history-remove:hover {
+  border-color: #ef444444;
+  color: #ef4444;
+}
+
 .hidden { display: none !important; }
 
 .results { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
