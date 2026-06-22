@@ -7,21 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
-    body { font-family: 'IBM Plex Mono', monospace; }
+    body { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
     .panel { background: #111; border: 1px solid #333; }
     .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
     .value { font-size: 18px; font-weight: 500; }
-    input, select, button { background: #1a1a1a; border: 1px solid #444; color: #22c55e; font-family: 'IBM Plex Mono', monospace; }
+    input, select, button { background: #1a1a1a; border: 1px solid #444; color: #22c55e; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
     .risk-low { color: #22c55e; }
     .risk-med { color: #eab308; }
     .risk-high { color: #ef4444; }
     .section-title { font-size: 11px; letter-spacing: 1.5px; color: #666; border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 8px; }
-    .uk-note { font-size: 9px; color: #888; }
-    table { border-collapse: collapse; width: 100%; }
-    td, th { padding: 4px 6px; text-align: left; }
+    .uk-note { font-size: 10px; color: #888; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; }
+    td, th { padding: 6px 8px; text-align: left; }
     tr.option-row { cursor: pointer; transition: background 0.1s; }
     tr.option-row:hover { background: #1a1a1a; }
     tr.option-row.selected { background: #1a2a1a; border-left: 2px solid #22c55e; }
+    #options-body td { padding-top: 7px; padding-bottom: 7px; }
     #auth-gate { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; align-items: center; justify-content: center; }
     #auth-gate .auth-box { background: #111; border: 1px solid #333; padding: 24px; width: 320px; }
     #auth-gate .auth-title { font-size: 14px; font-weight: 500; letter-spacing: 2px; margin-bottom: 16px; }
@@ -35,12 +36,12 @@
     #weight-slider { width: 100%; height: 10px; accent-color: #22c55e; cursor: pointer; }
     .weight-display { font-size: 36px; font-weight: 500; line-height: 1; }
     .weight-scale { display: flex; justify-content: space-between; font-size: 8px; color: #555; margin-top: 4px; }
-    .quick-pick { border: 1px solid #333; padding: 8px; cursor: pointer; transition: all 0.12s; background: #0d0d0d; }
+    .quick-pick { border: 1px solid #333; padding: 10px; cursor: pointer; transition: all 0.12s; background: #0d0d0d; font-size: 12px; }
     .quick-pick:hover { border-color: #22c55e; background: #141a14; }
     .quick-pick.active { border-color: #22c55e; background: #1a2a1a; }
     .quick-pick .qp-risk { font-size: 20px; font-weight: 600; }
     input[type="range"] { background: transparent; border: none; padding: 0; }
-    .search-btn { padding: 4px 8px; font-size: 10px; cursor: pointer; border-color: #22c55e; white-space: nowrap; }
+    .search-btn { padding: 6px 10px; font-size: 11px; cursor: pointer; border-color: #22c55e; white-space: nowrap; }
     .search-btn:hover { background: #222; }
     .search-btn.active { background: #1a2a1a; border-color: #22c55e; }
     #risk-search, #max-risk { font-size: 11px; }
@@ -97,6 +98,23 @@
       </div>
     </div>
 
+    <!-- Friendly intro for non-experts -->
+    <div class="panel p-3 rounded mb-3" style="max-width: 980px; margin: 0 auto 0.5rem; font-size: 12px; line-height: 1.45;">
+      <div style="display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <strong style="color:#e8e8f0;">What is this?</strong><br>
+          <span style="color:#aaa;">Find the lowest-risk UK tariff (HS) codes for your shipment weight &amp; box. Scores factor physical match, description quality, restrictions, valuation, and lane suitability (air/sea). Use for commercial invoices &amp; packing lists. For GPUs / AI hardware from the US.</span>
+        </div>
+        <div>
+          <button type="button" onclick="loadGpuExample()" class="search-btn" style="font-size:11px; padding:6px 10px;">Load GPU example (24 lb RTX 3090)</button>
+          <button type="button" onclick="showHelp()" class="search-btn" style="font-size:11px; padding:6px 10px; margin-left:4px;">Help &amp; legend</button>
+        </div>
+      </div>
+      <div id="risk-legend" style="margin-top:8px; font-size:10px; color:#888;">
+        Risk score: <span class="risk-low" style="font-weight:600;">&lt;28 LOW</span> (good) · <span class="risk-med" style="font-weight:600;">28-51 MED</span> · <span class="risk-high" style="font-weight:600;">52+ HIGH</span> — aim low. WT Δ = difference vs your shipment weight.
+      </div>
+    </div>
+
     <div class="grid grid-cols-12 gap-3">
       <div class="col-span-12 lg:col-span-3 panel p-3 rounded">
         <div class="section-title">LOWEST RISK SEARCH</div>
@@ -132,7 +150,7 @@
           <span class="text-[10px] text-[#666]">lbs — or type exact</span>
         </div>
         <div class="mt-4 mb-3">
-          <div class="label mb-1">PREPOPULATED PICKS (LOWEST RISK)</div>
+          <div class="label mb-1">PREPOPULATED PICKS (LOWEST RISK) <button onclick="resetAll()" class="search-btn" style="font-size:9px;padding:1px 6px;margin-left:6px;">RESET</button></div>
           <div id="quick-picks" class="space-y-2"></div>
         </div>
         <div class="mb-3">
@@ -250,7 +268,9 @@
         </div>
       </div>
 
-      <div class="col-span-12 panel p-3 rounded hidden" id="route-bloomberg">
+      <details class="col-span-12 panel p-3 rounded hidden" id="route-bloomberg" style="margin-top:4px;">
+        <summary style="cursor:pointer; font-weight:600; color:#a78bfa; list-style:none;">▶ Route Analysis (JFK → EU → UK) — click to expand advanced optimization</summary>
+        <div style="margin-top: 8px;">
         <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
           <div class="section-title mb-0">ROUTE ANALYSIS — JFK → EU → UK</div>
           <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN DB FOR SAFER HUBS</button>
@@ -281,7 +301,8 @@
           <div class="label mb-1">HUB ADVANTAGE SCAN RESULTS</div>
           <div class="overflow-auto max-h-[200px]" id="route-scan-table"></div>
         </div>
-      </div>
+        </div>
+      </details>
 
       <div class="col-span-12 panel p-3 rounded">
         <div class="section-title">CDS CHECKLIST — APPLY TO SELECTED OPTION</div>
@@ -1305,6 +1326,63 @@ async function init() {
   document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
   analyze();
 }
+
+// --- User friendly helpers (added for better UX) ---
+function loadGpuExample() {
+  // Realistic GPU example: ~24 lb RTX 3090 class card
+  document.getElementById('weight-input').value = '24';
+  syncWeightUI(24);
+  const boxSel = document.getElementById('box-select');
+  if (boxSel) boxSel.value = 'mdl';
+  boxManual = true;
+  document.getElementById('risk-target').value = '28';
+  clearScanMode();
+  document.getElementById('show-all').checked = false;
+  updateSearchModeUI();
+  analyze();
+  const note = document.getElementById('risk-search-status');
+  if (note) note.textContent = 'Loaded example: 24 lb GPU in medium box — review lowest risk codes';
+}
+
+function resetAll() {
+  scanMode = 'weight';
+  document.getElementById('risk-search').value = '';
+  document.getElementById('risk-keyword').value = '';
+  document.getElementById('risk-target').value = '';
+  document.getElementById('max-risk').value = '';
+  document.getElementById('show-all').checked = false;
+  boxManual = false;
+  freightMode = 'air';
+  updateFreightModeUI();
+  syncWeightUI(getFreightConfig().defaultWeight);
+  document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
+  updateSearchModeUI();
+  analyze();
+}
+
+function showHelp() {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#111;border:1px solid #333;max-width:620px;width:100%;padding:18px 20px;border-radius:10px;font-size:12px;color:#ccc;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-weight:600;color:#eee;">Quick Help — Risk Adjuster</div>
+        <button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">×</button>
+      </div>
+      <ul style="line-height:1.5;margin:0 0 10px 18px;padding:0;">
+        <li><strong>Risk score</strong>: Lower is safer for UK customs clearance. &lt;28 = LOW (preferred).</li>
+        <li><strong>WT Δ</strong>: How far the declared item weight is from your shipment weight. Smaller = more believable on paperwork.</li>
+        <li><strong>Dim weight</strong>: Volumetric weight used by carriers (L×W×H ÷139 for air). Can affect cost &amp; audit risk.</li>
+        <li>Use <strong>AIR</strong> for fast small/medium GPU shipments; <strong>SEA</strong> for heavy/pallets (no dim penalty).</li>
+        <li>Pick a code → copy the “COMMERCIAL DESCRIPTION (INVOICE)” and “PACKING LIST LINE” into your docs.</li>
+        <li>EU hub route sometimes lowers risk score via TCA preference rules.</li>
+      </ul>
+      <div style="font-size:10px;color:#777;">Guidance only. Always double-check at trade-tariff.service.gov.uk before filing. Not advice.</div>
+      <div style="text-align:right;margin-top:12px;"><button onclick="this.closest('[style*=\'position:fixed\']').remove()" class="search-btn">Close</button></div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
 window.onload = boot;
 
 </script>
