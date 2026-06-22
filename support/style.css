@@ -298,4 +298,5 @@
   background: #505070;
 }
 .server-dot.online { background: #22c55e; }
+.server-dot.sandbox { background: #f59e0b; }
 .server-dot.offline { background: #ef4444; }

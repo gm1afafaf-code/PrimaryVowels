@@ -34,6 +34,16 @@ function formatLocation(scan) {
   return parts.join(", ") || "Unknown";
 }
 
+function formatWeight(packageDetails) {
+  const raw = packageDetails?.weightAndDimensions?.weight;
+  if (!raw) return null;
+  const weights = Array.isArray(raw) ? raw : [raw];
+  const primary = weights.find((w) => w.unit === "LB" || w.units === "LB") || weights[0];
+  if (!primary?.value) return null;
+  const unit = primary.unit || primary.units || "";
+  return unit ? `${primary.value} ${unit}` : String(primary.value);
+}
+
 function parseScan(s) {
   return {
     date: s.date || "",
@@ -94,9 +104,7 @@ export function parseTrackResult(trackingNumber, trackResult) {
     service: trackResult?.serviceDetail?.description || trackResult?.serviceDetail?.type,
     shipper: formatAddress(trackResult?.shipperInformation?.address),
     recipient: formatAddress(trackResult?.recipientInformation?.address),
-    weight: trackResult?.packageDetails?.weightAndDimensions?.weight
-      ? `${trackResult.packageDetails.weightAndDimensions.weight.value} ${trackResult.packageDetails.weightAndDimensions.weight.units}`
-      : null,
+    weight: formatWeight(trackResult?.packageDetails),
     packaging: trackResult?.packageDetails?.packagingDescription?.description,
     shipped,
     estimatedDelivery,
@@ -113,6 +121,11 @@ export function parseTrackResult(trackingNumber, trackResult) {
     deliveryAttempts: trackResult?.deliveryDetails?.deliveryAttempts,
     receivedBy: trackResult?.deliveryDetails?.receivedByName,
     specialHandling: trackResult?.specialHandlings?.map((h) => h.description).filter(Boolean) || [],
+    sandbox: FEDEX_ENV !== "production",
+    sandboxNotice:
+      FEDEX_ENV !== "production"
+        ? "FedEx sandbox returns the same sample shipment for every tracking number. Switch FEDEX_ENV to production with production API credentials for real tracking data."
+        : null,
   };
 }
 

@@ -39,6 +39,10 @@ function renderResult(data) {
   $('#error-area').classList.add('hidden');
   $('#results').classList.remove('hidden');
 
+  if (data.sandboxNotice) {
+    showEnvBanner(data.sandboxNotice, 'sandbox');
+  }
+
   const cls = statusClass(data.statusCode, data.isDelayed);
   $('#status-header').innerHTML = `
     <div class="status-header ${cls}">
@@ -110,6 +114,16 @@ function showError(msg) {
   $('#error-area').classList.remove('hidden');
 }
 
+function showEnvBanner(notice, env) {
+  const note = $('#setup-note');
+  if (!notice) {
+    note.classList.add('hidden');
+    return;
+  }
+  note.classList.remove('hidden');
+  note.innerHTML = `<strong>${env === 'sandbox' ? 'Sandbox mode' : 'Notice'}:</strong> ${escapeHtml(notice)}`;
+}
+
 async function checkApi() {
   const dot = $('#server-dot');
   const text = $('#server-status-text');
@@ -117,18 +131,23 @@ async function checkApi() {
     const res = await fetch(apiUrl('/api/health'), { signal: AbortSignal.timeout(5000) });
     const data = await res.json();
     if (res.ok && data.fedexApi) {
-      dot.className = 'server-dot online';
-      text.textContent = `FedEx API ready (${data.env})`;
+      dot.className = data.liveData ? 'server-dot online' : 'server-dot sandbox';
+      text.textContent = data.liveData
+        ? 'FedEx API ready (live data)'
+        : 'FedEx API ready (sandbox — not real tracking data)';
+      showEnvBanner(data.sandboxNotice, data.env);
       return true;
     }
     dot.className = 'server-dot offline';
     text.textContent = 'FedEx API reachable but credentials not set on server';
+    showEnvBanner(null);
     return false;
   } catch {
     dot.className = 'server-dot offline';
     text.textContent = FEDEX_API_BASE
       ? 'Cannot reach FedEx API server'
       : 'Tracker UI is live — API server not deployed yet (see note below)';
+    showEnvBanner(null);
     return false;
   }
 }
