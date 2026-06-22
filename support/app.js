@@ -115,10 +115,10 @@ function renderHistory() {
 }
 
 function apiUrl(path) {
-  // When FEDEX_API_BASE is empty we use relative paths under the current site.
-  // The API lives in support/api/ in this repo, so we call /support/api/...
+  // Relative calls (preferred when protected under primaryvowels.com).
+  // We use clean /api/... paths — rewrites in vercel.json map them to support/api.
   if (!FEDEX_API_BASE) {
-    return `/support${path}`;   // e.g. /support/api/track
+    return path;   // e.g. /api/track  (rewritten internally)
   }
   const base = FEDEX_API_BASE.replace(/\/$/, '');
   return `${base}${path}`;
