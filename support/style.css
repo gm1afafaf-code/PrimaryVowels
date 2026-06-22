@@ -18,7 +18,7 @@
 }
 
 .service-hero p {
-  color: #8080a0;
+  color: #4b5563;
   max-width: 640px;
   margin: 0 auto 2rem;
 }
@@ -37,16 +37,17 @@
 }
 
 .panel {
-  background: #13131f;
-  border: 1px solid #1e1e30;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .panel h2 {
   font-size: 1.15rem;
   margin-bottom: 1.25rem;
-  color: #e8e8f0;
+  color: #111827;
 }
 
 .field { margin-bottom: 1.25rem; }
@@ -57,24 +58,24 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #7070a0;
+  color: #374151;
   margin-bottom: 0.4rem;
 }
 
 .field input, .field textarea, .field select {
   width: 100%;
-  background: #0a0a0f;
-  border: 1px solid #2a2a40;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  color: #e8e8f0;
+  color: #111827;
   font-family: inherit;
   font-size: 0.95rem;
 }
 
 .field input:focus, .field textarea:focus {
   outline: none;
-  border-color: #a78bfa;
+  border-color: #6d28d9;
 }
 
 .field textarea { resize: vertical; min-height: 80px; }
@@ -220,7 +221,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #7070a0;
+  color: #374151;
 }
 
 .history-clear {
@@ -252,8 +253,8 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   text-align: left;
-  background: #0a0a0f;
-  border: 1px solid #1e1e30;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 0.65rem 0.85rem;
   cursor: pointer;
@@ -262,24 +263,24 @@
 }
 
 .history-track-btn:hover {
-  border-color: #a78bfa44;
-  background: #0e0e18;
+  border-color: #c4b5fd;
+  background: #f3f4f6;
 }
 
 .history-num {
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 0.9rem;
-  color: #e8e8f0;
+  color: #111827;
 }
 
 .history-status {
   font-size: 0.8rem;
-  color: #a78bfa;
+  color: #6d28d9;
 }
 
 .history-time {
   font-size: 0.75rem;
-  color: #505070;
+  color: #6b7280;
   margin-left: auto;
 }
 
@@ -309,15 +310,15 @@
   padding: 1.25rem;
   border-radius: 10px;
   margin-bottom: 1.25rem;
-  background: #0a0a0f;
-  border: 1px solid #1e1e30;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
 }
-.status-header.delivered { border-color: #22c55e44; }
-.status-header.delayed { border-color: #ef444444; }
-.status-header.transit { border-color: #3b82f644; }
+.status-header.delivered { border-color: #166534; }
+.status-header.delayed { border-color: #b91c1c; }
+.status-header.transit { border-color: #1d4ed8; }
 
-.status-code { font-size: 1.5rem; font-weight: 700; color: #e8e8f0; }
-.tracking-num { font-family: monospace; color: #7070a0; margin-top: 0.25rem; }
+.status-code { font-size: 1.5rem; font-weight: 700; color: #111827; }
+.tracking-num { font-family: monospace; color: #374151; margin-top: 0.25rem; }
 .delay-tag {
   display: inline-block; margin-top: 0.5rem;
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
@@ -335,9 +336,9 @@
 .detail-item { padding: 0.5rem 0; }
 .detail-label {
   font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.08em; color: #505070; margin-bottom: 0.2rem;
+  letter-spacing: 0.08em; color: #6b7280; margin-bottom: 0.2rem;
 }
-.detail-value { font-size: 0.9rem; color: #c8c8d8; line-height: 1.4; }
+.detail-value { font-size: 0.9rem; color: #1f2937; line-height: 1.4; }
 
 .scan-count { font-size: 0.8rem; color: #505070; font-weight: 400; }
 
@@ -345,17 +346,17 @@
 .timeline-item {
   position: relative;
   padding: 0 0 1.5rem 1.5rem;
-  border-left: 2px solid #1e1e30;
+  border-left: 2px solid #e5e7eb;
 }
 .timeline-item:last-child { border-left-color: transparent; padding-bottom: 0; }
-.timeline-item.latest .timeline-dot { background: #a78bfa; box-shadow: 0 0 8px #a78bfa66; }
+.timeline-item.latest .timeline-dot { background: #6d28d9; box-shadow: 0 0 8px #c4b5fd; }
 .timeline-dot {
   position: absolute; left: -7px; top: 4px;
   width: 12px; height: 12px; border-radius: 50%;
-  background: #3b3b5c; border: 2px solid #0a0a0f;
+  background: #d1d5db; border: 2px solid #ffffff;
 }
-.timeline-date { font-size: 0.75rem; color: #505070; margin-bottom: 0.2rem; }
-.timeline-desc { font-weight: 600; color: #e8e8f0; font-size: 0.95rem; }
+.timeline-date { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.2rem; }
+.timeline-desc { font-weight: 600; color: #111827; font-size: 0.95rem; }
 .timeline-loc { font-size: 0.85rem; color: #7070a0; margin-top: 0.15rem; }
 .timeline-exception { font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem; }
 .timeline-delay { font-size: 0.8rem; color: #eab308; margin-top: 0.25rem; }
@@ -363,11 +364,11 @@
 .setup-note {
   margin-top: 1.25rem;
   padding: 1rem;
-  background: #0e0e18;
-  border: 1px solid #2a2a40;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 0.85rem;
-  color: #8080a0;
+  color: #374151;
   line-height: 1.6;
 }
 .setup-note strong { color: #a0a0b8; }
@@ -463,8 +464,8 @@
 }
 
 .scan-field {
-  background: #0a0a0f;
-  border: 1px solid #1e1e30;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 0.55rem 0.75rem;
 }
@@ -488,15 +489,15 @@
 .scan-field-nested { margin-top: 0.25rem; }
 
 .raw-json {
-  background: #0a0a0f;
-  border: 1px solid #1e1e30;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 1rem;
   overflow-x: auto;
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 0.75rem;
   line-height: 1.55;
-  color: #a0a0b8;
+  color: #374151;
   max-height: 600px;
   overflow-y: auto;
   white-space: pre-wrap;

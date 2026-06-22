@@ -1,13 +1,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: #0a0a0f;
-  color: #e8e8f0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #ffffff;
+  color: #111827;
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
 }
 
-a { color: #a78bfa; text-decoration: none; }
+a { color: #6d28d9; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ---- Nav ---- */
@@ -16,7 +16,8 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #1e1e2e;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
 }
 
 .logo {
@@ -27,11 +28,11 @@ nav {
 }
 .logo:hover { text-decoration: none; }
 .logo-mark { flex-shrink: 0; }
-.logo-text { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; color: #fff; }
+.logo-text { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; color: #111827; }
 
 nav ul { list-style: none; display: flex; gap: 2rem; }
-nav ul a { color: #a0a0b8; font-size: 0.95rem; }
-nav ul a:hover { color: #fff; text-decoration: none; }
+nav ul a { color: #4b5563; font-size: 0.95rem; }
+nav ul a:hover { color: #111827; text-decoration: none; }
 
 /* ---- Hero ---- */
 .hero {
@@ -52,9 +53,9 @@ nav ul a:hover { color: #fff; text-decoration: none; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #a78bfa;
-  border: 1px solid #a78bfa44;
-  background: #a78bfa10;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+  background: #f5f3ff;
   padding: 0.3rem 0.9rem;
   border-radius: 999px;
   margin-bottom: 1.5rem;
@@ -80,31 +81,31 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .tagline {
   font-size: 1.35rem;
   font-weight: 600;
-  color: #c8c8d8;
+  color: #374151;
   margin-bottom: 0.75rem;
 }
-.accent { color: #a78bfa; background: linear-gradient(90deg, #a78bfa, #60a5fa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.accent { color: #6d28d9; background: linear-gradient(90deg, #6d28d9, #3b82f6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
-.hero-sub { font-size: 1.05rem; color: #8080a0; margin-bottom: 2rem; max-width: 480px; }
+.hero-sub { font-size: 1.05rem; color: #4b5563; margin-bottom: 2rem; max-width: 480px; }
 
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 .btn {
   display: inline-block;
-  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  background: linear-gradient(135deg, #6d28d9, #3b82f6);
   color: #fff;
   padding: 0.75rem 1.75rem;
   border-radius: 8px;
   font-weight: 600;
   transition: opacity 0.2s;
 }
-.btn:hover { opacity: 0.85; text-decoration: none; }
+.btn:hover { opacity: 0.9; text-decoration: none; }
 .btn-outline {
   background: transparent;
-  border: 1px solid #3b3b5c;
-  color: #a0a0b8;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
 }
-.btn-outline:hover { border-color: #a78bfa; color: #e8e8f0; opacity: 1; }
+.btn-outline:hover { border-color: #6d28d9; color: #111827; opacity: 1; }
 
 /* ---- Hero visual ---- */
 .hero-visual {
@@ -140,22 +141,22 @@ nav ul a:hover { color: #fff; text-decoration: none; }
   margin: 0 auto;
   padding: 5rem 2rem;
 }
-.section.alt { background: #0e0e18; border-radius: 16px; }
+.section.alt { background: #f8fafc; border-radius: 16px; }
 .section h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1.25rem; }
-.section p { color: #a0a0b8; max-width: 640px; }
+.section p { color: #4b5563; max-width: 640px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-.card { background: #13131f; border: 1px solid #1e1e30; border-radius: 12px; padding: 1.75rem; transition: border-color 0.25s, transform 0.25s; }
-.card:hover { border-color: #a78bfa44; transform: translateY(-4px); }
-.card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #e8e8f0; }
-.card p { color: #7070a0; font-size: 0.95rem; }
+.card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.75rem; transition: border-color 0.25s, transform 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.card:hover { border-color: #c4b5fd; transform: translateY(-2px); }
+.card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #111827; }
+.card p { color: #4b5563; font-size: 0.95rem; }
 
 footer {
   text-align: center;
   padding: 2rem;
-  color: #404060;
+  color: #6b7280;
   font-size: 0.85rem;
-  border-top: 1px solid #1e1e2e;
+  border-top: 1px solid #e5e7eb;
   margin-top: 4rem;
 }
 
