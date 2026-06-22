@@ -37,6 +37,17 @@ function formatTrackingDisplay(num) {
   return num.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
 }
 
+function autoFormatTrackingInput(el) {
+  el.addEventListener('input', () => {
+    const cleaned = normalizeTracking(el.value);
+    if (cleaned.length > 15) {
+      el.value = formatTrackingDisplay(cleaned.slice(0,15));
+    } else if (cleaned.length >= 4) {
+      el.value = formatTrackingDisplay(cleaned);
+    }
+  });
+}
+
 function loadHistory() {
   try {
     const entries = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
@@ -245,11 +256,25 @@ function renderResult(data) {
   $('#status-header').innerHTML = `
     <div class="status-header ${cls}">
       <div class="status-code">${escapeHtml(data.status)}</div>
-      <div class="tracking-num">${escapeHtml(data.trackingNumber)}</div>
+      <div class="tracking-num">${escapeHtml(data.trackingNumber)} <button class="copy-btn" data-copy="${escapeHtml(data.trackingNumber)}" title="Copy tracking number" style="margin-left:8px;font-size:11px;padding:2px 6px;border-radius:4px;border:1px solid #3b3b5c;background:transparent;color:#a78bfa;cursor:pointer;">Copy</button></div>
       ${data.statusCode ? `<div class="status-meta">Code: ${escapeHtml(data.statusCode)} · ${data.scanCount} scan events</div>` : ''}
       ${data.isDelayed ? '<span class="delay-tag">Delayed</span>' : ''}
     </div>
   `;
+
+  // Wire copy buttons after render
+  setTimeout(() => {
+    document.querySelectorAll('#status-header .copy-btn').forEach(b => {
+      b.onclick = (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(b.dataset.copy).then(() => {
+          const orig = b.textContent;
+          b.textContent = 'Copied!';
+          setTimeout(() => b.textContent = orig, 1200);
+        });
+      };
+    });
+  }, 0);
 
   $('#scan-count').textContent = `(${data.scanCount} events)`;
   $('#timeline').innerHTML = renderScanTimeline(data.scanEvents);
@@ -261,9 +286,11 @@ function renderResult(data) {
 
   $('#all-sections').innerHTML = sections + `
     <div class="panel api-section raw-section">
-      <h2>Complete FedEx API Response</h2>
-      <p class="section-hint">Unmodified JSON returned by FedEx Track API for this lookup.</p>
-      <pre class="raw-json">${escapeHtml(JSON.stringify(data.raw, null, 2))}</pre>
+      <details>
+        <summary style="cursor:pointer; color:#a78bfa; font-weight:600;">Complete FedEx API Response (raw JSON)</summary>
+        <p class="section-hint">Unmodified JSON returned by FedEx Track API for this lookup. For advanced debugging.</p>
+        <pre class="raw-json">${escapeHtml(JSON.stringify(data.raw, null, 2))}</pre>
+      </details>
     </div>
   `;
 
@@ -371,3 +398,15 @@ $('#history-clear').addEventListener('click', clearHistory);
 
 renderHistory();
 checkApi();
+
+const trackingInput = $('#tracking');
+if (trackingInput) autoFormatTrackingInput(trackingInput);
+
+// Demo buttons
+document.querySelectorAll('.demo-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const demo = btn.dataset.demo;
+    if (trackingInput) trackingInput.value = formatTrackingDisplay(demo);
+    runTrack(demo);
+  });
+});
