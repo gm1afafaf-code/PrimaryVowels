@@ -1,12 +1,16 @@
+// If the API runs on a different host than this page, paste your Vercel URL here.
+// Leave empty when the whole support/ folder is deployed on Vercel (recommended).
+const FEDEX_API_BASE = '';
+
 const $ = (sel) => document.querySelector(sel);
 
 function normalizeTracking(raw) {
   return raw.replace(/\s+/g, '').replace(/[^0-9]/g, '');
 }
 
-function getApiBase() {
-  if (window.PV_API_URL) return window.PV_API_URL.replace(/\/$/, '');
-  return '';
+function apiUrl(path) {
+  const base = FEDEX_API_BASE.replace(/\/$/, '');
+  return base ? `${base}${path}` : path;
 }
 
 function escapeHtml(str) {
@@ -108,16 +112,10 @@ function showError(msg) {
 }
 
 async function checkApi() {
-  const base = getApiBase();
   const dot = $('#server-dot');
   const text = $('#server-status-text');
-  if (!base) {
-    dot.className = 'server-dot offline';
-    text.textContent = 'API URL not set in config.js';
-    return false;
-  }
   try {
-    const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(apiUrl('/api/health'), { signal: AbortSignal.timeout(5000) });
     const data = await res.json();
     if (res.ok && data.fedexApi) {
       dot.className = 'server-dot online';
@@ -125,11 +123,13 @@ async function checkApi() {
       return true;
     }
     dot.className = 'server-dot offline';
-    text.textContent = data.fedexApi ? 'API reachable' : 'FedEx credentials not configured on server';
+    text.textContent = 'FedEx API reachable but credentials not set on server';
     return false;
   } catch {
     dot.className = 'server-dot offline';
-    text.textContent = `Cannot reach API at ${base}`;
+    text.textContent = FEDEX_API_BASE
+      ? 'Cannot reach FedEx API server'
+      : 'Tracker UI is live — API server not deployed yet (see note below)';
     return false;
   }
 }
@@ -142,18 +142,12 @@ async function track(e) {
     return;
   }
 
-  const base = getApiBase();
-  if (!base) {
-    showError('Set PV_API_URL in service/config.js to your Vercel deployment URL.');
-    return;
-  }
-
   const btn = $('#track-btn');
   btn.disabled = true;
   btn.textContent = 'Tracking…';
 
   try {
-    const res = await fetch(`${base}/api/track?trackingNumber=${tracking}`);
+    const res = await fetch(apiUrl(`/api/track?trackingNumber=${tracking}`));
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Lookup failed');
     renderResult(data);
