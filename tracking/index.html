@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v6.6 | 18³ BOX + RISK MODEL</title>
+  <title>TRACKING // RISK ADJUSTER v6.7 | SEARCH ALL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
@@ -89,7 +89,7 @@
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
           <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#4b5563] self-end mb-0.5">RISK ADJUSTER v6.6</span>
+          <span class="text-xs text-[#4b5563] self-end mb-0.5">RISK ADJUSTER v6.7</span>
         </div>
         <div class="text-xs text-[#4b5563]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
       </div>
@@ -128,8 +128,9 @@
           <div class="label mb-1">FILTER (optional)</div>
           <input type="text" id="risk-keyword" placeholder="HS, chapter, keyword…" class="w-full p-1 text-sm" onkeydown="if(event.key==='Enter')runLowestRiskSearch()">
         </div>
-        <button type="button" class="search-btn w-full py-2 mb-1 text-xs" onclick="runLowestRiskSearch()">FIND LOWEST RISK</button>
-        <button type="button" class="search-btn w-full py-1 text-[9px] text-[#6b7280]" onclick="clearLowestRiskSearch()">clear risk search</button>
+        <button type="button" class="search-btn w-full py-2 mb-1 text-xs" onclick="runSearchAll()">SEARCH ALL</button>
+        <button type="button" class="search-btn w-full py-1 mb-1 text-[10px]" onclick="runLowestRiskSearch()">FIND LOWEST RISK (native weight)</button>
+        <button type="button" class="search-btn w-full py-1 text-[9px] text-[#6b7280]" onclick="clearLowestRiskSearch()">clear search</button>
         <div id="risk-search-status" class="text-[9px] text-[#4b5563] mt-1"></div>
         <div class="section-title mt-4">FREIGHT MODE</div>
         <p class="uk-note mb-2">Air vs sea changes dim-weight rules, entry port scrutiny, and lane-plausibility risk.</p>
@@ -187,8 +188,9 @@
           <div class="flex gap-2 flex-wrap items-center mb-2">
             <input type="text" id="risk-search" placeholder="HS code, ch 84, keyword…" class="flex-1 min-w-[160px] p-1" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
             <input type="number" id="max-risk" min="4" max="96" step="1" placeholder="≤ risk" class="w-16 p-1" title="Max risk score (target &lt;28)" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
-            <button type="button" class="search-btn" onclick="runDirectRiskSearch()">SEARCH</button>
-            <button type="button" id="btn-global" class="search-btn" onclick="runGlobalLowestRisk()">LOWEST GLOBAL</button>
+            <button type="button" id="btn-search-all" class="search-btn" onclick="runSearchAll()">SEARCH ALL</button>
+            <button type="button" class="search-btn" onclick="runDirectRiskSearch()">FILTER</button>
+            <button type="button" id="btn-global" class="search-btn" onclick="runGlobalLowestRisk()">NATIVE WT</button>
             <button type="button" class="search-btn" onclick="clearDirectSearch()">RESET</button>
           </div>
           <div id="search-mode-note" class="text-[9px] text-[#4b5563]"></div>
@@ -357,8 +359,8 @@
 <script>
 
 const REGIME = {
-  version: '6.6.0',
-  codename: '18³ BOX + RISK MODEL',
+  version: '6.7.0',
+  codename: 'SEARCH ALL',
   tariffBase: 'UK Integrated Online Tariff',
   tariffAsOf: '2026-06-18',
   route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
@@ -444,6 +446,7 @@ let productIndex = null;
 let dbReady = false;
 let analyzeTimer = null;
 const DISPLAY_LIMIT = 500;
+const DISPLAY_LIMIT_ALL = 15000;
 
 function buildWeightIndex() {
   const buckets = {};
@@ -546,25 +549,33 @@ function getRiskTargetFilter() {
 function updateSearchModeUI() {
   const note = document.getElementById('search-mode-note');
   const title = document.getElementById('results-title');
-  const btn = document.getElementById('btn-global');
+  const btnGlobal = document.getElementById('btn-global');
+  const btnAll = document.getElementById('btn-search-all');
   const status = document.getElementById('risk-search-status');
   const target = getRiskTargetFilter() ?? getMaxRiskFilter();
-  if (scanMode === 'global') {
+  btnGlobal?.classList.remove('active');
+  btnAll?.classList.remove('active');
+  if (scanMode === 'all') {
+    title.textContent = 'SEARCH ALL — FULL UK TARIFF AT YOUR WEIGHT';
+    const targetNote = target != null ? ' · risk ≤ ' + target : '';
+    const box = getSelectedBox();
+    note.textContent = 'All ' + (REGIME.entries || '13k+') + ' codes scored at ' + profile.weight + ' lbs · ' + box.dims.join('×') + ' in box. No weight cutoff.' + targetNote;
+    if (status) status.textContent = 'Search all active — full database at current weight/box' + (target != null ? ' · cap ≤ ' + target : '');
+    btnAll?.classList.add('active');
+  } else if (scanMode === 'global') {
     title.textContent = 'GLOBAL LOWEST RISK — NATIVE WEIGHT PER CODE';
     const targetNote = target != null ? ' · showing risk ≤ ' + target : '';
     note.textContent = 'Scoring each code at its own gross weight + best-fit box. WT Δ vs your shipment weight shown for reference.' + targetNote;
-    if (status) status.textContent = 'Risk search active — weight slider ignored' + (target != null ? ' · cap ≤ ' + target : '');
-    btn?.classList.add('active');
+    if (status) status.textContent = 'Native-weight scan — weight slider ignored' + (target != null ? ' · cap ≤ ' + target : '');
+    btnGlobal?.classList.add('active');
   } else if (getSearchQuery() || getMaxRiskFilter() != null) {
-    title.textContent = 'DIRECT SEARCH RESULTS — LOWEST RISK FIRST';
-    note.textContent = 'Full-database search at your current weight (' + profile.weight + ' lbs) and box.';
+    title.textContent = 'FILTERED SEARCH — LOWEST RISK FIRST';
+    note.textContent = 'Filtered search at your current weight (' + profile.weight + ' lbs) and box.';
     if (status) status.textContent = '';
-    btn?.classList.remove('active');
   } else {
     title.textContent = 'ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST';
     note.textContent = '';
     if (status) status.textContent = '';
-    btn?.classList.remove('active');
   }
 }
 
@@ -599,8 +610,8 @@ function runDirectRiskSearch() {
   syncRiskSearchInputs();
   const hasQuery = !!getSearchQuery();
   const hasMax = getMaxRiskFilter() != null;
-  if (!hasQuery) {
-    runLowestRiskSearch();
+  if (!hasQuery && !hasMax) {
+    runSearchAll();
     return;
   }
   scanMode = 'weight';
@@ -611,6 +622,14 @@ function runDirectRiskSearch() {
 
 function runGlobalLowestRisk() {
   runLowestRiskSearch();
+}
+
+function runSearchAll() {
+  syncRiskSearchInputs();
+  scanMode = 'all';
+  document.getElementById('show-all').checked = true;
+  updateSearchModeUI();
+  analyzeAllAsync();
 }
 
 function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
@@ -1068,7 +1087,7 @@ function onWeightSlide() {
   const w = parseFloat(document.getElementById('weight-slider').value);
   syncWeightUI(w);
   if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
-  if (scanMode === 'global') scanMode = 'weight';
+  if (scanMode === 'global' || scanMode === 'all') scanMode = 'weight';
   updateSearchModeUI();
   scheduleAnalyze();
 }
@@ -1077,7 +1096,7 @@ function onWeightInput() {
   const w = parseFloat(document.getElementById('weight-input').value) || 0.5;
   syncWeightUI(w);
   if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
-  if (scanMode === 'global') scanMode = 'weight';
+  if (scanMode === 'global' || scanMode === 'all') scanMode = 'weight';
   updateSearchModeUI();
   analyze();
 }
@@ -1144,6 +1163,35 @@ function finishAnalyze(allRanked, prevId) {
 }
 
 let globalScanGen = 0;
+let allScanGen = 0;
+let renderGen = 0;
+
+async function analyzeAllAsync() {
+  const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
+  const box = getSelectedBox();
+  syncProfileUI(weight, box);
+  updateSearchModeUI();
+  const gen = ++allScanGen;
+  const prev = selectedId;
+  let entries = filterBySearch(Object.entries(PRODUCTS));
+  const allRanked = [];
+  const chunk = 2000;
+  const total = entries.length;
+  document.getElementById('result-count').textContent = 'Searching all 0 / ' + total + '…';
+  for (let i = 0; i < entries.length; i += chunk) {
+    if (gen !== allScanGen) return;
+    const slice = entries.slice(i, i + chunk);
+    for (const [id, p] of slice) {
+      const scored = scoreOption(p, weight, box.dims, box);
+      allRanked.push({ id, product: p, ...scored });
+    }
+    document.getElementById('result-count').textContent = 'Searching all ' + Math.min(i + chunk, total) + ' / ' + total + '…';
+    await new Promise(r => setTimeout(r, 0));
+  }
+  if (gen !== allScanGen) return;
+  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
+  finishAnalyze(allRanked, prev);
+}
 
 async function analyzeGlobalAsync() {
   const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
@@ -1175,6 +1223,10 @@ async function analyzeGlobalAsync() {
 function analyze() {
   if (scanMode === 'global') {
     analyzeGlobalAsync();
+    return;
+  }
+  if (scanMode === 'all') {
+    analyzeAllAsync();
     return;
   }
   const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
@@ -1212,26 +1264,49 @@ function productFlags(p, scored) {
   return flags;
 }
 
+function buildOptionRow(r, index) {
+  const tr = document.createElement('tr');
+  tr.className = 'option-row border-b border-[#222]' + (r.id === selectedId ? ' selected' : '');
+  tr.onclick = () => selectOption(r.id);
+  const flags = productFlags(r.product, r);
+  if (r.wtDelta <= 3) flags.push('<span class="flag flag-ok">WT MATCH</span>');
+  if (r.fits) flags.push('<span class="flag flag-ok">FITS BOX</span>');
+  if (r.breakdown?.boxCapacity >= 8) flags.push('<span class="flag flag-warn">OVER CAP</span>');
+  if (r.breakdown?.volumeFill >= 6) flags.push('<span class="flag flag-warn">LOW FILL</span>');
+  tr.innerHTML = '<td class="text-[#4b5563]">'+(index+1)+'</td><td class="font-bold '+riskClass(r.score)+'">'+r.score+'</td><td class="max-w-[200px] truncate" title="'+r.product.name+'">'+r.product.name+'</td><td class="text-[10px]">'+fmtHs(r.product.hs)+'</td><td>'+r.product.duty+'%</td><td class="'+(r.wtDelta>10?'text-[#eab308]':'')+'">'+r.wtDelta.toFixed(1)+'</td><td>'+(flags.join('')||'—')+'</td>';
+  return tr;
+}
+
+function appendOptionRows(start, end) {
+  const body = document.getElementById('options-body');
+  const frag = document.createDocumentFragment();
+  for (let i = start; i < end; i++) {
+    frag.appendChild(buildOptionRow(rankedResults[i], i));
+  }
+  body.appendChild(frag);
+}
+
 function renderOptions() {
   const body = document.getElementById('options-body');
   body.innerHTML = '';
-  const suffix = rankedResults.length > DISPLAY_LIMIT ? ' (showing top '+DISPLAY_LIMIT+')' : '';
-  const pool = scanMode === 'global' ? 'global scan' : (getSearchQuery() ? 'search' : 'weight');
+  const gen = ++renderGen;
+  const limit = scanMode === 'all' ? DISPLAY_LIMIT_ALL : DISPLAY_LIMIT;
+  const shown = Math.min(rankedResults.length, limit);
+  const suffix = rankedResults.length > shown ? ' (showing ' + shown + ' of ' + rankedResults.length + ')' : '';
+  const pool = scanMode === 'all' ? 'search all' : scanMode === 'global' ? 'native weight' : (getSearchQuery() ? 'filtered' : 'weight');
   const maxNote = getMaxRiskFilter() != null ? ' · risk ≤ ' + getMaxRiskFilter() : '';
   document.getElementById('result-count').textContent = rankedResults.length + ' matched (' + pool + ')' + maxNote + suffix;
-  const display = rankedResults.slice(0, DISPLAY_LIMIT);
-  display.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    tr.className = 'option-row border-b border-[#222]' + (r.id === selectedId ? ' selected' : '');
-    tr.onclick = () => selectOption(r.id);
-    const flags = productFlags(r.product, r);
-    if (r.wtDelta <= 3) flags.push('<span class="flag flag-ok">WT MATCH</span>');
-    if (r.fits) flags.push('<span class="flag flag-ok">FITS BOX</span>');
-    if (r.breakdown?.boxCapacity >= 8) flags.push('<span class="flag flag-warn">OVER CAP</span>');
-    if (r.breakdown?.volumeFill >= 6) flags.push('<span class="flag flag-warn">LOW FILL</span>');
-    tr.innerHTML = '<td class="text-[#4b5563]">'+(i+1)+'</td><td class="font-bold '+riskClass(r.score)+'">'+r.score+'</td><td class="max-w-[200px] truncate" title="'+r.product.name+'">'+r.product.name+'</td><td class="text-[10px]">'+fmtHs(r.product.hs)+'</td><td>'+r.product.duty+'%</td><td class="'+(r.wtDelta>10?'text-[#eab308]':'')+'">'+r.wtDelta.toFixed(1)+'</td><td>'+(flags.join('')||'—')+'</td>';
-    body.appendChild(tr);
-  });
+  const firstBatch = Math.min(400, shown);
+  appendOptionRows(0, firstBatch);
+  if (shown > firstBatch) {
+    (async () => {
+      for (let i = firstBatch; i < shown; i += 400) {
+        if (gen !== renderGen) return;
+        await new Promise(r => requestAnimationFrame(r));
+        appendOptionRows(i, Math.min(i + 400, shown));
+      }
+    })();
+  }
   const cfg = getFreightConfig();
   document.getElementById('footer-profile').textContent = 'DB v'+REGIME.version+' · '+cfg.label+' · '+profile.weight+' lbs · '+profile.dims.join('×')+' in · '+rankedResults.length+' ranked';
 }
@@ -1505,6 +1580,7 @@ function showHelp() {
         <li><strong>Risk score</strong>: Lower is safer for UK customs clearance. &lt;28 = LOW (preferred).</li>
         <li><strong>WT Δ</strong>: How far the declared item weight is from your shipment weight. Smaller = more believable on paperwork.</li>
         <li><strong>Dim weight</strong>: Volumetric weight used by carriers (L×W×H ÷139 for air). Can affect cost &amp; audit risk.</li>
+        <li><strong>SEARCH ALL</strong>: Scores every UK tariff code at your current weight &amp; box — no weight cutoff.</li>
         <li><strong>18×18×18 cube</strong>: Standard GPU/electronics box (~42 lb dim weight). Use the dedicated panel or preset.</li>
         <li>Risk now includes <strong>box capacity</strong>, <strong>volume fill</strong>, and <strong>billable weight</strong> alignment.</li>
         <li>Use <strong>AIR</strong> for fast small/medium GPU shipments; <strong>SEA</strong> for heavy/pallets (no dim penalty).</li>
