@@ -3,450 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRACKING // RISK ADJUSTER v6.7 | SEARCH ALL</title>
+  <title>UK TRACKER — Classification Risk</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; background:#fff; color:#111827; }
-    .panel { background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-    .label { font-size: 11px; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-    .value { font-size: 18px; font-weight: 500; }
-    input, select, button { background: #fff; border: 1px solid #d1d5db; color: #111827; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
-    input:focus, select:focus { border-color: #6d28d9; outline: none; }
-    .risk-low { color: #15803d; font-weight:600; }
-    .risk-med { color: #b45309; font-weight:600; }
-    .risk-high { color: #b91c1c; font-weight:600; }
-    .section-title { font-size: 11px; letter-spacing: 1px; color: #4b5563; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; font-weight:600; }
-    .uk-note { font-size: 11px; color: #6b7280; }
-    table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
-    td, th { padding: 7px 9px; text-align: left; }
-    tr.option-row { cursor: pointer; transition: background 0.1s; }
-    tr.option-row:hover { background: #f3f4f6; }
-    tr.option-row.selected { background: #f5f3ff; border-left: 2px solid #6d28d9; }
-    #options-body td { padding-top: 7px; padding-bottom: 7px; }
-    #auth-gate { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9999; align-items: center; justify-content: center; }
-    #auth-gate .auth-box { background: #fff; border: 1px solid #e5e7eb; padding: 24px; width: 320px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
-    #auth-gate .auth-title { font-size: 14px; font-weight: 600; letter-spacing: 1px; margin-bottom: 16px; color:#111827; }
-    #auth-gate .auth-error { color: #b91c1c; font-size: 10px; margin-top: 8px; display: none; }
-    #auth-gate input[type="text"], #auth-gate input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; background:#fff; border:1px solid #d1d5db; color:#111; }
-    #auth-gate button { width: 100%; padding: 8px; cursor: pointer; border:1px solid #6d28d9; background:#6d28d9; color:#fff; }
-    #auth-gate button:hover { background: #5b21b6; }
-    .flag { font-size: 8px; padding: 1px 4px; border: 1px solid #444; border-radius: 2px; margin-right: 3px; }
-    .flag-warn { color: #eab308; border-color: #665500; }
-    .flag-ok { color: #666; }
-    #weight-slider { width: 100%; height: 10px; accent-color: #22c55e; cursor: pointer; }
-    .weight-display { font-size: 36px; font-weight: 500; line-height: 1; }
-    .weight-scale { display: flex; justify-content: space-between; font-size: 8px; color: #555; margin-top: 4px; }
-    .quick-pick { border: 1px solid #d1d5db; padding: 10px; cursor: pointer; transition: all 0.12s; background: #f9fafb; font-size: 12px; }
-    .quick-pick:hover { border-color: #6d28d9; background: #f3f4f6; }
-    .quick-pick.active { border-color: #6d28d9; background: #f5f3ff; }
-    .quick-pick .qp-risk { font-size: 20px; font-weight: 600; }
-    input[type="range"] { background: transparent; border: none; padding: 0; accent-color: #6d28d9; }
-    .search-btn { padding: 6px 10px; font-size: 11px; cursor: pointer; border: 1px solid #d1d5db; background:#fff; color:#374151; white-space: nowrap; }
-    .search-btn:hover { background: #f3f4f6; border-color:#6d28d9; color:#111827; }
-    .search-btn.active { background: #f5f3ff; border-color: #6d28d9; color:#6d28d9; }
-    #risk-search, #max-risk { font-size: 11px; }
-    .freight-btn { flex: 1; padding: 6px 4px; font-size: 10px; cursor: pointer; border: 1px solid #d1d5db; background: #fff; color: #4b5563; text-align: center; transition: all 0.12s; }
-    .freight-btn:hover { border-color: #6d28d9; color: #6d28d9; }
-    .freight-btn.active { border-color: #6d28d9; background: #f5f3ff; color: #6d28d9; }
-    .route-leg-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 8px; text-align: center; }
-    .route-leg-box.highlight { border-color: #6d28d9; background: #f5f3ff; }
-    .route-arrow { color: #6b7280; font-size: 14px; padding: 0 4px; }
-    .route-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-    .route-tab { padding: 4px 10px; font-size: 10px; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; }
-    .route-tab.active { border-color: #6d28d9; color: #6d28d9; background: #f5f3ff; }
-    .route-tab-panel { display: none; }
-    .route-tab-panel.active { display: block; }
-    .route-compare-card { flex: 1; min-width: 140px; padding: 10px; border: 1px solid #e5e7eb; background: #fff; }
-    .route-compare-card.winner { border-color: #6d28d9; background: #f5f3ff; }
-    .route-score-lg { font-size: 28px; font-weight: 600; line-height: 1.1; }
+    body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; background: #fafafa; color: #111827; }
+    .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    input, button { border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 10px; font-size: 14px; }
+    input:focus { border-color: #6d28d9; outline: none; box-shadow: 0 0 0 2px #ede9fe; }
+    .btn { background: #6d28d9; color: #fff; border-color: #6d28d9; font-weight: 600; cursor: pointer; }
+    .btn:hover { background: #5b21b6; }
+    .risk-low { color: #15803d; font-weight: 700; }
+    .risk-med { color: #b45309; font-weight: 700; }
+    .risk-high { color: #b91c1c; font-weight: 700; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #f3f4f6; }
+    th { font-size: 11px; color: #6b7280; text-transform: uppercase; background: #f9fafb; position: sticky; top: 0; }
+    tr.row { cursor: pointer; }
+    tr.row:hover { background: #f9fafb; }
+    tr.row.selected { background: #f5f3ff; }
+    .flag { font-size: 9px; padding: 1px 5px; border: 1px solid #e5e7eb; border-radius: 3px; margin-right: 3px; color: #6b7280; }
+    .flag-warn { color: #b45309; border-color: #fde68a; background: #fffbeb; }
+    .flag-ok { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
   </style>
 </head>
-<body class="bg-white text-[#111827] p-4">
-  <div id="auth-gate">
-    <div class="auth-box">
-      <div class="auth-title">TRACKING // ACCESS</div>
-      <form onsubmit="handleLogin(event)">
-        <div class="label mb-1">USERNAME</div>
-        <input type="text" id="auth-user" autocomplete="username" required>
-        <div class="label mb-1">PASSWORD</div>
-        <input type="password" id="auth-pass" autocomplete="current-password" required>
-        <button type="submit">AUTHENTICATE</button>
-        <div id="auth-error" class="auth-error">ACCESS DENIED</div>
-      </form>
+<body class="p-4 md:p-6 max-w-6xl mx-auto">
+
+  <div id="db-loading" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center gap-3" style="display:none">
+    <div class="text-sm font-medium">Loading UK tariff database…</div>
+    <div id="db-loading-status" class="text-xs text-gray-500">—</div>
+  </div>
+
+  <header class="mb-6">
+    <h1 class="text-xl font-bold">UK TRACKER</h1>
+    <p class="text-sm text-gray-500 mt-1">Enter shipment weight and box size. Get UK HS classifications ranked by clearance risk.</p>
+  </header>
+
+  <div class="panel p-4 mb-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
+      <div>
+        <div class="label mb-1">Gross weight (lbs)</div>
+        <input type="number" id="weight" min="0.1" step="0.1" value="24" class="w-full">
+      </div>
+      <div>
+        <div class="label mb-1">Length (in)</div>
+        <input type="number" id="dim-l" min="1" step="0.5" value="18" class="w-full">
+      </div>
+      <div>
+        <div class="label mb-1">Width (in)</div>
+        <input type="number" id="dim-w" min="1" step="0.5" value="18" class="w-full">
+      </div>
+      <div>
+        <div class="label mb-1">Height (in)</div>
+        <input type="number" id="dim-h" min="1" step="0.5" value="18" class="w-full">
+      </div>
+      <div>
+        <button type="button" class="btn w-full" onclick="search()">SEARCH</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 items-end">
+      <div class="md:col-span-2">
+        <div class="label mb-1">Filter (optional)</div>
+        <input type="text" id="filter" placeholder="HS code, chapter, keyword…" class="w-full" onkeydown="if(event.key==='Enter')search()">
+      </div>
+      <label class="flex items-center gap-2 text-sm text-gray-600 pb-2 cursor-pointer">
+        <input type="checkbox" id="show-all" class="w-4 h-4">
+        Include poor weight matches
+      </label>
+    </div>
+    <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
+      <span>Dim weight: <strong id="info-dim" class="text-gray-800">—</strong></span>
+      <span>Billable: <strong id="info-billable" class="text-gray-800">—</strong></span>
+      <span>Risk: <span class="risk-low">&lt;28 low</span> · <span class="risk-med">28–51 med</span> · <span class="risk-high">52+ high</span></span>
+      <span id="db-info">—</span>
     </div>
   </div>
 
-
-  <div id="db-loading" style="display:none;position:fixed;inset:0;background:#fff;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
-    <div class="text-sm tracking-widest" style="color:#111827">LOADING UK TARIFF DATABASE</div>
-    <div id="db-loading-status" class="text-xs" style="color:#6b7280">fetching products.json…</div>
-  </div>
-
-  <div id="app-content" style="display:none">
-    <div class="flex justify-between items-center mb-4 border-b border-[#d1d5db] pb-2">
-      <div class="flex items-center gap-4 flex-wrap">
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse"></div>
-          <span class="font-bold text-lg">TRACKING</span>
-          <span class="text-xs text-[#4b5563] self-end mb-0.5">RISK ADJUSTER v6.7</span>
-        </div>
-        <div class="text-xs text-[#4b5563]" id="route-tagline">NY JFK → EU HUBS → UK · TRIANGULAR ROUTE BLOOMBERG | 15 EU JURISDICTIONS</div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 panel overflow-hidden">
+      <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+        <span class="font-semibold text-sm">Classifications</span>
+        <span id="result-count" class="text-xs text-gray-500">—</span>
       </div>
-      <div class="flex items-center gap-4 text-xs">
-        <div>TARIFF: <span id="last-update">—</span></div>
-        <div class="px-2 py-0.5 bg-[#f3f4f6] border border-[#d1d5db]">UK IOT + EU TARIC · CDS-READY</div>
+      <div class="overflow-auto max-h-[65vh]">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Risk</th>
+              <th>Classification</th>
+              <th>HS Code</th>
+              <th>Duty</th>
+              <th>WT Δ</th>
+            </tr>
+          </thead>
+          <tbody id="results"></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- Friendly intro for non-experts -->
-    <div class="panel p-3 rounded mb-3" style="max-width: 980px; margin: 0 auto 0.5rem; font-size: 12px; line-height: 1.45;">
-      <div style="display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:260px;">
-          <strong style="color:#e8e8f0;">What is this?</strong><br>
-          <span style="color:#aaa;">Find the lowest-risk UK tariff (HS) codes for your shipment weight &amp; box. Scores factor physical match, description quality, restrictions, valuation, and lane suitability (air/sea). Use for commercial invoices &amp; packing lists. For GPUs / AI hardware from the US.</span>
+    <div class="panel p-4">
+      <div class="font-semibold text-sm mb-3">Selected</div>
+      <div id="detail-empty" class="text-sm text-gray-400">Click a row to see details.</div>
+      <div id="detail" class="hidden text-sm space-y-3">
+        <div>
+          <div id="detail-name" class="font-semibold"></div>
+          <div class="mt-1 flex items-baseline gap-2">
+            <span id="detail-risk" class="text-3xl font-bold"></span>
+            <span id="detail-risk-label" class="text-xs text-gray-500"></span>
+          </div>
         </div>
         <div>
-          <button type="button" onclick="loadGpuExample()" class="search-btn" style="font-size:11px; padding:6px 10px;">Load GPU example (24 lb RTX 3090)</button>
-          <button type="button" onclick="showHelp()" class="search-btn" style="font-size:11px; padding:6px 10px; margin-left:4px;">Help &amp; legend</button>
+          <div class="label mb-1">HS Code</div>
+          <div id="detail-hs" class="font-mono text-sm"></div>
+          <a id="detail-hs-link" href="#" target="_blank" class="text-xs text-violet-700 hover:underline"></a>
+        </div>
+        <div>
+          <div class="label mb-1">Invoice description</div>
+          <div id="detail-desc" class="text-xs text-gray-700 leading-relaxed"></div>
+        </div>
+        <div>
+          <div class="label mb-1">Packing list</div>
+          <div id="detail-packing" class="text-xs text-gray-600"></div>
+        </div>
+        <div>
+          <div class="label mb-1">Risk factors</div>
+          <div id="detail-breakdown" class="text-xs space-y-0.5"></div>
         </div>
       </div>
-      <div id="risk-legend" style="margin-top:8px; font-size:10px; color:#888;">
-        Risk score: <span class="risk-low" style="font-weight:600;">&lt;28 LOW</span> (good) · <span class="risk-med" style="font-weight:600;">28-51 MED</span> · <span class="risk-high" style="font-weight:600;">52+ HIGH</span> — aim low. WT Δ = difference vs your shipment weight.
-      </div>
-    </div>
-
-    <div class="grid grid-cols-12 gap-3">
-      <div class="col-span-12 lg:col-span-3 panel p-3 rounded">
-        <div class="section-title">LOWEST RISK SEARCH</div>
-        <p class="uk-note mb-2">Find the lowest clearance risk across the full UK tariff — no weight scrolling. Each code scored at its native weight + best-fit box.</p>
-        <div class="mb-2">
-          <div class="label mb-1">TARGET RISK (optional)</div>
-          <input type="number" id="risk-target" min="4" max="96" step="1" placeholder="e.g. 28" class="w-full p-1 text-sm" title="Only show codes scoring at or below this risk" onkeydown="if(event.key==='Enter')runLowestRiskSearch()">
-        </div>
-        <div class="mb-2">
-          <div class="label mb-1">FILTER (optional)</div>
-          <input type="text" id="risk-keyword" placeholder="HS, chapter, keyword…" class="w-full p-1 text-sm" onkeydown="if(event.key==='Enter')runLowestRiskSearch()">
-        </div>
-        <button type="button" class="search-btn w-full py-2 mb-1 text-xs" onclick="runSearchAll()">SEARCH ALL</button>
-        <button type="button" class="search-btn w-full py-1 mb-1 text-[10px]" onclick="runLowestRiskSearch()">FIND LOWEST RISK (native weight)</button>
-        <button type="button" class="search-btn w-full py-1 text-[9px] text-[#6b7280]" onclick="clearLowestRiskSearch()">clear search</button>
-        <div id="risk-search-status" class="text-[9px] text-[#4b5563] mt-1"></div>
-        <div class="section-title mt-4">FREIGHT MODE</div>
-        <p class="uk-note mb-2">Air vs sea changes dim-weight rules, entry port scrutiny, and lane-plausibility risk.</p>
-        <div class="flex gap-1 mb-2">
-          <button type="button" id="btn-freight-air" class="freight-btn active" onclick="setFreightMode('air')">AIR EXPRESS</button>
-          <button type="button" id="btn-freight-sea" class="freight-btn" onclick="setFreightMode('sea')">SEA LCL/FCL</button>
-        </div>
-        <div id="freight-mode-note" class="text-[9px] text-[#4b5563] mb-1">LHR courier · dim weight ÷139 · IATA lane checks</div>
-        <div class="section-title mt-3">WEIGHT SLIDER</div>
-        <p class="uk-note mb-3">Slide gross weight. Full UK declarable tariff ranked by clearance risk — physical coherence, HMRC description grade, compliance controls, valuation band.</p>
-        <div class="mb-2 flex justify-between items-end">
-          <div class="label">GROSS WEIGHT</div>
-          <div class="weight-display"><span id="weight-display">75</span><span class="text-sm text-[#4b5563]"> lbs</span></div>
-        </div>
-        <input type="range" id="weight-slider" min="0.5" max="150" step="0.5" value="75" class="mb-1" oninput="onWeightSlide()">
-        <div class="weight-scale" id="weight-scale"><span>0.5</span><span>10</span><span>25</span><span>50</span><span>75</span><span>100</span><span>150</span></div>
-        <div class="mt-3 flex gap-2 items-center">
-          <input type="number" id="weight-input" step="0.5" min="0.5" max="150" value="75" class="w-20 p-1 text-sm" oninput="onWeightInput()">
-          <span class="text-[10px] text-[#4b5563]">lbs — or type exact</span>
-        </div>
-        <div class="mt-4 mb-3">
-          <div class="label mb-1">PREPOPULATED PICKS (LOWEST RISK) <button onclick="resetAll()" class="search-btn" style="font-size:9px;padding:1px 6px;margin-left:6px;">RESET</button></div>
-          <div id="quick-picks" class="space-y-2"></div>
-        </div>
-        <div class="mb-3">
-          <div class="label mb-1">BOX (auto-suggested)</div>
-          <select id="box-select" class="w-full p-2 text-sm" onchange="onBoxManual()"></select>
-          <div id="box-note" class="uk-note mt-1"></div>
-        </div>
-        <div class="mb-3 panel p-2" id="cube18-section">
-          <div class="label mb-1">18 × 18 × 18 STANDARD CUBE</div>
-          <p class="uk-note mb-2">Common GPU/electronics carton. Dim weight ≈ 42 lb (÷139). Billable = max(gross, dim).</p>
-          <button type="button" class="search-btn w-full mb-2 text-[10px]" onclick="use18CubeBox()">USE 18×18×18 BOX</button>
-          <div class="text-xs space-y-1">
-            <div class="flex justify-between"><span>Dim weight</span><span id="cube18-dim" class="font-semibold">—</span></div>
-            <div class="flex justify-between"><span>Billable at gross</span><span id="cube18-billable" class="font-semibold">—</span></div>
-            <div class="flex justify-between"><span>Gross vs dim gap</span><span id="cube18-gap" class="font-semibold">—</span></div>
-            <div class="flex justify-between"><span>Max safe gross</span><span id="cube18-max" class="font-semibold">45 lb</span></div>
-            <div class="flex justify-between"><span>Volume fill</span><span id="cube18-fill" class="font-semibold">—</span></div>
-          </div>
-        </div>
-        <div class="panel p-2 text-xs space-y-1">
-          <div class="flex justify-between"><span id="profile-dim-label">Dim weight (÷139)</span><span id="profile-dim-wt" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span id="profile-billable-label">Billable weight</span><span id="profile-billable" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span id="profile-gap-label">Weight/dim gap</span><span id="profile-gap" class="font-semibold">—</span></div>
-        </div>
-        <div id="freight-dim-note" class="uk-note mt-2">FedEx/UPS intl divisor 139. Override box if needed.</div>
-      </div>
-
-      <div class="col-span-12 lg:col-span-6 panel p-3 rounded">
-        <div class="section-title" id="results-title">ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST</div>
-        <div class="mb-3 panel p-2">
-          <div class="label mb-1">DIRECT RISK SEARCH</div>
-          <p class="uk-note mb-2">Find lowest-risk codes by HS, chapter, or keyword — no weight scrolling. Global scan ranks all 13k+ codes at their native weight.</p>
-          <div class="flex gap-2 flex-wrap items-center mb-2">
-            <input type="text" id="risk-search" placeholder="HS code, ch 84, keyword…" class="flex-1 min-w-[160px] p-1" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
-            <input type="number" id="max-risk" min="4" max="96" step="1" placeholder="≤ risk" class="w-16 p-1" title="Max risk score (target &lt;28)" onkeydown="if(event.key==='Enter')runDirectRiskSearch()">
-            <button type="button" id="btn-search-all" class="search-btn" onclick="runSearchAll()">SEARCH ALL</button>
-            <button type="button" class="search-btn" onclick="runDirectRiskSearch()">FILTER</button>
-            <button type="button" id="btn-global" class="search-btn" onclick="runGlobalLowestRisk()">NATIVE WT</button>
-            <button type="button" class="search-btn" onclick="clearDirectSearch()">RESET</button>
-          </div>
-          <div id="search-mode-note" class="text-[9px] text-[#4b5563]"></div>
-        </div>
-        <div class="mb-2 flex justify-between items-center text-xs flex-wrap gap-2">
-          <span id="result-count" class="text-[#6b7280]">—</span>
-          <label class="flex items-center gap-1 text-[#4b5563] cursor-pointer">
-            <input type="checkbox" id="show-all" onchange="clearScanMode(); analyze()" class="w-3 h-3"> show poor weight matches
-          </label>
-        </div>
-        <div class="overflow-auto max-h-[520px]">
-          <table class="text-xs">
-            <thead class="text-[#4b5563] sticky top-0 bg-[#f8fafc]">
-              <tr><th>#</th><th>RISK</th><th>PRODUCT / CLASSIFICATION</th><th>HS CODE</th><th>DUTY</th><th>WT Δ</th><th>FLAGS</th></tr>
-            </thead>
-            <tbody id="options-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="col-span-12 lg:col-span-3 panel p-3 rounded flex flex-col">
-        <div class="section-title">SELECTED OPTION</div>
-        <div id="detail-empty" class="text-xs text-[#4b5563] flex-1">Select an option from the ranked list to see classification detail, risk breakdown, and invoice text.</div>
-        <div id="detail-panel" class="hidden text-xs space-y-2 overflow-auto flex-1">
-          <div id="detail-name" class="text-sm font-semibold"></div>
-          <div class="flex items-center gap-2">
-            <span id="detail-risk" class="text-3xl font-bold"></span>
-            <span id="detail-risk-label" class="text-[10px]"></span>
-          </div>
-          <div class="panel p-2 border border-[#e5e7eb]" id="detail-reroute-panel">
-            <div class="label mb-1">ROUTE QUICK VIEW <span style="font-weight:normal;color:#6b7280">(uses current weight/box on left)</span></div>
-            <div class="flex gap-2 mb-2 flex-wrap items-center text-[10px]">
-              <span class="text-[#6b7280]">EU hub:</span>
-              <select id="reroute-hub-select" class="p-1 text-[10px] flex-1 min-w-[100px]" onchange="onRerouteHubChange()"></select>
-            </div>
-            <div class="flex gap-2 mb-2 flex-wrap">
-              <div class="route-compare-card" id="card-direct">
-                <div class="text-[8px] text-[#6b7280]">DIRECT JFK→UK</div>
-                <div id="reroute-direct-score" class="route-score-lg">—</div>
-                <div class="text-[8px] text-[#6b7280]">selected risk</div>
-              </div>
-              <div class="route-compare-card" id="card-hub">
-                <div class="text-[8px] text-[#6b7280]">VIA EU HUB</div>
-                <div id="reroute-combined" class="route-score-lg">—</div>
-                <div class="text-[9px] mt-1"><span id="reroute-leg1">—</span> + <span id="reroute-leg2">—</span></div>
-                <div class="text-[7px] text-[#6b7280]">blended SRI</div>
-              </div>
-            </div>
-            <div id="reroute-verdict" class="text-[10px] mb-1">—</div>
-            <div id="reroute-status" class="text-[8px] text-[#6b7280]">Direct = the risk you selected. Hub SRI = blended risk via EU (can be lower or higher). See tabs below for details.</div>
-            <span id="reroute-leg1-label" class="hidden"></span>
-            <span id="reroute-leg2-label" class="hidden"></span>
-            <span id="reroute-safety" class="hidden"></span>
-            <span id="reroute-delta" class="hidden"></span>
-            <span id="reroute-uk-entry" class="hidden"></span>
-            <span id="reroute-direct-compare" class="hidden"></span>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">HS / TARIFF</div>
-            <div id="detail-hs" class="font-semibold"></div>
-            <div id="detail-hs-link" class="uk-note mt-1"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">CLASSIFICATION METADATA</div>
-            <div id="detail-meta" class="space-y-0.5 text-[10px]"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">COMMERCIAL DESCRIPTION (INVOICE)</div>
-            <div id="detail-desc" class="text-[10px] leading-relaxed"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">PACKING LIST LINE</div>
-            <div id="detail-packing" class="text-[10px] text-[#aaa]"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">COMPLIANCE / LICENCES</div>
-            <div id="detail-compliance" class="text-[10px] text-[#aaa]"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">RISK BREAKDOWN (EXPERT MODEL)</div>
-            <div id="detail-breakdown" class="space-y-0.5"></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">UK IMPORT ESTIMATE (US ORIGIN)</div>
-            <div id="detail-uk-calc"></div>
-            <div class="mt-1">Est. VAT: <span id="detail-vat"></span></div>
-          </div>
-          <div class="panel p-2">
-            <div class="label mb-1">WHY THIS RANK</div>
-            <div id="detail-why" class="text-[10px] text-[#aaa]"></div>
-          </div>
-        </div>
-      </div>
-
-      <details class="col-span-12 panel p-3 rounded hidden" id="route-bloomberg" style="margin-top:4px;">
-        <summary style="cursor:pointer; font-weight:600; color:#a78bfa; list-style:none;">▶ Route Analysis (JFK → EU → UK) — click to expand advanced optimization</summary>
-        <div style="margin-top: 8px;">
-        <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-          <div class="section-title mb-0">ROUTE ANALYSIS — JFK → EU → UK</div>
-          <button type="button" class="search-btn" onclick="runTriangularAdvantageScan()">SCAN DB FOR SAFER HUBS</button>
-        </div>
-        <div class="flex gap-1 mb-3 flex-wrap" id="route-tabs">
-          <button type="button" class="route-tab active" data-tab="summary" onclick="switchRouteTab('summary')">SUMMARY</button>
-          <button type="button" class="route-tab" data-tab="leg1" onclick="switchRouteTab('leg1')">LEG 1 · US→EU</button>
-          <button type="button" class="route-tab" data-tab="leg2" onclick="switchRouteTab('leg2')">LEG 2 · EU→UK</button>
-          <button type="button" class="route-tab" data-tab="hubs" onclick="switchRouteTab('hubs')">ALL 15 HUBS</button>
-        </div>
-        <div id="route-tab-summary" class="route-tab-panel active">
-          <div id="route-bloomberg-summary" class="mb-2"></div>
-          <div id="route-sri-math" class="panel p-2 text-[10px]"></div>
-        </div>
-        <div id="route-tab-leg1" class="route-tab-panel">
-          <p class="uk-note mb-2">US third-country import into selected EU hub. Only non-zero factors shown.</p>
-          <div id="reroute-leg1-breakdown" class="text-[10px]"></div>
-        </div>
-        <div id="route-tab-leg2" class="route-tab-panel">
-          <p class="uk-note mb-2">EU-origin goods into UK under TCA preference 300 (not US pass-through).</p>
-          <div id="reroute-leg2-breakdown" class="text-[10px]"></div>
-        </div>
-        <div id="route-tab-hubs" class="route-tab-panel">
-          <div id="route-bloomberg-body" class="overflow-auto max-h-[320px]"></div>
-        </div>
-        <div id="route-scan-status" class="text-[9px] text-[#4b5563] mt-2"></div>
-        <div id="route-scan-results" class="hidden mt-3">
-          <div class="label mb-1">HUB ADVANTAGE SCAN RESULTS</div>
-          <div class="overflow-auto max-h-[200px]" id="route-scan-table"></div>
-        </div>
-        </div>
-      </details>
-
-      <div class="col-span-12 panel p-3 rounded">
-        <div class="section-title">CDS CHECKLIST — APPLY TO SELECTED OPTION</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 text-xs">
-          <div>
-            <div class="font-semibold mb-1">COMMERCIAL INVOICE MUST INCLUDE</div>
-            <ul class="list-disc ml-4 space-y-0.5 text-[#aaa]">
-              <li>Seller + buyer details + GB EORI (UK importer of record)</li>
-              <li>Invoice no., date, Incoterms 2020 (DAP/DDP London)</li>
-              <li>10-digit UK commodity code + plain-language description</li>
-              <li>Qty, UoM, unit price, total value USD, country of origin US</li>
-              <li>Preference code 100 (third country) unless REX/statement of origin</li>
-              <li>Gross/net weight: <span id="doc-weight" class="text-[#111827]">—</span> lbs | Box: <span id="doc-dims" class="text-[#111827]">—</span></li>
-            </ul>
-          </div>
-          <div>
-            <div class="font-semibold mb-1">PACKING LIST MUST MATCH</div>
-            <ul class="list-disc ml-4 space-y-0.5 text-[#aaa]">
-              <li>Exact L×W×H per package — match carrier label</li>
-              <li>Gross + net weight per carton, package marks</li>
-              <li>Contents mirror invoice line; HS cross-reference</li>
-              <li>Attach licences/phyto/SDS where compliance panel flags</li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-2 text-[10px] text-[#6b7280]">Full UK + EU TARIC route model v6.1 — verify measures at trade-tariff.service.gov.uk and EU TARIC before filing. Not legal advice.</div>
-      </div>
-    </div>
-
-    <div class="mt-4 text-[10px] text-[#6b7280] flex justify-between flex-wrap gap-2">
-      <div>PrimaryVowels Tracking — UK IOT full declarable tariff</div>
-      <div id="footer-profile"></div>
     </div>
   </div>
 
-<script src="data/routes-engine.js"></script>
 <script>
-
-const REGIME = {
-  version: '6.7.0',
-  codename: 'SEARCH ALL',
-  tariffBase: 'UK Integrated Online Tariff',
-  tariffAsOf: '2026-06-18',
-  route: { origin: 'US', dest: 'GB', entry: 'LHR', mode: 'air_courier' },
-  preferenceCode: '100',
-  preferenceLabel: 'Third country duty (US origin — no preferential FTA rate)',
-  vatRate: 0.20,
-  fxUsdGbp: 0.79,
-  entries: 0,
-};
-
-const FREIGHT_MODES = {
-  air: {
-    id: 'air',
-    label: 'Air express',
-    entry: 'LHR',
-    entryLabel: 'Heathrow (LHR) — express/courier',
-    routeTag: 'US → GB · LHR · AIR',
-    dimDivisor: 139,
-    useDimWeight: true,
-    weightMin: 0.5,
-    weightMax: 150,
-    weightStep: 0.5,
-    defaultWeight: 75,
-    freightPerLb: 8.2,
-    freightBase: 42,
-    insRate: 0.004,
-    modeNote: 'LHR courier · dim weight ÷139 · IATA lane checks',
-    dimNote: 'FedEx/UPS intl divisor 139. Override box if needed.',
-    docType: 'Air waybill (AWB) + commercial invoice',
-  },
-  sea: {
-    id: 'sea',
-    label: 'Sea freight',
-    entry: 'FXT',
-    entryLabel: 'Felixstowe (FXT) — LCL/FCL',
-    routeTag: 'US → GB · FXT · SEA',
-    dimDivisor: 139,
-    useDimWeight: false,
-    weightMin: 50,
-    weightMax: 2000,
-    weightStep: 5,
-    defaultWeight: 500,
-    freightPerLb: 1.35,
-    freightBase: 195,
-    insRate: 0.003,
-    modeNote: 'Felixstowe port · CBM billing · no dim-weight penalty · B/L scrutiny',
-    dimNote: 'Sea LCL/FCL billed on CBM/weight — dim divisor not applied. Override box if needed.',
-    docType: 'Bill of lading (B/L) + commercial invoice + packing list',
-  },
-};
-
-let freightMode = 'air';
+const DIM_DIVISOR = 139;
+const WEIGHT_MATCH_CUTOFF = 15;
+const DISPLAY_LIMIT = 500;
 
 const RESTRICTION_WEIGHTS = {
   EXCISE: 24, PHYTO: 26, SPS: 18, REACH: 14, DUAL_USE: 17, MHRA: 10,
   UKCA: 9, BORDER_MODEL: 11, CITES: 15, AVIATION: 10, VALUATION: 14,
 };
-
-const CHAPTER_BASE = {
-  12: 9, 18: 6, 21: 6, 22: 10, 33: 4, 38: 6, 39: 5, 63: 7, 71: 8, 88: 7, 97: 6,
-};
-
+const CHAPTER_BASE = { 12: 9, 18: 6, 21: 6, 22: 10, 33: 4, 38: 6, 39: 5, 63: 7, 71: 8, 88: 7, 97: 6 };
 const CATCH_ALL_HEADINGS = ['630790', '210690', '392690', '847330'];
-
-const BOX_PRESETS = [
-  { id: 'xs',   label: '10 × 8 × 6 in (extra small)',        dims: [10, 8, 6],   maxWt: 3 },
-  { id: 'sm',   label: '12 × 10 × 8 in (small)',             dims: [12, 10, 8],  maxWt: 8 },
-  { id: 'med',  label: '16 × 13 × 7 in (medium)',            dims: [16, 13, 7],  maxWt: 12 },
-  { id: 'app',  label: '18 × 14 × 6 in (apparel)',           dims: [18, 14, 6],  maxWt: 10 },
-  { id: '18cube', label: '18 × 18 × 18 in (standard cube)',  dims: [18, 18, 18], maxWt: 45 },
-  { id: 'mdl',  label: '24 × 18 × 12 in (medium-large)',     dims: [24, 18, 12], maxWt: 35 },
-  { id: 'cube', label: '24 × 24 × 24 in (large cube)',       dims: [24, 24, 24], maxWt: 85 },
-  { id: 'srv',  label: '30 × 22 × 14 in (machinery)',        dims: [30, 22, 14], maxWt: 95 },
-  { id: 'xl',   label: '28 × 28 × 16 in (oversize)',         dims: [28, 28, 16], maxWt: 55 },
-  { id: 'bike', label: '48 × 10 × 30 in (bike flat-pack)',   dims: [48, 10, 30], maxWt: 35 },
-  { id: 'plt',  label: '48 × 40 × 24 in (pallet carton)',    dims: [48, 40, 24], maxWt: 150 },
-  { id: 'lcl',  label: '48 × 40 × 48 in (LCL pallet)',       dims: [48, 40, 48], maxWt: 800 },
-  { id: 'fcl',  label: '96 × 96 × 96 in (FCL volume)',       dims: [96, 96, 96], maxWt: 2000 },
-];
 
 let PRODUCTS = {};
 let productIndex = null;
-let dbReady = false;
-let analyzeTimer = null;
-const DISPLAY_LIMIT = 500;
-const DISPLAY_LIMIT_ALL = 15000;
+let rankedResults = [];
+let selectedId = null;
+let searchGen = 0;
+
+function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
+function fmtHs(hs) {
+  const n = normHs(hs);
+  if (n.length !== 10) return hs;
+  return n.slice(0,4)+' '+n.slice(4,6)+' '+n.slice(6,8)+' '+n.slice(8,10);
+}
+function hsValid(hs) {
+  const n = normHs(hs);
+  return n.length === 10 && /^\d{10}$/.test(n);
+}
+function dimDelta(a, b) {
+  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);
+}
+function fitsInBox(productDims, boxDims) {
+  const pd = [...productDims].sort((a,b)=>b-a);
+  const bd = [...boxDims].sort((a,b)=>b-a);
+  return pd[0] <= bd[0] && pd[1] <= bd[1] && pd[2] <= bd[2];
+}
+function riskClass(score) {
+  return score < 28 ? 'risk-low' : score < 52 ? 'risk-med' : 'risk-high';
+}
+function riskLabel(score) {
+  return score < 28 ? 'LOW' : score < 52 ? 'MEDIUM' : 'HIGH';
+}
+
+function getInputs() {
+  const weight = parseFloat(document.getElementById('weight').value) || 0;
+  const dims = [
+    parseFloat(document.getElementById('dim-l').value) || 1,
+    parseFloat(document.getElementById('dim-w').value) || 1,
+    parseFloat(document.getElementById('dim-h').value) || 1,
+  ];
+  return { weight, dims };
+}
+
+function updateInfoBar(weight, dims) {
+  const dimWt = (dims[0] * dims[1] * dims[2]) / DIM_DIVISOR;
+  const billable = Math.max(weight, dimWt);
+  document.getElementById('info-dim').textContent = dimWt.toFixed(1) + ' lb';
+  document.getElementById('info-billable').textContent = billable.toFixed(1) + ' lb';
+}
 
 function buildWeightIndex() {
   const buckets = {};
@@ -457,22 +203,6 @@ function buildWeightIndex() {
   productIndex = buckets;
 }
 
-function nearestByWeight(weight) {
-  const b = Math.round(weight * 2);
-  let best = null, bestD = Infinity;
-  for (let d = 0; d <= 30; d++) {
-    for (const bb of [b - d, b + d]) {
-      for (const id of productIndex[bb] || []) {
-        const p = PRODUCTS[id];
-        const delta = Math.abs(p.weight - weight);
-        if (delta < bestD) { bestD = delta; best = p; }
-      }
-    }
-    if (best) break;
-  }
-  return best;
-}
-
 function getCandidates(weight, showAll) {
   if (showAll) return Object.entries(PRODUCTS);
   const out = [];
@@ -480,36 +210,14 @@ function getCandidates(weight, showAll) {
   const span = Math.round(WEIGHT_MATCH_CUTOFF * 2);
   for (let d = 0; d <= span; d++) {
     for (const bb of [b - d, b + d]) {
-      for (const id of productIndex[bb] || []) {
-        out.push([id, PRODUCTS[id]]);
-      }
+      for (const id of productIndex[bb] || []) out.push([id, PRODUCTS[id]]);
     }
   }
   return out.length ? out : Object.entries(PRODUCTS);
 }
 
-let rankedResults = [];
-let selectedId = null;
-let profile = { weight: 75, dims: [24, 24, 24] };
-let boxManual = false;
-let scanMode = 'weight';
-const QUICK_PICK_COUNT = 4;
-const WEIGHT_MATCH_CUTOFF = 15;
-
-function getSearchQuery() {
-  const q = (document.getElementById('risk-search')?.value || '').trim();
-  if (q) return q;
-  return (document.getElementById('risk-keyword')?.value || '').trim();
-}
-
-function getMaxRiskFilter() {
-  const v = parseFloat(document.getElementById('max-risk')?.value);
-  if (Number.isFinite(v)) return v;
-  return getRiskTargetFilter();
-}
-
-function filterBySearch(entries) {
-  const q = getSearchQuery().toLowerCase();
+function filterByKeyword(entries) {
+  const q = (document.getElementById('filter').value || '').trim().toLowerCase();
   if (!q) return entries;
   const qHs = normHs(q);
   const qCh = q.replace(/^ch\s*/i, '').replace(/^0+/, '');
@@ -520,146 +228,8 @@ function filterBySearch(entries) {
     if (/^\d{4}$/.test(qHs) && n.startsWith(qHs)) return true;
     if ((p.name || '').toLowerCase().includes(q)) return true;
     if ((p.desc || '').toLowerCase().includes(q)) return true;
-    if (String(p.heading).includes(qHs)) return true;
     return false;
   });
-}
-
-function applyMaxRiskFilter(results) {
-  const max = getMaxRiskFilter();
-  return max != null ? results.filter(r => r.score <= max) : results;
-}
-
-function syncRiskSearchInputs() {
-  const target = document.getElementById('risk-target');
-  const keyword = document.getElementById('risk-keyword');
-  const maxEl = document.getElementById('max-risk');
-  const searchEl = document.getElementById('risk-search');
-  if (target && maxEl && document.activeElement !== maxEl) maxEl.value = target.value;
-  if (target && maxEl && document.activeElement === maxEl) target.value = maxEl.value;
-  if (keyword && searchEl && document.activeElement !== searchEl) searchEl.value = keyword.value;
-  if (keyword && searchEl && document.activeElement === searchEl) keyword.value = searchEl.value;
-}
-
-function getRiskTargetFilter() {
-  const v = parseFloat(document.getElementById('risk-target')?.value);
-  return Number.isFinite(v) ? v : null;
-}
-
-function updateSearchModeUI() {
-  const note = document.getElementById('search-mode-note');
-  const title = document.getElementById('results-title');
-  const btnGlobal = document.getElementById('btn-global');
-  const btnAll = document.getElementById('btn-search-all');
-  const status = document.getElementById('risk-search-status');
-  const target = getRiskTargetFilter() ?? getMaxRiskFilter();
-  btnGlobal?.classList.remove('active');
-  btnAll?.classList.remove('active');
-  if (scanMode === 'all') {
-    title.textContent = 'SEARCH ALL — FULL UK TARIFF AT YOUR WEIGHT';
-    const targetNote = target != null ? ' · risk ≤ ' + target : '';
-    const box = getSelectedBox();
-    note.textContent = 'All ' + (REGIME.entries || '13k+') + ' codes scored at ' + profile.weight + ' lbs · ' + box.dims.join('×') + ' in box. No weight cutoff.' + targetNote;
-    if (status) status.textContent = 'Search all active — full database at current weight/box' + (target != null ? ' · cap ≤ ' + target : '');
-    btnAll?.classList.add('active');
-  } else if (scanMode === 'global') {
-    title.textContent = 'GLOBAL LOWEST RISK — NATIVE WEIGHT PER CODE';
-    const targetNote = target != null ? ' · showing risk ≤ ' + target : '';
-    note.textContent = 'Scoring each code at its own gross weight + best-fit box. WT Δ vs your shipment weight shown for reference.' + targetNote;
-    if (status) status.textContent = 'Native-weight scan — weight slider ignored' + (target != null ? ' · cap ≤ ' + target : '');
-    btnGlobal?.classList.add('active');
-  } else if (getSearchQuery() || getMaxRiskFilter() != null) {
-    title.textContent = 'FILTERED SEARCH — LOWEST RISK FIRST';
-    note.textContent = 'Filtered search at your current weight (' + profile.weight + ' lbs) and box.';
-    if (status) status.textContent = '';
-  } else {
-    title.textContent = 'ALL OPTIONS AT THIS WEIGHT — LOWEST RISK FIRST';
-    note.textContent = '';
-    if (status) status.textContent = '';
-  }
-}
-
-function clearScanMode() {
-  scanMode = 'weight';
-}
-
-function clearDirectSearch() {
-  clearLowestRiskSearch();
-}
-
-function clearLowestRiskSearch() {
-  scanMode = 'weight';
-  document.getElementById('risk-search').value = '';
-  document.getElementById('max-risk').value = '';
-  document.getElementById('risk-target').value = '';
-  document.getElementById('risk-keyword').value = '';
-  document.getElementById('show-all').checked = false;
-  updateSearchModeUI();
-  analyze();
-}
-
-function runLowestRiskSearch() {
-  syncRiskSearchInputs();
-  scanMode = 'global';
-  document.getElementById('show-all').checked = true;
-  updateSearchModeUI();
-  analyzeGlobalAsync();
-}
-
-function runDirectRiskSearch() {
-  syncRiskSearchInputs();
-  const hasQuery = !!getSearchQuery();
-  const hasMax = getMaxRiskFilter() != null;
-  if (!hasQuery && !hasMax) {
-    runSearchAll();
-    return;
-  }
-  scanMode = 'weight';
-  document.getElementById('show-all').checked = true;
-  updateSearchModeUI();
-  analyze();
-}
-
-function runGlobalLowestRisk() {
-  runLowestRiskSearch();
-}
-
-function runSearchAll() {
-  syncRiskSearchInputs();
-  scanMode = 'all';
-  document.getElementById('show-all').checked = true;
-  updateSearchModeUI();
-  analyzeAllAsync();
-}
-
-function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
-function fmtHs(hs) {
-  const n = normHs(hs);
-  if (n.length !== 10) return hs;
-  return n.slice(0,4)+' '+n.slice(4,6)+' '+n.slice(6,8)+' '+n.slice(8,10);
-}
-
-function hsValid(hs) {
-  const n = normHs(hs);
-  return n.length === 10 && /^\d{10}$/.test(n);
-}
-
-function dimDelta(a, b) {
-  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);
-}
-
-function fitsInBox(productDims, boxDims) {
-  const pd = [...productDims].sort((a,b)=>b-a);
-  const bd = [...boxDims].sort((a,b)=>b-a);
-  return pd[0] <= bd[0] && pd[1] <= bd[1] && pd[2] <= bd[2];
-}
-
-function riskClass(score) {
-  return score < 28 ? 'risk-low' : score < 52 ? 'risk-med' : 'risk-high';
-}
-
-function riskLabel(score) {
-  return score < 28 ? 'LOW' : score < 52 ? 'MEDIUM' : 'HIGH';
 }
 
 function descQualityScore(product) {
@@ -669,17 +239,16 @@ function descQualityScore(product) {
   else if (d.length >= 100) pts += 2;
   else if (d.length >= 70) pts += 1;
   else pts -= 2;
-  if (/cotton|steel|leather|rubber|glass|copper|aluminium|plastic|wood|ceramic|gold|stainless|carbon|iron|alloy|textile|paper|wine|chocolate|epoxy|hyaluronic|cellular|knitted|bovine|cast iron|copper|zinc/i.test(d)) pts += 2;
-  if (/for |used in|suitable|designed|presented|industrial|domestic|office|consumption|sowing|heading \d{4}/i.test(d)) pts += 2;
-  if (/new|used|refurb|pre-owned|knocked-down|unassembled|retail|assorted|tested|functional/i.test(d)) pts += 1;
-  if (/\d+\s*(ml|mm|in|lb|kg|kW|AWG|GB|iu|°|pct|%)/i.test(d) || /\d+ × \d+/i.test(d)) pts += 1;
-  if (product.gir && product.gir.length) pts += 1;
+  if (/cotton|steel|leather|rubber|glass|copper|aluminium|plastic|wood|ceramic|gold|stainless|carbon|iron|alloy|textile|paper/i.test(d)) pts += 2;
+  if (/for |used in|suitable|designed|presented|industrial|domestic/i.test(d)) pts += 2;
+  if (/new|used|refurb|pre-owned|retail|functional/i.test(d)) pts += 1;
+  if (product.gir?.length) pts += 1;
   return Math.max(0, Math.min(10, pts));
 }
 
 function valuationRisk(product, wtDelta) {
   const vpl = product.value / Math.max(product.weight, 0.1);
-  const market = product.marketUsdLb || (product.value / Math.max(product.weight, 0.1));
+  const market = product.marketUsdLb || vpl;
   const ratio = vpl / Math.max(market, 1);
   let pts = 0;
   if (vpl > 1200 && product.weight < 1) pts += 18;
@@ -694,11 +263,9 @@ function valuationRisk(product, wtDelta) {
 }
 
 function restrictionRisk(product) {
-  if (!product.restrictions || !product.restrictions.length) return 0;
+  if (!product.restrictions?.length) return 0;
   let pts = 0;
-  product.restrictions.forEach(r => {
-    pts += RESTRICTION_WEIGHTS[r.type] || 12;
-  });
+  product.restrictions.forEach(r => { pts += RESTRICTION_WEIGHTS[r.type] || 12; });
   return Math.min(40, pts);
 }
 
@@ -710,7 +277,6 @@ function flagRisk(product) {
   if (f.sps) pts += 6;
   if (f.excise) pts += 8;
   if (f.reach) pts += 5;
-  if (f.ipr) pts += 4;
   if (f.cites) pts += 8;
   return pts;
 }
@@ -724,60 +290,9 @@ function classificationRisk(product) {
   if (conf < 0.80) pts += 14;
   else if (conf < 0.88) pts += 8;
   else if (conf < 0.93) pts += 3;
-  else pts += 0;
   pts += (CHAPTER_BASE[product.chapter] || 0);
   pts += Math.max(0, (product.scrutiny || 1) - 1) * 3;
   return pts;
-}
-
-function getFreightConfig() {
-  return FREIGHT_MODES[freightMode] || FREIGHT_MODES.air;
-}
-
-function cbmFromDims(dims) {
-  return (dims[0] * dims[1] * dims[2]) / 61023.7;
-}
-
-function modeFitRisk(product, inputWeight, inputDims) {
-  const cfg = getFreightConfig();
-  const vol = inputDims[0] * inputDims[1] * inputDims[2];
-  const vpl = product.value / Math.max(product.weight, 0.1);
-  const ch = product.chapter;
-  const desc = (product.desc || '').toLowerCase();
-  let pts = 0;
-
-  if (cfg.id === 'air') {
-    if (inputWeight > 100) pts += 10;
-    else if (inputWeight > 70) pts += 6;
-    if (vol > 24 * 24 * 24) pts += 5;
-    if (ch >= 84 && ch <= 87 && inputWeight > 45) pts += 6;
-    if (ch === 85 && /lithium|battery|power bank|cell/i.test(desc)) pts += 12;
-    if ([27, 28, 33].includes(ch) && /flamm|aerosol|perfume|alcohol|spirit/i.test(desc)) pts += 8;
-    if ([1, 2, 3, 4, 5, 6, 7, 8, 20].includes(ch)) pts = Math.max(0, pts - 3);
-    if (product.flags?.hazmat || product.flags?.iata) pts += 10;
-  } else {
-    if (inputWeight < 8 && vpl > 80 && vol < 12 * 10 * 8) pts += 12;
-    else if (inputWeight < 5 && product.value > 400) pts += 9;
-    if (ch === 85 && inputWeight < 6 && vol < 2500) pts += 8;
-    if (ch >= 90 && ch <= 92 && inputWeight < 10) pts += 6;
-    if ([1, 2, 3, 4, 5, 6, 7, 8, 20].includes(ch) && !/refrigerat|frozen|cold chain|reefer|chilled|temperature/i.test(desc)) pts += 14;
-    if ([12, 27, 39, 44, 72, 73, 84, 87].includes(ch) && inputWeight > 100) pts = Math.max(0, pts - 5);
-    if (vol > 30 * 22 * 14 && inputWeight > 80) pts = Math.max(0, pts - 4);
-    const cbm = cbmFromDims(inputDims);
-    if (cbm > 0.4 && inputWeight / Math.max(cbm, 0.01) < 80) pts += 5;
-  }
-
-  return Math.max(0, pts);
-}
-
-function boxCapacityRisk(inputWeight, box) {
-  if (!box?.maxWt) return 0;
-  const ratio = inputWeight / box.maxWt;
-  if (ratio > 1.2) return 22;
-  if (ratio > 1.05) return 14;
-  if (ratio > 1.0) return 8;
-  if (ratio > 0.95) return 3;
-  return 0;
 }
 
 function volumeFillRisk(product, inputDims) {
@@ -791,20 +306,8 @@ function volumeFillRisk(product, inputDims) {
   return 0;
 }
 
-function netGrossRisk(product, inputWeight) {
-  const net = product.net ?? product.weight * 0.92;
-  const gross = product.weight;
-  let pts = 0;
-  const netGrossRatio = net / Math.max(gross, 0.1);
-  if (netGrossRatio < 0.72 || netGrossRatio > 0.98) pts += 5;
-  if (Math.abs(gross - inputWeight) <= 2 && Math.abs(net - inputWeight * netGrossRatio) > 4) pts += 4;
-  return pts;
-}
-
 function billableCoherenceRisk(product, inputWeight, inputDims) {
-  const cfg = getFreightConfig();
-  if (!cfg.useDimWeight) return 0;
-  const dimWt = (inputDims[0] * inputDims[1] * inputDims[2]) / cfg.dimDivisor;
+  const dimWt = (inputDims[0] * inputDims[1] * inputDims[2]) / DIM_DIVISOR;
   const billable = Math.max(inputWeight, dimWt);
   const gap = Math.abs(product.weight - billable);
   let pts = 0;
@@ -816,37 +319,24 @@ function billableCoherenceRisk(product, inputWeight, inputDims) {
 }
 
 function physicalCoherence(product, inputWeight, inputDims) {
-  const cfg = getFreightConfig();
-  const breakdown = {};
-  const dimWt = cfg.useDimWeight
-    ? (inputDims[0] * inputDims[1] * inputDims[2]) / cfg.dimDivisor
-    : inputWeight;
-  let shipGap = Math.abs(inputWeight - dimWt);
+  const dimWt = (inputDims[0] * inputDims[1] * inputDims[2]) / DIM_DIVISOR;
+  const shipGap = Math.abs(inputWeight - dimWt);
   const wtDelta = Math.abs(product.weight - inputWeight);
   const dimDiff = dimDelta(product.dims, inputDims);
   const fits = fitsInBox(product.dims, inputDims);
+  const breakdown = {};
 
   breakdown.weight = Math.min(32, Math.round(Math.pow(wtDelta / 7.5, 1.3) * 7));
+  if (!fits) breakdown.dims = 18;
+  else if (dimDiff > 40) breakdown.dims = 12;
+  else if (dimDiff > 20) breakdown.dims = 7;
+  else if (dimDiff > 8) breakdown.dims = 3;
+  else breakdown.dims = 0;
 
-  if (!fits) { breakdown.dims = 18; }
-  else if (dimDiff > 40) { breakdown.dims = 12; }
-  else if (dimDiff > 20) { breakdown.dims = 7; }
-  else if (dimDiff > 8) { breakdown.dims = 3; }
-  else { breakdown.dims = 0; }
+  breakdown.shipGap = Math.min(18, Math.round(Math.pow(shipGap / 6, 1.2) * 5));
 
-  if (cfg.useDimWeight) {
-    breakdown.shipGap = Math.min(18, Math.round(Math.pow(shipGap / 6, 1.2) * 5));
-  } else {
-    shipGap = 0;
-    const cbm = cbmFromDims(inputDims);
-    const density = inputWeight / Math.max(cbm, 0.01);
-    if (cbm > 0.5 && density < 50) breakdown.shipGap = 6;
-    else if (cbm > 1.2 && density < 120) breakdown.shipGap = 4;
-    else breakdown.shipGap = 0;
-  }
-
-  const boxVol = inputDims[0]*inputDims[1]*inputDims[2];
-  const prodVol = Math.max(product.dims[0]*product.dims[1]*product.dims[2], 1);
+  const boxVol = inputDims[0] * inputDims[1] * inputDims[2];
+  const prodVol = Math.max(product.dims[0] * product.dims[1] * product.dims[2], 1);
   const densityRatio = (product.weight / prodVol) / (inputWeight / boxVol);
   if (densityRatio < 0.2 || densityRatio > 4.5) breakdown.density = 10;
   else if (densityRatio < 0.4 || densityRatio > 2.4) breakdown.density = 5;
@@ -855,629 +345,123 @@ function physicalCoherence(product, inputWeight, inputDims) {
   return { breakdown, wtDelta, dimDiff, dimWt, shipGap, fits };
 }
 
-function scoreOption(product, inputWeight, inputDims, boxPreset) {
-  const box = boxPreset || nearestPresetForDims(inputDims);
+function scoreOption(product, inputWeight, inputDims) {
   const phys = physicalCoherence(product, inputWeight, inputDims);
   const breakdown = { ...phys.breakdown };
 
   const dq = descQualityScore(product);
   breakdown.desc = dq >= 8 ? 0 : dq >= 6 ? 3 : dq >= 4 ? 8 : 16;
-
   breakdown.hs = classificationRisk(product);
   breakdown.restricted = restrictionRisk(product);
   breakdown.flags = flagRisk(product);
-
-  if (product.used) {
-    const hasCond = /used|pre-owned|second|refurb|antique|decommission|tested/i.test(product.desc || '');
-    breakdown.used = hasCond ? 3 : 15;
-  } else breakdown.used = 0;
-
+  breakdown.used = product.used ? (/used|pre-owned|refurb/i.test(product.desc || '') ? 3 : 15) : 0;
   breakdown.valuation = valuationRisk(product, phys.wtDelta);
-
-  if (product.duty > 14) breakdown.duty = 6;
-  else if (product.duty > 8) breakdown.duty = 4;
-  else if (product.duty > 3) breakdown.duty = 2;
-  else breakdown.duty = 0;
-
-  breakdown.freight = modeFitRisk(product, inputWeight, inputDims);
-  breakdown.boxCapacity = boxCapacityRisk(inputWeight, box);
+  breakdown.duty = product.duty > 14 ? 6 : product.duty > 8 ? 4 : product.duty > 3 ? 2 : 0;
   breakdown.volumeFill = volumeFillRisk(product, inputDims);
-  breakdown.netGross = netGrossRisk(product, inputWeight);
   breakdown.billable = billableCoherenceRisk(product, inputWeight, inputDims);
 
-  let risk = 5 + Object.values(breakdown).reduce((a,b)=>a+b, 0);
-
-  const capOk = inputWeight <= (box.maxWt || Infinity) * 1.02;
+  let risk = 5 + Object.values(breakdown).reduce((a, b) => a + b, 0);
   const physOk = phys.wtDelta <= 2 && phys.dimDiff <= 6 && phys.shipGap <= 5;
-  const clean = (product.conf||0) >= 0.93 && !product.restrictions?.length;
-  const fillOk = breakdown.volumeFill === 0 && breakdown.boxCapacity <= 3;
-  if (physOk && clean && capOk && fillOk) risk -= 8;
-  else if (phys.wtDelta <= 4 && phys.dimDiff <= 10 && clean && capOk) risk -= 4;
+  const clean = (product.conf || 0) >= 0.93 && !product.restrictions?.length;
+  if (physOk && clean && phys.fits && breakdown.volumeFill === 0) risk -= 8;
+  else if (phys.wtDelta <= 4 && phys.dimDiff <= 10 && clean) risk -= 4;
 
   const score = Math.max(4, Math.min(96, Math.round(risk)));
   return { score, breakdown, ...phys };
 }
 
-function buildWhyText(product, scored) {
-  const parts = [];
-  if (scored.wtDelta <= 2) parts.push('Gross weight aligns with declared commodity profile');
-  else if (scored.wtDelta > 15) parts.push('Weight delta '+scored.wtDelta.toFixed(1)+' lb — invoice/packing list credibility risk');
-  if (scored.fits && scored.dimDiff <= 8) parts.push('Product dims fit selected box preset');
-  else if (!scored.fits) parts.push('Product dims exceed box — physically implausible packing');
-  if (scored.breakdown.boxCapacity >= 8) parts.push('Gross weight exceeds box safe capacity — carrier/HMRC credibility risk');
-  if (scored.breakdown.volumeFill >= 6) parts.push('Low volume fill — under-packed carton raises audit suspicion');
-  if (scored.breakdown.billable >= 6) parts.push('Declared weight misaligned with billable (gross vs dim) weight');
-  if (scored.shipGap > 12 && getFreightConfig().useDimWeight) parts.push('Actual vs volumetric weight gap '+scored.shipGap.toFixed(1)+' lb triggers carrier audit');
-  else if (scored.breakdown.freight >= 10) parts.push(getFreightConfig().label+' lane mismatch — commodity profile atypical for this mode');
-  else if (scored.breakdown.freight >= 6) parts.push('Moderate '+getFreightConfig().label.toLowerCase()+' lane scrutiny — verify logistics plausibility');
-  if (product.conf >= 0.93) parts.push('High classification confidence ('+Math.round(product.conf*100)+'%)');
-  else if (product.conf < 0.85) parts.push('Classification confidence below threshold — consider alt codes');
-  if (product.restrictions?.length) parts.push(product.restrictions.map(r=>r.type+'/'+r.agency).join(', ')+' controls apply');
-  if (product.used && scored.breakdown.used > 5) parts.push('Used goods — condition must appear on commercial invoice');
-  if (scored.breakdown.valuation > 10) parts.push('Value density departs from market band — valuation scrutiny');
-  if (scored.breakdown.desc <= 3) parts.push('HMRC-grade description with material, function, form');
-  if (!parts.length) parts.push('Balanced physical, tariff, and compliance profile');
-  return parts.join('. ') + '.';
-}
+async function search() {
+  const { weight, dims } = getInputs();
+  if (weight <= 0) return;
+  updateInfoBar(weight, dims);
 
-function populateBoxSelect() {
-  const sel = document.getElementById('box-select');
-  sel.innerHTML = '';
-  BOX_PRESETS.forEach(b => {
-    const opt = document.createElement('option');
-    opt.value = b.id;
-    opt.textContent = b.label;
-    sel.appendChild(opt);
-  });
-  sel.value = 'cube';
-}
+  const gen = ++searchGen;
+  const showAll = document.getElementById('show-all').checked;
+  let entries = filterByKeyword(getCandidates(weight, showAll));
 
-function getSelectedBox() {
-  const id = document.getElementById('box-select').value;
-  return BOX_PRESETS.find(b => b.id === id) || BOX_PRESETS.find(b => b.id === '18cube') || BOX_PRESETS[0];
-}
-
-function get18CubePreset() {
-  return BOX_PRESETS.find(b => b.id === '18cube');
-}
-
-function use18CubeBox() {
-  const cube = get18CubePreset();
-  if (!cube) return;
-  document.getElementById('box-select').value = '18cube';
-  boxManual = true;
-  document.getElementById('box-note').textContent = cube.label + ' — manual override';
-  sync18CubePanel(parseFloat(document.getElementById('weight-input').value) || profile.weight);
-  analyze();
-}
-
-function sync18CubePanel(weight) {
-  const cube = get18CubePreset();
-  if (!cube) return;
-  const cfg = getFreightConfig();
-  const dimWt = cfg.useDimWeight
-    ? (cube.dims[0] * cube.dims[1] * cube.dims[2]) / cfg.dimDivisor
-    : weight;
-  const billable = cfg.useDimWeight ? Math.max(weight, dimWt) : weight;
-  const gap = cfg.useDimWeight ? Math.abs(weight - dimWt) : 0;
-  const sel = getSelectedBox();
-  const fillPct = sel.dims[0] * sel.dims[1] * sel.dims[2] > 0
-    ? Math.min(100, Math.round((sel.dims[0] * sel.dims[1] * sel.dims[2]) / (cube.dims[0] * cube.dims[1] * cube.dims[2]) * 100))
-    : 0;
-  const dimEl = document.getElementById('cube18-dim');
-  const billEl = document.getElementById('cube18-billable');
-  const gapEl = document.getElementById('cube18-gap');
-  const fillEl = document.getElementById('cube18-fill');
-  const maxEl = document.getElementById('cube18-max');
-  if (dimEl) dimEl.textContent = dimWt.toFixed(1) + ' lb';
-  if (billEl) billEl.textContent = billable.toFixed(1) + ' lb';
-  if (gapEl) gapEl.textContent = gap.toFixed(1) + ' lb' + (gap > 10 ? ' ⚠' : '');
-  if (maxEl) maxEl.textContent = cube.maxWt + ' lb';
-  if (fillEl) {
-    const active = sel.id === '18cube';
-    fillEl.textContent = active ? 'selected box' : (fillPct + '% of 18³ vol');
-    fillEl.className = 'font-semibold' + (active ? ' text-[#15803d]' : '');
-  }
-  const section = document.getElementById('cube18-section');
-  if (section) section.style.borderColor = sel.id === '18cube' ? '#6d28d9' : '#e5e7eb';
-}
-
-function nearestPresetForDims(dims) {
-  let best = BOX_PRESETS[0], bestDiff = Infinity;
-  BOX_PRESETS.forEach(b => {
-    const d = dimDelta(b.dims, dims);
-    if (d < bestDiff) { bestDiff = d; best = b; }
-  });
-  return best;
-}
-
-function autoSuggestBox(weight) {
-  const cfg = getFreightConfig();
-  if (cfg.id === 'sea') {
-    if (weight >= 1200) return BOX_PRESETS.find(b => b.id === 'fcl') || BOX_PRESETS[BOX_PRESETS.length - 1];
-    if (weight >= 200) return BOX_PRESETS.find(b => b.id === 'lcl') || BOX_PRESETS.find(b => b.id === 'plt');
-  }
-  const cube18 = get18CubePreset();
-  if (cfg.id === 'air' && cube18 && weight >= 8 && weight <= cube18.maxWt) {
-    const dimWt = (cube18.dims[0] * cube18.dims[1] * cube18.dims[2]) / cfg.dimDivisor;
-    if (Math.abs(weight - dimWt) <= 16) return cube18;
-  }
-  const anchor = nearestByWeight(weight);
-  if (anchor) {
-    const preset = nearestPresetForDims(anchor.dims);
-    if (cfg.id === 'air' && cube18 && weight <= cube18.maxWt) {
-      const cubeDimWt = (cube18.dims[0] * cube18.dims[1] * cube18.dims[2]) / cfg.dimDivisor;
-      const presetDimWt = (preset.dims[0] * preset.dims[1] * preset.dims[2]) / cfg.dimDivisor;
-      if (Math.abs(weight - cubeDimWt) < Math.abs(weight - presetDimWt) - 2) return cube18;
-    }
-    return preset;
-  }
-  let best = BOX_PRESETS[0], bestGap = Infinity;
-  BOX_PRESETS.forEach(b => {
-    const dimWt = cfg.useDimWeight
-      ? (b.dims[0]*b.dims[1]*b.dims[2]) / cfg.dimDivisor
-      : b.maxWt;
-    const gap = Math.abs(weight - dimWt);
-    if (weight > b.maxWt) return;
-    if (gap < bestGap) { bestGap = gap; best = b; }
-  });
-  return best;
-}
-
-function syncWeightUI(weight) {
-  const cfg = getFreightConfig();
-  const w = Math.max(cfg.weightMin, Math.min(cfg.weightMax, weight));
-  const slider = document.getElementById('weight-slider');
-  const input = document.getElementById('weight-input');
-  slider.min = cfg.weightMin;
-  slider.max = cfg.weightMax;
-  slider.step = cfg.weightStep;
-  input.min = cfg.weightMin;
-  input.max = cfg.weightMax;
-  input.step = cfg.weightStep;
-  slider.value = w;
-  input.value = w;
-  document.getElementById('weight-display').textContent = w % 1 === 0 ? w.toFixed(0) : w.toFixed(1);
-}
-
-function updateFreightModeUI() {
-  const cfg = getFreightConfig();
-  REGIME.route.entry = cfg.entry;
-  REGIME.route.mode = cfg.id === 'air' ? 'air_courier' : 'sea_lcl_fcl';
-  document.getElementById('btn-freight-air')?.classList.toggle('active', freightMode === 'air');
-  document.getElementById('btn-freight-sea')?.classList.toggle('active', freightMode === 'sea');
-  document.getElementById('freight-mode-note').textContent = cfg.modeNote;
-  document.getElementById('freight-dim-note').textContent = cfg.dimNote;
-  document.getElementById('route-tagline').textContent = 'FULL UK IOT · SLIDE WEIGHT → LOWEST-RISK CLASSIFICATIONS | ' + cfg.routeTag;
-  const dimLabel = document.getElementById('profile-dim-label');
-  const billLabel = document.getElementById('profile-billable-label');
-  const gapLabel = document.getElementById('profile-gap-label');
-  if (cfg.useDimWeight) {
-    dimLabel.textContent = 'Dim weight (÷' + cfg.dimDivisor + ')';
-    billLabel.textContent = 'Billable weight';
-    gapLabel.textContent = 'Weight/dim gap';
-  } else {
-    dimLabel.textContent = 'CBM volume';
-    billLabel.textContent = 'Chargeable weight';
-    gapLabel.textContent = 'CBM density check';
-  }
-  const scale = document.getElementById('weight-scale');
-  if (scale) {
-    if (cfg.id === 'air') {
-      scale.innerHTML = '<span>0.5</span><span>10</span><span>25</span><span>50</span><span>75</span><span>100</span><span>150</span>';
-    } else {
-      scale.innerHTML = '<span>50</span><span>200</span><span>500</span><span>800</span><span>1200</span><span>1600</span><span>2000</span>';
-    }
-  }
-}
-
-function setFreightMode(mode) {
-  if (!FREIGHT_MODES[mode] || freightMode === mode) return;
-  freightMode = mode;
-  boxManual = false;
-  updateFreightModeUI();
-  const cfg = getFreightConfig();
-  const current = parseFloat(document.getElementById('weight-input').value) || cfg.defaultWeight;
-  syncWeightUI(current);
-  document.getElementById('box-select').value = autoSuggestBox(parseFloat(document.getElementById('weight-input').value)).id;
-  analyze();
-}
-
-function onWeightSlide() {
-  const w = parseFloat(document.getElementById('weight-slider').value);
-  syncWeightUI(w);
-  if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
-  if (scanMode === 'global' || scanMode === 'all') scanMode = 'weight';
-  updateSearchModeUI();
-  scheduleAnalyze();
-}
-
-function onWeightInput() {
-  const w = parseFloat(document.getElementById('weight-input').value) || 0.5;
-  syncWeightUI(w);
-  if (!boxManual) document.getElementById('box-select').value = autoSuggestBox(w).id;
-  if (scanMode === 'global' || scanMode === 'all') scanMode = 'weight';
-  updateSearchModeUI();
-  analyze();
-}
-
-function onBoxManual() {
-  boxManual = true;
-  document.getElementById('box-note').textContent = getSelectedBox().label + ' — manual override';
-  analyze();
-}
-
-function renderQuickPicks() {
-  const el = document.getElementById('quick-picks');
-  el.innerHTML = '';
-  const picks = rankedResults.slice(0, QUICK_PICK_COUNT);
-  if (!picks.length) {
-    el.innerHTML = '<div class="text-[10px] text-[#4b5563]">No viable options at this weight</div>';
-    return;
-  }
-  picks.forEach((r, i) => {
-    const card = document.createElement('div');
-    card.className = 'quick-pick' + (r.id === selectedId ? ' active' : '');
-    card.onclick = () => selectOption(r.id);
-    const conf = Math.round((r.product.conf||0.9)*100);
-    card.innerHTML = '<div class="flex justify-between items-start gap-2"><div class="flex-1 min-w-0"><div class="text-[9px] text-[#4b5563]">#'+(i+1)+' · CH '+r.product.chapter+' · '+conf+'% conf</div><div class="text-[10px] truncate" title="'+r.product.name+'">'+r.product.name+'</div><div class="text-[9px] text-[#6b7280]">'+fmtHs(r.product.hs)+' · Δwt '+r.wtDelta.toFixed(1)+' lb</div></div><div class="qp-risk '+riskClass(r.score)+'">'+r.score+'</div></div>';
-    el.appendChild(card);
-  });
-}
-
-function syncProfileUI(weight, box) {
-  const cfg = getFreightConfig();
-  profile = { weight, dims: [...box.dims], freightMode: cfg.id };
-  const dimWt = cfg.useDimWeight
-    ? (box.dims[0]*box.dims[1]*box.dims[2]) / cfg.dimDivisor
-    : weight;
-  const billable = cfg.useDimWeight ? Math.max(weight, dimWt) : weight;
-  const gap = cfg.useDimWeight ? Math.abs(weight - dimWt) : 0;
-  if (cfg.useDimWeight) {
-    document.getElementById('profile-dim-wt').textContent = dimWt.toFixed(1) + ' lbs';
-    document.getElementById('profile-billable').textContent = billable.toFixed(1) + ' lbs';
-    document.getElementById('profile-gap').textContent = gap.toFixed(1) + ' lbs' + (gap > 10 ? ' ⚠' : '');
-  } else {
-    const cbm = cbmFromDims(box.dims);
-    const density = weight / Math.max(cbm, 0.01);
-    document.getElementById('profile-dim-wt').textContent = cbm.toFixed(2) + ' m³';
-    document.getElementById('profile-billable').textContent = weight.toFixed(1) + ' lbs';
-    document.getElementById('profile-gap').textContent = density.toFixed(0) + ' lb/m³' + (density < 80 && cbm > 0.4 ? ' ⚠' : '');
-  }
-  const autoTag = boxManual ? '' : ' · auto-matched';
-  document.getElementById('box-note').textContent = box.label + ' — ' + box.dims.join('×') + ' in' + autoTag;
-  document.getElementById('doc-weight').textContent = weight.toFixed(1);
-  document.getElementById('doc-dims').textContent = box.dims.join(' × ') + ' in';
-  document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs';
-  sync18CubePanel(weight);
-}
-
-function finishAnalyze(allRanked, prevId) {
-  rankedResults = applyMaxRiskFilter(allRanked);
-  if (!rankedResults.length && allRanked.length) rankedResults = allRanked.slice(0, 10);
-  const still = prevId && rankedResults.some(r => r.id === prevId);
-  renderQuickPicks();
-  renderOptions();
-  if (still) selectOption(prevId);
-  else if (rankedResults.length) selectOption(rankedResults[0].id);
-}
-
-let globalScanGen = 0;
-let allScanGen = 0;
-let renderGen = 0;
-
-async function analyzeAllAsync() {
-  const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
-  const box = getSelectedBox();
-  syncProfileUI(weight, box);
-  updateSearchModeUI();
-  const gen = ++allScanGen;
-  const prev = selectedId;
-  let entries = filterBySearch(Object.entries(PRODUCTS));
+  document.getElementById('result-count').textContent = 'Searching…';
   const allRanked = [];
   const chunk = 2000;
-  const total = entries.length;
-  document.getElementById('result-count').textContent = 'Searching all 0 / ' + total + '…';
+
   for (let i = 0; i < entries.length; i += chunk) {
-    if (gen !== allScanGen) return;
-    const slice = entries.slice(i, i + chunk);
-    for (const [id, p] of slice) {
-      const scored = scoreOption(p, weight, box.dims, box);
+    if (gen !== searchGen) return;
+    for (const [id, p] of entries.slice(i, i + chunk)) {
+      const scored = scoreOption(p, weight, dims);
       allRanked.push({ id, product: p, ...scored });
     }
-    document.getElementById('result-count').textContent = 'Searching all ' + Math.min(i + chunk, total) + ' / ' + total + '…';
+    document.getElementById('result-count').textContent = 'Scoring ' + Math.min(i + chunk, entries.length) + ' / ' + entries.length + '…';
     await new Promise(r => setTimeout(r, 0));
   }
-  if (gen !== allScanGen) return;
-  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
-  finishAnalyze(allRanked, prev);
-}
+  if (gen !== searchGen) return;
 
-async function analyzeGlobalAsync() {
-  const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
-  const box = getSelectedBox();
-  syncProfileUI(weight, box);
-  updateSearchModeUI();
-  const gen = ++globalScanGen;
-  const prev = selectedId;
-  let entries = filterBySearch(Object.entries(PRODUCTS));
-  const allRanked = [];
-  const chunk = 2000;
-  document.getElementById('result-count').textContent = 'Scanning 0 / ' + entries.length + '…';
-  for (let i = 0; i < entries.length; i += chunk) {
-    if (gen !== globalScanGen) return;
-    const slice = entries.slice(i, i + chunk);
-    for (const [id, p] of slice) {
-      const nativeBox = nearestPresetForDims(p.dims);
-      const scored = scoreOption(p, p.weight, nativeBox.dims, nativeBox);
-      allRanked.push({ id, product: p, ...scored, wtDelta: Math.abs(p.weight - weight), nativeWeight: p.weight });
-    }
-    document.getElementById('result-count').textContent = 'Scanning ' + Math.min(i + chunk, entries.length) + ' / ' + entries.length + '…';
-    await new Promise(r => setTimeout(r, 0));
-  }
-  if (gen !== globalScanGen) return;
-  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
-  finishAnalyze(allRanked, prev);
-}
+  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf || 0));
 
-function analyze() {
-  if (scanMode === 'global') {
-    analyzeGlobalAsync();
-    return;
-  }
-  if (scanMode === 'all') {
-    analyzeAllAsync();
-    return;
-  }
-  const weight = parseFloat(document.getElementById('weight-input').value) || getFreightConfig().weightMin;
-  const box = getSelectedBox();
-  syncProfileUI(weight, box);
-  updateSearchModeUI();
-
-  const showAll = document.getElementById('show-all')?.checked;
-  const directSearch = getSearchQuery() || getMaxRiskFilter() != null;
-  const candidates = directSearch || showAll ? Object.entries(PRODUCTS) : getCandidates(weight, showAll);
-  const filtered = filterBySearch(candidates);
-  let allRanked = filtered.map(([id, p]) => {
-    const scored = scoreOption(p, weight, box.dims, box);
-    return { id, product: p, ...scored };
-  }).sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf||0));
-
-  if (!directSearch && !showAll) {
+  if (!showAll) {
     const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
-    allRanked = matched.length ? matched : allRanked.slice(0, 10);
+    rankedResults = matched.length ? matched : allRanked.slice(0, 20);
+  } else {
+    rankedResults = allRanked;
   }
 
-  finishAnalyze(allRanked, selectedId);
+  renderResults();
+  if (rankedResults.length) selectRow(rankedResults[0].id);
 }
 
-function productFlags(p, scored) {
-  const flags = [];
-  const cfg = getFreightConfig();
-  flags.push('<span class="flag flag-ok">' + (cfg.id === 'air' ? 'AIR' : 'SEA') + '</span>');
-  if (scored?.breakdown?.freight >= 10) flags.push('<span class="flag flag-warn">LANE MISMATCH</span>');
-  else if (scored?.breakdown?.freight >= 6) flags.push('<span class="flag flag-warn">LANE CHECK</span>');
-  if (p.used) flags.push('<span class="flag flag-warn">USED</span>');
-  if (p.restrictions?.length) flags.push('<span class="flag flag-warn">CONTROLLED</span>');
-  if ((p.conf||0) >= 0.93) flags.push('<span class="flag flag-ok">HIGH CONF</span>');
-  if (p.flags?.dualUse) flags.push('<span class="flag flag-warn">DUAL-USE</span>');
-  return flags;
-}
-
-function buildOptionRow(r, index) {
-  const tr = document.createElement('tr');
-  tr.className = 'option-row border-b border-[#222]' + (r.id === selectedId ? ' selected' : '');
-  tr.onclick = () => selectOption(r.id);
-  const flags = productFlags(r.product, r);
-  if (r.wtDelta <= 3) flags.push('<span class="flag flag-ok">WT MATCH</span>');
-  if (r.fits) flags.push('<span class="flag flag-ok">FITS BOX</span>');
-  if (r.breakdown?.boxCapacity >= 8) flags.push('<span class="flag flag-warn">OVER CAP</span>');
-  if (r.breakdown?.volumeFill >= 6) flags.push('<span class="flag flag-warn">LOW FILL</span>');
-  tr.innerHTML = '<td class="text-[#4b5563]">'+(index+1)+'</td><td class="font-bold '+riskClass(r.score)+'">'+r.score+'</td><td class="max-w-[200px] truncate" title="'+r.product.name+'">'+r.product.name+'</td><td class="text-[10px]">'+fmtHs(r.product.hs)+'</td><td>'+r.product.duty+'%</td><td class="'+(r.wtDelta>10?'text-[#eab308]':'')+'">'+r.wtDelta.toFixed(1)+'</td><td>'+(flags.join('')||'—')+'</td>';
-  return tr;
-}
-
-function appendOptionRows(start, end) {
-  const body = document.getElementById('options-body');
-  const frag = document.createDocumentFragment();
-  for (let i = start; i < end; i++) {
-    frag.appendChild(buildOptionRow(rankedResults[i], i));
-  }
-  body.appendChild(frag);
-}
-
-function renderOptions() {
-  const body = document.getElementById('options-body');
+function renderResults() {
+  const body = document.getElementById('results');
   body.innerHTML = '';
-  const gen = ++renderGen;
-  const limit = scanMode === 'all' ? DISPLAY_LIMIT_ALL : DISPLAY_LIMIT;
-  const shown = Math.min(rankedResults.length, limit);
-  const suffix = rankedResults.length > shown ? ' (showing ' + shown + ' of ' + rankedResults.length + ')' : '';
-  const pool = scanMode === 'all' ? 'search all' : scanMode === 'global' ? 'native weight' : (getSearchQuery() ? 'filtered' : 'weight');
-  const maxNote = getMaxRiskFilter() != null ? ' · risk ≤ ' + getMaxRiskFilter() : '';
-  document.getElementById('result-count').textContent = rankedResults.length + ' matched (' + pool + ')' + maxNote + suffix;
-  const firstBatch = Math.min(400, shown);
-  appendOptionRows(0, firstBatch);
-  if (shown > firstBatch) {
-    (async () => {
-      for (let i = firstBatch; i < shown; i += 400) {
-        if (gen !== renderGen) return;
-        await new Promise(r => requestAnimationFrame(r));
-        appendOptionRows(i, Math.min(i + 400, shown));
-      }
-    })();
-  }
-  const cfg = getFreightConfig();
-  document.getElementById('footer-profile').textContent = 'DB v'+REGIME.version+' · '+cfg.label+' · '+profile.weight+' lbs · '+profile.dims.join('×')+' in · '+rankedResults.length+' ranked';
+  const shown = Math.min(rankedResults.length, DISPLAY_LIMIT);
+  const suffix = rankedResults.length > shown ? ' (top ' + shown + ')' : '';
+  document.getElementById('result-count').textContent = rankedResults.length + ' matches' + suffix;
+
+  rankedResults.slice(0, shown).forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'row' + (r.id === selectedId ? ' selected' : '');
+    tr.onclick = () => selectRow(r.id);
+    tr.innerHTML =
+      '<td class="text-gray-400">' + (i + 1) + '</td>' +
+      '<td class="' + riskClass(r.score) + '">' + r.score + '</td>' +
+      '<td class="max-w-[220px] truncate" title="' + (r.product.name || '') + '">' + (r.product.name || '') + '</td>' +
+      '<td class="font-mono text-xs">' + fmtHs(r.product.hs) + '</td>' +
+      '<td>' + r.product.duty + '%</td>' +
+      '<td class="' + (r.wtDelta > 10 ? 'text-amber-600' : '') + '">' + r.wtDelta.toFixed(1) + '</td>';
+    body.appendChild(tr);
+  });
 }
 
-function ukImportCalc(p, billableWt) {
-  const cfg = getFreightConfig();
-  const freight = Math.round(billableWt * cfg.freightPerLb + cfg.freightBase);
-  const ins = Math.round(p.value * cfg.insRate);
-  const cifUsd = p.value + freight + ins;
-  const cifGbp = cifUsd * REGIME.fxUsdGbp;
-  const dutyGbp = cifGbp * (p.duty / 100);
-  const vatGbp = (cifGbp + dutyGbp) * REGIME.vatRate;
-  return { freight, ins, cifUsd, cifGbp, dutyGbp, vatGbp };
-}
-
-function selectOption(id) {
+function selectRow(id) {
   selectedId = id;
   const r = rankedResults.find(x => x.id === id);
   if (!r) return;
-  renderOptions();
-  renderQuickPicks();
+  renderResults();
+
   document.getElementById('detail-empty').classList.add('hidden');
-  document.getElementById('detail-panel').classList.remove('hidden');
+  document.getElementById('detail').classList.remove('hidden');
+
   const p = r.product;
   document.getElementById('detail-name').textContent = p.name;
   document.getElementById('detail-risk').textContent = r.score;
   document.getElementById('detail-risk').className = 'text-3xl font-bold ' + riskClass(r.score);
-  document.getElementById('detail-risk-label').textContent = 'DIRECT JFK→UK · ' + riskLabel(r.score) + ' · target <28';
-  document.getElementById('detail-hs').textContent = fmtHs(p.hs) + ' | Ch '+p.chapter+'/'+p.heading+' | '+p.duty+'% duty | pref '+REGIME.preferenceCode+' | VAT 20%';
+  document.getElementById('detail-risk-label').textContent = riskLabel(r.score) + ' · WT Δ ' + r.wtDelta.toFixed(1) + ' lb';
+  document.getElementById('detail-hs').textContent = fmtHs(p.hs) + ' · Ch ' + p.chapter + ' · ' + p.duty + '% duty';
   const n = normHs(p.hs);
-  document.getElementById('detail-hs-link').innerHTML = '<a href="https://www.trade-tariff.service.gov.uk/commodities/'+n+'?country=US" target="_blank" class="text-[#111827] hover:underline">UK tariff · US origin · '+n+'</a>';
-  document.getElementById('detail-desc').textContent = p.desc;
-  const cfg = getFreightConfig();
-  document.getElementById('detail-meta').innerHTML = '<div class="flex justify-between"><span>Freight mode</span><span>'+cfg.label+' · '+cfg.entryLabel+'</span></div><div class="flex justify-between"><span>Transport doc</span><span>'+cfg.docType+'</span></div><div class="flex justify-between"><span>Classification confidence</span><span>'+Math.round((p.conf||0)*100)+'%</span></div><div class="flex justify-between"><span>GIR basis</span><span>'+(p.gir||[]).join(', ')+'</span></div><div class="flex justify-between"><span>Scrutiny tier</span><span>'+(p.scrutiny||1)+'/5</span></div><div class="flex justify-between"><span>Origin / preference</span><span>US · '+REGIME.preferenceLabel+'</span></div>';
-  const comp = (p.restrictions||[]).map(x => x.type+' ('+x.agency+'): '+x.note).join(' · ');
-  document.getElementById('detail-compliance').textContent = comp || 'No additional licences flagged for this lane.';
+  const link = document.getElementById('detail-hs-link');
+  link.href = 'https://www.trade-tariff.service.gov.uk/commodities/' + n + '?country=US';
+  link.textContent = 'View on UK Trade Tariff →';
+  document.getElementById('detail-desc').textContent = p.desc || '—';
   document.getElementById('detail-packing').textContent = p.packing || '—';
+
   const bd = r.breakdown;
   const rows = [
-    ['Physical — weight match', bd.weight], ['Physical — dimension fit', bd.dims],
-    ['Physical — wt/dim gap', bd.shipGap], ['Physical — density plausibility', bd.density||0],
-    ['Physical — box capacity', bd.boxCapacity||0], ['Physical — volume fill', bd.volumeFill||0],
-    ['Physical — net/gross coherence', bd.netGross||0], ['Physical — billable alignment', bd.billable||0],
-    ['Documentation — HMRC desc quality', bd.desc], ['Tariff — HS & classification', bd.hs],
-    ['Compliance — restrictions', bd.restricted], ['Compliance — sector flags', bd.flags||0],
-    ['Condition — used goods', bd.used], ['Valuation — market band', bd.valuation], ['Duty rate factor', bd.duty],
-    ['Lane — ' + cfg.label + ' mode fit', bd.freight || 0],
+    ['Weight match', bd.weight], ['Box fit', bd.dims], ['Dim weight gap', bd.shipGap],
+    ['Density', bd.density], ['Volume fill', bd.volumeFill], ['Billable align', bd.billable],
+    ['Description', bd.desc], ['HS / classification', bd.hs], ['Restrictions', bd.restricted],
+    ['Flags', bd.flags], ['Used goods', bd.used], ['Valuation', bd.valuation], ['Duty', bd.duty],
   ].filter(([, v]) => v > 0);
+
   document.getElementById('detail-breakdown').innerHTML = rows.length
-    ? '<div class="flex justify-between border-b border-[#d1d5db] pb-1 mb-1 font-semibold"><span>UK direct score</span><span class="'+riskClass(r.score)+'">'+r.score+'</span></div>'
-      + rows.map(([k,v])=>'<div class="flex justify-between"><span>'+k+'</span><span>+'+v+'</span></div>').join('')
-    : '<div class="text-[#111827]">✓ No risk factors flagged — clean direct clearance match.</div>';
-  const billable = cfg.useDimWeight ? Math.max(profile.weight, r.dimWt) : profile.weight;
-  const calc = ukImportCalc(p, billable);
-  document.getElementById('detail-uk-calc').textContent = 'FOB $'+p.value+' + '+cfg.label.toLowerCase()+' freight $'+calc.freight+' + ins $'+calc.ins+' → CIF ~$'+Math.round(calc.cifUsd)+' (~£'+Math.round(calc.cifGbp)+') | Duty ~£'+Math.round(calc.dutyGbp);
-  document.getElementById('detail-vat').textContent = '£'+Math.round(calc.vatGbp)+' VAT (PVA if GB VAT-registered importer)';
-  document.getElementById('detail-why').textContent = buildWhyText(p, r);
-  void updateRouteBloomberg(p, r);
-}
-
-function switchRouteTab(tab) {
-  document.querySelectorAll('.route-tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
-  document.querySelectorAll('.route-tab-panel').forEach(el => el.classList.toggle('active', el.id === 'route-tab-' + tab));
-}
-
-function onRerouteHubChange() {
-  const RB = window.RouteBloomberg;
-  const code = document.getElementById('reroute-hub-select')?.value;
-  if (code && window.currentRouteAnalysis && RB) {
-    RB.renderDetailReroute(window.currentRouteAnalysis, window.currentRouteProduct, code, null);
-    RB.renderRouteBloomberg(window.currentRouteAnalysis, window.currentRouteProduct, code);
-  }
-}
-
-function setRerouteLoading() {
-  ['reroute-direct-score','reroute-combined'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.textContent = '…'; el.className = 'route-score-lg text-[#4b5563]'; }
-  });
-  ['reroute-leg1','reroute-leg2'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.textContent = '…'; el.className = 'text-[#4b5563]'; }
-  });
-  const verdict = document.getElementById('reroute-verdict');
-  if (verdict) verdict.textContent = 'Computing routes…';
-  const st = document.getElementById('reroute-status');
-  if (st) st.textContent = 'Computing EU leg scores…';
-}
-
-async function updateRouteBloomberg(product, scored) {
-  const RB = window.RouteBloomberg;
-  if (!RB) {
-    const st = document.getElementById('reroute-status');
-    if (st) st.textContent = 'Route engine failed to load — refresh page.';
-    return;
-  }
-  setRerouteLoading();
-  try {
-    await RB.loadRouteData();
-    const box = getSelectedBox();
-    let weight = parseFloat(document.getElementById('weight-input')?.value) || profile.weight;
-    // In global search, use the item's native weight for consistent scoring with what the user saw selected
-    if (scored && typeof scored.nativeWeight === 'number') {
-      weight = scored.nativeWeight;
-    }
-    const analysis = RB.analyzeRoutesForProduct(product, weight, box.dims);
-    if (!analysis) throw new Error('Route analysis returned empty — EU jurisdiction data missing.');
-    window.currentRouteAnalysis = analysis;
-    window.currentRouteProduct = product;
-    RB.renderDetailReroute(analysis, product, null, scored && scored.score);
-    RB.renderRouteBloomberg(analysis, product);
-    document.getElementById('route-bloomberg')?.classList.remove('hidden');
-  } catch (e) {
-    console.error('Route bloomberg error:', e);
-    RB.showRerouteLegsError(e.message || String(e));
-    document.getElementById('route-bloomberg')?.classList.add('hidden');
-  }
-}
-
-let triangularScanGen = 0;
-async function runTriangularAdvantageScan() {
-  const RB = window.RouteBloomberg;
-  if (!dbReady || !RB) return;
-  await RB.loadRouteData();
-  const gen = ++triangularScanGen;
-  const status = document.getElementById('route-scan-status');
-  const resultsEl = document.getElementById('route-scan-results');
-  const table = document.getElementById('route-scan-table');
-  document.getElementById('route-bloomberg').classList.remove('hidden');
-  resultsEl.classList.remove('hidden');
-  status.textContent = 'Scanning 13k+ classifications across 15 EU hubs…';
-  const box = getSelectedBox();
-  const weight = parseFloat(document.getElementById('weight-input').value) || profile.weight;
-  const hits = await RB.scanBestTriangularRoutes(weight, box.dims, 25);
-  if (gen !== triangularScanGen) return;
-  status.textContent = hits.length + ' classifications where EU hub beats direct UK at ' + weight + ' lbs';
-  if (!hits.length) {
-    table.innerHTML = '<div class="text-[10px] text-[#4b5563]">No hub advantage found at this weight — direct JFK→UK wins for all scanned codes.</div>';
-    return;
-  }
-  let html = '<table class="text-[10px] w-full"><thead class="text-[#4b5563]"><tr><th>#</th><th>PRODUCT</th><th>HS</th><th>DIRECT SRI</th><th>HUB</th><th>HUB SRI</th><th>SAFE</th><th>SAVE</th></tr></thead><tbody>';
-  hits.forEach((h, i) => {
-    html += '<tr class="option-row border-b border-[#222]" onclick="selectOption(\'' + h.id + '\')">'
-      + '<td>' + (i+1) + '</td>'
-      + '<td class="max-w-[160px] truncate">' + h.product.name + '</td>'
-      + '<td>' + fmtHs(h.product.hs) + '</td>'
-      + '<td class="' + riskClass(h.directSRI) + '">' + h.directSRI + '</td>'
-      + '<td>' + h.bestHub.hub.code + '</td>'
-      + '<td class="font-bold ' + riskClass(h.bestHub.statistical) + '">' + h.bestHub.statistical + '</td>'
-      + '<td>' + h.bestHub.safetyIndex + '</td>'
-      + '<td class="risk-low">-' + h.saving + '</td></tr>';
-  });
-  html += '</tbody></table>';
-  table.innerHTML = html;
-}
-
-const AUTH_USER = 'admin', AUTH_PASS = 'admin', AUTH_KEY = 'tracking_auth';
-function checkAuth() { return sessionStorage.getItem(AUTH_KEY) === '1'; }
-function showApp() { document.getElementById('auth-gate').style.display='none'; document.getElementById('app-content').style.display=''; }
-function handleLogin(e) {
-  e.preventDefault();
-  const user = document.getElementById('auth-user').value;
-  const pass = document.getElementById('auth-pass').value;
-  const err = document.getElementById('auth-error');
-  if (user === AUTH_USER && pass === AUTH_PASS) { sessionStorage.setItem(AUTH_KEY,'1'); err.style.display='none'; showApp(); init(); }
-  else err.style.display = 'block';
-}
-function boot() { if (checkAuth()) { showApp(); init(); } else document.getElementById('auth-gate').style.display='flex'; }
-function scheduleAnalyze() {
-  clearTimeout(analyzeTimer);
-  analyzeTimer = setTimeout(analyze, 60);
+    ? rows.map(([k, v]) => '<div class="flex justify-between"><span class="text-gray-500">' + k + '</span><span>+' + v + '</span></div>').join('')
+    : '<span class="text-green-700">Clean match — no risk factors flagged.</span>';
 }
 
 async function loadDatabase() {
@@ -1487,114 +471,40 @@ async function loadDatabase() {
   try {
     const single = await fetch('products.json');
     if (single.ok) {
-      status.textContent = 'fetching products.json…';
       PRODUCTS = await single.json();
     } else {
-      status.textContent = 'loading chapter chunks…';
       const manifestRes = await fetch('data/manifest.json');
-      if (!manifestRes.ok) throw new Error('HTTP ' + manifestRes.status + ' (manifest)');
+      if (!manifestRes.ok) throw new Error('Could not load tariff data');
       const manifest = await manifestRes.json();
       PRODUCTS = {};
       let loaded = 0;
       for (const ch of manifest.chapters) {
+        status.textContent = 'Loading chapter ' + (++loaded) + ' / ' + manifest.chapters.length + '…';
         const chunkRes = await fetch(ch.file);
-        if (!chunkRes.ok) throw new Error('HTTP ' + chunkRes.status + ' (' + ch.file + ')');
+        if (!chunkRes.ok) throw new Error('Failed: ' + ch.file);
         Object.assign(PRODUCTS, await chunkRes.json());
-        loaded++;
-        status.textContent = 'loaded ' + loaded + ' / ' + manifest.chapters.length + ' chapters…';
       }
     }
-    REGIME.entries = Object.keys(PRODUCTS).length;
     buildWeightIndex();
-    dbReady = true;
-    status.textContent = REGIME.entries.toLocaleString() + ' declarable commodity codes loaded';
+    const count = Object.keys(PRODUCTS).length;
+    document.getElementById('db-info').textContent = count.toLocaleString() + ' UK tariff codes loaded';
+    status.textContent = count.toLocaleString() + ' codes ready';
   } catch (e) {
-    status.textContent = 'Failed to load tariff database: ' + e.message;
+    status.textContent = 'Error: ' + e.message;
     throw e;
   } finally {
-    setTimeout(() => { el.style.display = 'none'; }, 400);
+    setTimeout(() => { el.style.display = 'none'; }, 300);
   }
 }
 
 async function init() {
-  populateBoxSelect(); boxManual = false;
-  updateFreightModeUI();
-  if (!dbReady) await loadDatabase();
-  try {
-    if (window.RouteBloomberg) {
-      await window.RouteBloomberg.loadRouteData();
-      document.getElementById('last-update').textContent = REGIME.tariffAsOf + ' · ' + REGIME.entries + ' SKUs · ' + (window.JURISDICTIONS?.euHubs?.length || 0) + ' EU hubs';
-    }
-  } catch (e) {
-    console.warn('Route data load failed:', e);
-    document.getElementById('reroute-status').textContent = 'EU route data load failed: ' + e.message;
-  }
-  syncWeightUI(getFreightConfig().defaultWeight);
-  document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
-  analyze();
+  await loadDatabase();
+  const { weight, dims } = getInputs();
+  updateInfoBar(weight, dims);
+  search();
 }
 
-// --- User friendly helpers (added for better UX) ---
-function loadGpuExample() {
-  // Realistic GPU example: ~24 lb RTX 3090 class card
-  document.getElementById('weight-input').value = '24';
-  syncWeightUI(24);
-  const boxSel = document.getElementById('box-select');
-  if (boxSel) boxSel.value = '18cube';
-  boxManual = true;
-  document.getElementById('risk-target').value = '28';
-  clearScanMode();
-  document.getElementById('show-all').checked = false;
-  updateSearchModeUI();
-  analyze();
-  const note = document.getElementById('risk-search-status');
-  if (note) note.textContent = 'Loaded example: 24 lb GPU in 18×18×18 cube — review lowest risk codes';
-}
-
-function resetAll() {
-  scanMode = 'weight';
-  document.getElementById('risk-search').value = '';
-  document.getElementById('risk-keyword').value = '';
-  document.getElementById('risk-target').value = '';
-  document.getElementById('max-risk').value = '';
-  document.getElementById('show-all').checked = false;
-  boxManual = false;
-  freightMode = 'air';
-  updateFreightModeUI();
-  syncWeightUI(getFreightConfig().defaultWeight);
-  document.getElementById('box-select').value = autoSuggestBox(getFreightConfig().defaultWeight).id;
-  updateSearchModeUI();
-  analyze();
-}
-
-function showHelp() {
-  const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
-  modal.innerHTML = `
-    <div style="background:#fff;border:1px solid #e5e7eb;max-width:620px;width:100%;padding:18px 20px;border-radius:10px;font-size:12px;color:#111827;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-weight:600;color:#111827;">Quick Help — Risk Adjuster</div>
-        <button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">×</button>
-      </div>
-      <ul style="line-height:1.5;margin:0 0 10px 18px;padding:0; color:#374151;">
-        <li><strong>Risk score</strong>: Lower is safer for UK customs clearance. &lt;28 = LOW (preferred).</li>
-        <li><strong>WT Δ</strong>: How far the declared item weight is from your shipment weight. Smaller = more believable on paperwork.</li>
-        <li><strong>Dim weight</strong>: Volumetric weight used by carriers (L×W×H ÷139 for air). Can affect cost &amp; audit risk.</li>
-        <li><strong>SEARCH ALL</strong>: Scores every UK tariff code at your current weight &amp; box — no weight cutoff.</li>
-        <li><strong>18×18×18 cube</strong>: Standard GPU/electronics box (~42 lb dim weight). Use the dedicated panel or preset.</li>
-        <li>Risk now includes <strong>box capacity</strong>, <strong>volume fill</strong>, and <strong>billable weight</strong> alignment.</li>
-        <li>Use <strong>AIR</strong> for fast small/medium GPU shipments; <strong>SEA</strong> for heavy/pallets (no dim penalty).</li>
-        <li>Pick a code → copy the “COMMERCIAL DESCRIPTION (INVOICE)” and “PACKING LIST LINE” into your docs.</li>
-        <li>EU hub route sometimes lowers risk score via TCA preference rules.</li>
-      </ul>
-      <div style="font-size:10px;color:#6b7280;">Guidance only. Always double-check at trade-tariff.service.gov.uk before filing. Not advice.</div>
-      <div style="text-align:right;margin-top:12px;"><button onclick="this.closest('[style*=\'position:fixed\']').remove()" class="search-btn">Close</button></div>
-    </div>`;
-  document.body.appendChild(modal);
-}
-
-window.onload = boot;
-
+window.onload = init;
 </script>
 </body>
 </html>
