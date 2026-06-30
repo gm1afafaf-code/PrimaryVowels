@@ -6,132 +6,248 @@
   <title>UK TRACKER — Classification Risk</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; background: #fafafa; color: #111827; }
-    .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
-    .label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-    input, button { border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 10px; font-size: 14px; }
-    input:focus { border-color: #6d28d9; outline: none; box-shadow: 0 0 0 2px #ede9fe; }
-    .btn { background: #6d28d9; color: #fff; border-color: #6d28d9; font-weight: 600; cursor: pointer; }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --accent: #6d28d9;
+      --accent-soft: #f5f3ff;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+    }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+    .shell { max-width: 1120px; margin: 0 auto; padding: 24px 20px 40px; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .field {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 15px;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+    }
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
     .btn:hover { background: #5b21b6; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chip strong { color: var(--ink); font-weight: 600; }
     .risk-low { color: #15803d; font-weight: 700; }
     .risk-med { color: #b45309; font-weight: 700; }
     .risk-high { color: #b91c1c; font-weight: 700; }
     table { border-collapse: collapse; width: 100%; }
-    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #f3f4f6; }
-    th { font-size: 11px; color: #6b7280; text-transform: uppercase; background: #f9fafb; position: sticky; top: 0; }
-    tr.row { cursor: pointer; }
-    tr.row:hover { background: #f9fafb; }
-    tr.row.selected { background: #f5f3ff; }
-    .flag { font-size: 9px; padding: 1px 5px; border: 1px solid #e5e7eb; border-radius: 3px; margin-right: 3px; color: #6b7280; }
-    .flag-warn { color: #b45309; border-color: #fde68a; background: #fffbeb; }
-    .flag-ok { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+    th {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr.row { cursor: pointer; transition: background 0.1s; }
+    tr.row:hover { background: #f8fafc; }
+    tr.row.selected { background: var(--accent-soft); }
+    tr.row.selected td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+    .detail-block {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
   </style>
 </head>
-<body class="p-4 md:p-6 max-w-6xl mx-auto">
-
-  <div id="db-loading" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center gap-3" style="display:none">
-    <div class="text-sm font-medium">Loading UK tariff database…</div>
-    <div id="db-loading-status" class="text-xs text-gray-500">—</div>
+<body>
+  <div id="db-loading" class="fixed inset-0 bg-white/95 z-50 flex flex-col items-center justify-center gap-3" style="display:none">
+    <div class="text-sm font-semibold text-slate-800">Loading UK tariff database…</div>
+    <div id="db-loading-status" class="text-xs text-slate-500 mono">—</div>
   </div>
 
-  <header class="mb-6">
-    <h1 class="text-xl font-bold">UK TRACKER</h1>
-    <p class="text-sm text-gray-500 mt-1">Enter shipment weight and box size. Get UK HS classifications ranked by clearance risk.</p>
-  </header>
+  <div class="shell">
+    <header class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="status-dot"></span>
+          <h1 class="text-2xl font-semibold tracking-tight">UK TRACKER</h1>
+        </div>
+        <p class="text-sm text-slate-500 max-w-xl">
+          Enter gross weight and box dimensions. We score every UK HS code at <em>your</em> shipment profile and return the lowest-risk matches first.
+        </p>
+      </div>
+      <div class="chip mono" id="db-info">—</div>
+    </header>
 
-  <div class="panel p-4 mb-4">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
-      <div>
-        <div class="label mb-1">Gross weight (lbs)</div>
-        <input type="number" id="weight" min="0.1" step="0.1" value="24" class="w-full">
-      </div>
-      <div>
-        <div class="label mb-1">Length (in)</div>
-        <input type="number" id="dim-l" min="1" step="0.5" value="18" class="w-full">
-      </div>
-      <div>
-        <div class="label mb-1">Width (in)</div>
-        <input type="number" id="dim-w" min="1" step="0.5" value="18" class="w-full">
-      </div>
-      <div>
-        <div class="label mb-1">Height (in)</div>
-        <input type="number" id="dim-h" min="1" step="0.5" value="18" class="w-full">
-      </div>
-      <div>
-        <button type="button" class="btn w-full" onclick="search()">SEARCH</button>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 items-end">
-      <div class="md:col-span-2">
-        <div class="label mb-1">Filter (optional)</div>
-        <input type="text" id="filter" placeholder="HS code, chapter, keyword…" class="w-full" onkeydown="if(event.key==='Enter')search()">
-      </div>
-      <label class="flex items-center gap-2 text-sm text-gray-600 pb-2 cursor-pointer">
-        <input type="checkbox" id="show-all" class="w-4 h-4">
-        Include poor weight matches
-      </label>
-    </div>
-    <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
-      <span>Dim weight: <strong id="info-dim" class="text-gray-800">—</strong></span>
-      <span>Billable: <strong id="info-billable" class="text-gray-800">—</strong></span>
-      <span>Risk: <span class="risk-low">&lt;28 low</span> · <span class="risk-med">28–51 med</span> · <span class="risk-high">52+ high</span></span>
-      <span id="db-info">—</span>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="lg:col-span-2 panel overflow-hidden">
-      <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-        <span class="font-semibold text-sm">Classifications</span>
-        <span id="result-count" class="text-xs text-gray-500">—</span>
-      </div>
-      <div class="overflow-auto max-h-[65vh]">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Risk</th>
-              <th>Classification</th>
-              <th>HS Code</th>
-              <th>Duty</th>
-              <th>WT Δ</th>
-            </tr>
-          </thead>
-          <tbody id="results"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel p-4">
-      <div class="font-semibold text-sm mb-3">Selected</div>
-      <div id="detail-empty" class="text-sm text-gray-400">Click a row to see details.</div>
-      <div id="detail" class="hidden text-sm space-y-3">
+    <form id="search-form" class="panel p-5 mb-5" onsubmit="event.preventDefault(); runSearch();">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
         <div>
-          <div id="detail-name" class="font-semibold"></div>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span id="detail-risk" class="text-3xl font-bold"></span>
-            <span id="detail-risk-label" class="text-xs text-gray-500"></span>
+          <div class="label">Gross weight</div>
+          <div class="relative">
+            <input type="text" inputmode="decimal" id="weight" class="field mono pr-10" value="24" autocomplete="off" spellcheck="false">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">lbs</span>
           </div>
         </div>
         <div>
-          <div class="label mb-1">HS Code</div>
-          <div id="detail-hs" class="font-mono text-sm"></div>
-          <a id="detail-hs-link" href="#" target="_blank" class="text-xs text-violet-700 hover:underline"></a>
+          <div class="label">Length</div>
+          <div class="relative">
+            <input type="text" inputmode="decimal" id="dim-l" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
+          </div>
         </div>
         <div>
-          <div class="label mb-1">Invoice description</div>
-          <div id="detail-desc" class="text-xs text-gray-700 leading-relaxed"></div>
+          <div class="label">Width</div>
+          <div class="relative">
+            <input type="text" inputmode="decimal" id="dim-w" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
+          </div>
         </div>
         <div>
-          <div class="label mb-1">Packing list</div>
-          <div id="detail-packing" class="text-xs text-gray-600"></div>
+          <div class="label">Height</div>
+          <div class="relative">
+            <input type="text" inputmode="decimal" id="dim-h" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
+          </div>
         </div>
-        <div>
-          <div class="label mb-1">Risk factors</div>
-          <div id="detail-breakdown" class="text-xs space-y-0.5"></div>
+        <div class="sm:col-span-2 lg:col-span-2">
+          <div class="label">Filter <span class="normal-case font-normal text-slate-400">(optional)</span></div>
+          <input type="text" id="filter" class="field" placeholder="HS code, chapter, keyword…" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-slate-100">
+        <div class="flex flex-wrap gap-2">
+          <span class="chip">Dim wt <strong id="info-dim" class="mono">—</strong></span>
+          <span class="chip">Billable <strong id="info-billable" class="mono">—</strong></span>
+          <span class="chip"><span class="risk-low">&lt;28</span> low · <span class="risk-med">28–51</span> med · <span class="risk-high">52+</span> high</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="show-all" class="rounded border-slate-300 text-violet-700 focus:ring-violet-500">
+            Include poor weight matches
+          </label>
+          <button type="submit" id="search-btn" class="btn">Search</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+      <div class="lg:col-span-3 panel overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div>
+            <div class="font-semibold">Lowest risk first</div>
+            <div class="text-xs text-slate-500 mt-0.5">Sorted by clearance risk at your weight, then weight proximity</div>
+          </div>
+          <span id="result-count" class="text-xs text-slate-500 mono">—</span>
+        </div>
+        <div class="overflow-auto max-h-[68vh]">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Risk</th>
+                <th>Classification</th>
+                <th>HS Code</th>
+                <th>Duty</th>
+                <th>WT Δ</th>
+              </tr>
+            </thead>
+            <tbody id="results">
+              <tr><td colspan="6" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2 panel p-5">
+        <div class="font-semibold mb-4">Selected classification</div>
+        <div id="detail-empty" class="text-sm text-slate-400 py-8 text-center border border-dashed border-slate-200 rounded-lg">
+          Select a row to view HS detail, invoice text, and risk breakdown.
+        </div>
+        <div id="detail" class="hidden space-y-4">
+          <div>
+            <div id="detail-name" class="font-semibold text-base leading-snug"></div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span id="detail-risk" class="text-4xl font-bold mono"></span>
+              <span id="detail-risk-label" class="text-xs text-slate-500"></span>
+            </div>
+          </div>
+          <div class="detail-block">
+            <div class="label">HS / Tariff</div>
+            <div id="detail-hs" class="mono text-sm font-medium"></div>
+            <a id="detail-hs-link" href="#" target="_blank" rel="noopener" class="inline-block mt-2 text-xs text-violet-700 hover:underline"></a>
+          </div>
+          <div class="detail-block">
+            <div class="label">Commercial description</div>
+            <div id="detail-desc" class="text-xs text-slate-700 leading-relaxed mt-1"></div>
+          </div>
+          <div class="detail-block">
+            <div class="label">Packing list line</div>
+            <div id="detail-packing" class="text-xs text-slate-600 mt-1"></div>
+          </div>
+          <div class="detail-block">
+            <div class="label">Risk breakdown</div>
+            <div id="detail-breakdown" class="text-xs space-y-1 mt-1"></div>
+          </div>
         </div>
       </div>
     </div>
+
+    <footer class="mt-6 text-xs text-slate-400 text-center">
+      PrimaryVowels · UK Integrated Online Tariff · guidance only, verify at trade-tariff.service.gov.uk
+    </footer>
   </div>
 
 <script>
@@ -147,10 +263,42 @@ const CHAPTER_BASE = { 12: 9, 18: 6, 21: 6, 22: 10, 33: 4, 38: 6, 39: 5, 63: 7, 
 const CATCH_ALL_HEADINGS = ['630790', '210690', '392690', '847330'];
 
 let PRODUCTS = {};
-let productIndex = null;
 let rankedResults = [];
 let selectedId = null;
 let searchGen = 0;
+let hasSearched = false;
+
+function parseNum(id, fallback) {
+  const raw = (document.getElementById(id).value || '').trim().replace(/,/g, '');
+  if (raw === '' || raw === '.') return fallback;
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function isUserTyping() {
+  const el = document.activeElement;
+  if (!el) return false;
+  return el.id === 'weight' || el.id === 'dim-l' || el.id === 'dim-w' || el.id === 'dim-h' || el.id === 'filter';
+}
+
+function getInputs() {
+  return {
+    weight: parseNum('weight', NaN),
+    dims: [parseNum('dim-l', 18), parseNum('dim-w', 18), parseNum('dim-h', 18)],
+  };
+}
+
+function updateInfoBar(weight, dims) {
+  if (!Number.isFinite(weight) || weight <= 0) {
+    document.getElementById('info-dim').textContent = '—';
+    document.getElementById('info-billable').textContent = '—';
+    return;
+  }
+  const dimWt = (dims[0] * dims[1] * dims[2]) / DIM_DIVISOR;
+  const billable = Math.max(weight, dimWt);
+  document.getElementById('info-dim').textContent = dimWt.toFixed(1) + ' lb';
+  document.getElementById('info-billable').textContent = billable.toFixed(1) + ' lb';
+}
 
 function normHs(hs) { return (hs || '').replace(/[ .]/g, ''); }
 function fmtHs(hs) {
@@ -177,45 +325,6 @@ function riskLabel(score) {
   return score < 28 ? 'LOW' : score < 52 ? 'MEDIUM' : 'HIGH';
 }
 
-function getInputs() {
-  const weight = parseFloat(document.getElementById('weight').value) || 0;
-  const dims = [
-    parseFloat(document.getElementById('dim-l').value) || 1,
-    parseFloat(document.getElementById('dim-w').value) || 1,
-    parseFloat(document.getElementById('dim-h').value) || 1,
-  ];
-  return { weight, dims };
-}
-
-function updateInfoBar(weight, dims) {
-  const dimWt = (dims[0] * dims[1] * dims[2]) / DIM_DIVISOR;
-  const billable = Math.max(weight, dimWt);
-  document.getElementById('info-dim').textContent = dimWt.toFixed(1) + ' lb';
-  document.getElementById('info-billable').textContent = billable.toFixed(1) + ' lb';
-}
-
-function buildWeightIndex() {
-  const buckets = {};
-  for (const [id, p] of Object.entries(PRODUCTS)) {
-    const b = Math.round(p.weight * 2);
-    (buckets[b] ||= []).push(id);
-  }
-  productIndex = buckets;
-}
-
-function getCandidates(weight, showAll) {
-  if (showAll) return Object.entries(PRODUCTS);
-  const out = [];
-  const b = Math.round(weight * 2);
-  const span = Math.round(WEIGHT_MATCH_CUTOFF * 2);
-  for (let d = 0; d <= span; d++) {
-    for (const bb of [b - d, b + d]) {
-      for (const id of productIndex[bb] || []) out.push([id, PRODUCTS[id]]);
-    }
-  }
-  return out.length ? out : Object.entries(PRODUCTS);
-}
-
 function filterByKeyword(entries) {
   const q = (document.getElementById('filter').value || '').trim().toLowerCase();
   if (!q) return entries;
@@ -239,9 +348,9 @@ function descQualityScore(product) {
   else if (d.length >= 100) pts += 2;
   else if (d.length >= 70) pts += 1;
   else pts -= 2;
-  if (/cotton|steel|leather|rubber|glass|copper|aluminium|plastic|wood|ceramic|gold|stainless|carbon|iron|alloy|textile|paper/i.test(d)) pts += 2;
-  if (/for |used in|suitable|designed|presented|industrial|domestic/i.test(d)) pts += 2;
-  if (/new|used|refurb|pre-owned|retail|functional/i.test(d)) pts += 1;
+  if (/cotton|steel|leather|plastic|wood|ceramic|gold|textile|paper/i.test(d)) pts += 2;
+  if (/for |used in|suitable|designed|industrial|domestic/i.test(d)) pts += 2;
+  if (/new|used|refurb|functional/i.test(d)) pts += 1;
   if (product.gir?.length) pts += 1;
   return Math.max(0, Math.min(10, pts));
 }
@@ -332,7 +441,6 @@ function physicalCoherence(product, inputWeight, inputDims) {
   else if (dimDiff > 20) breakdown.dims = 7;
   else if (dimDiff > 8) breakdown.dims = 3;
   else breakdown.dims = 0;
-
   breakdown.shipGap = Math.min(18, Math.round(Math.pow(shipGap / 6, 1.2) * 5));
 
   const boxVol = inputDims[0] * inputDims[1] * inputDims[2];
@@ -348,7 +456,6 @@ function physicalCoherence(product, inputWeight, inputDims) {
 function scoreOption(product, inputWeight, inputDims) {
   const phys = physicalCoherence(product, inputWeight, inputDims);
   const breakdown = { ...phys.breakdown };
-
   const dq = descQualityScore(product);
   breakdown.desc = dq >= 8 ? 0 : dq >= 6 ? 3 : dq >= 4 ? 8 : 16;
   breakdown.hs = classificationRisk(product);
@@ -370,18 +477,35 @@ function scoreOption(product, inputWeight, inputDims) {
   return { score, breakdown, ...phys };
 }
 
-async function search() {
+function sortResults(rows) {
+  return rows.sort((a, b) =>
+    a.score - b.score ||
+    a.wtDelta - b.wtDelta ||
+    (b.product.conf || 0) - (a.product.conf || 0)
+  );
+}
+
+async function runSearch() {
   const { weight, dims } = getInputs();
-  if (weight <= 0) return;
+  if (!Number.isFinite(weight) || weight <= 0) {
+    document.getElementById('result-count').textContent = 'Enter a valid weight';
+    return;
+  }
+
   updateInfoBar(weight, dims);
+  hasSearched = true;
+
+  const btn = document.getElementById('search-btn');
+  btn.disabled = true;
+  btn.textContent = 'Searching…';
 
   const gen = ++searchGen;
   const showAll = document.getElementById('show-all').checked;
-  let entries = filterByKeyword(getCandidates(weight, showAll));
-
-  document.getElementById('result-count').textContent = 'Searching…';
+  const entries = filterByKeyword(Object.entries(PRODUCTS));
   const allRanked = [];
   const chunk = 2000;
+
+  document.getElementById('result-count').textContent = 'Scoring 0 / ' + entries.length + '…';
 
   for (let i = 0; i < entries.length; i += chunk) {
     if (gen !== searchGen) return;
@@ -389,51 +513,77 @@ async function search() {
       const scored = scoreOption(p, weight, dims);
       allRanked.push({ id, product: p, ...scored });
     }
-    document.getElementById('result-count').textContent = 'Scoring ' + Math.min(i + chunk, entries.length) + ' / ' + entries.length + '…';
+    document.getElementById('result-count').textContent =
+      'Scoring ' + Math.min(i + chunk, entries.length).toLocaleString() + ' / ' + entries.length.toLocaleString() + '…';
     await new Promise(r => setTimeout(r, 0));
   }
+
   if (gen !== searchGen) return;
 
-  allRanked.sort((a, b) => a.score - b.score || a.wtDelta - b.wtDelta || (b.product.conf || 0) - (a.product.conf || 0));
+  sortResults(allRanked);
 
   if (!showAll) {
     const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
-    rankedResults = matched.length ? matched : allRanked.slice(0, 20);
+    rankedResults = matched.length ? matched : allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF * 2).slice(0, 50);
   } else {
     rankedResults = allRanked;
   }
 
+  btn.disabled = false;
+  btn.textContent = 'Search';
   renderResults();
-  if (rankedResults.length) selectRow(rankedResults[0].id);
+
+  if (rankedResults.length && !isUserTyping()) {
+    selectRow(rankedResults[0].id, false);
+  }
 }
 
 function renderResults() {
   const body = document.getElementById('results');
   body.innerHTML = '';
+
+  if (!hasSearched) {
+    body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>';
+    document.getElementById('result-count').textContent = '—';
+    return;
+  }
+
+  if (!rankedResults.length) {
+    body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-10">No matches at this weight. Try “Include poor weight matches”.</td></tr>';
+    document.getElementById('result-count').textContent = '0 matches';
+    return;
+  }
+
   const shown = Math.min(rankedResults.length, DISPLAY_LIMIT);
-  const suffix = rankedResults.length > shown ? ' (top ' + shown + ')' : '';
-  document.getElementById('result-count').textContent = rankedResults.length + ' matches' + suffix;
+  const suffix = rankedResults.length > shown ? ' · showing top ' + shown : '';
+  document.getElementById('result-count').textContent = rankedResults.length.toLocaleString() + ' matches' + suffix;
 
   rankedResults.slice(0, shown).forEach((r, i) => {
     const tr = document.createElement('tr');
     tr.className = 'row' + (r.id === selectedId ? ' selected' : '');
-    tr.onclick = () => selectRow(r.id);
+    tr.onclick = () => selectRow(r.id, true);
+    const wtClass = r.wtDelta <= 3 ? 'text-emerald-600 font-medium' : r.wtDelta > 10 ? 'text-amber-600' : '';
     tr.innerHTML =
-      '<td class="text-gray-400">' + (i + 1) + '</td>' +
-      '<td class="' + riskClass(r.score) + '">' + r.score + '</td>' +
-      '<td class="max-w-[220px] truncate" title="' + (r.product.name || '') + '">' + (r.product.name || '') + '</td>' +
-      '<td class="font-mono text-xs">' + fmtHs(r.product.hs) + '</td>' +
-      '<td>' + r.product.duty + '%</td>' +
-      '<td class="' + (r.wtDelta > 10 ? 'text-amber-600' : '') + '">' + r.wtDelta.toFixed(1) + '</td>';
+      '<td class="text-slate-400 mono text-xs">' + (i + 1) + '</td>' +
+      '<td class="' + riskClass(r.score) + ' mono">' + r.score + '</td>' +
+      '<td class="max-w-[240px]"><div class="truncate font-medium" title="' + esc(r.product.name) + '">' + esc(r.product.name) + '</div></td>' +
+      '<td class="mono text-xs text-slate-700">' + fmtHs(r.product.hs) + '</td>' +
+      '<td class="mono text-xs">' + r.product.duty + '%</td>' +
+      '<td class="mono text-xs ' + wtClass + '">' + r.wtDelta.toFixed(1) + '</td>';
     body.appendChild(tr);
   });
 }
 
-function selectRow(id) {
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function selectRow(id, rerender) {
   selectedId = id;
+  if (rerender) renderResults();
+
   const r = rankedResults.find(x => x.id === id);
   if (!r) return;
-  renderResults();
 
   document.getElementById('detail-empty').classList.add('hidden');
   document.getElementById('detail').classList.remove('hidden');
@@ -441,13 +591,15 @@ function selectRow(id) {
   const p = r.product;
   document.getElementById('detail-name').textContent = p.name;
   document.getElementById('detail-risk').textContent = r.score;
-  document.getElementById('detail-risk').className = 'text-3xl font-bold ' + riskClass(r.score);
-  document.getElementById('detail-risk-label').textContent = riskLabel(r.score) + ' · WT Δ ' + r.wtDelta.toFixed(1) + ' lb';
-  document.getElementById('detail-hs').textContent = fmtHs(p.hs) + ' · Ch ' + p.chapter + ' · ' + p.duty + '% duty';
+  document.getElementById('detail-risk').className = 'text-4xl font-bold mono ' + riskClass(r.score);
+  document.getElementById('detail-risk-label').textContent =
+    riskLabel(r.score) + ' clearance risk · ' + r.wtDelta.toFixed(1) + ' lb from your weight';
+  document.getElementById('detail-hs').textContent =
+    fmtHs(p.hs) + ' · Chapter ' + p.chapter + ' · ' + p.duty + '% duty';
   const n = normHs(p.hs);
   const link = document.getElementById('detail-hs-link');
   link.href = 'https://www.trade-tariff.service.gov.uk/commodities/' + n + '?country=US';
-  link.textContent = 'View on UK Trade Tariff →';
+  link.textContent = 'Open in UK Trade Tariff →';
   document.getElementById('detail-desc').textContent = p.desc || '—';
   document.getElementById('detail-packing').textContent = p.packing || '—';
 
@@ -455,13 +607,28 @@ function selectRow(id) {
   const rows = [
     ['Weight match', bd.weight], ['Box fit', bd.dims], ['Dim weight gap', bd.shipGap],
     ['Density', bd.density], ['Volume fill', bd.volumeFill], ['Billable align', bd.billable],
-    ['Description', bd.desc], ['HS / classification', bd.hs], ['Restrictions', bd.restricted],
-    ['Flags', bd.flags], ['Used goods', bd.used], ['Valuation', bd.valuation], ['Duty', bd.duty],
+    ['Description quality', bd.desc], ['HS classification', bd.hs], ['Restrictions', bd.restricted],
+    ['Sector flags', bd.flags], ['Used goods', bd.used], ['Valuation', bd.valuation], ['Duty rate', bd.duty],
   ].filter(([, v]) => v > 0);
 
   document.getElementById('detail-breakdown').innerHTML = rows.length
-    ? rows.map(([k, v]) => '<div class="flex justify-between"><span class="text-gray-500">' + k + '</span><span>+' + v + '</span></div>').join('')
-    : '<span class="text-green-700">Clean match — no risk factors flagged.</span>';
+    ? rows.map(([k, v]) =>
+        '<div class="flex justify-between gap-4"><span class="text-slate-500">' + k + '</span><span class="mono font-medium">+' + v + '</span></div>'
+      ).join('')
+    : '<span class="text-emerald-700 font-medium">Clean profile — no extra risk factors.</span>';
+}
+
+function bindInputs() {
+  const ids = ['weight', 'dim-l', 'dim-w', 'dim-h'];
+  ids.forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      const { weight, dims } = getInputs();
+      updateInfoBar(weight, dims);
+    });
+  });
+  document.getElementById('show-all').addEventListener('change', () => {
+    if (hasSearched) runSearch();
+  });
 }
 
 async function loadDatabase() {
@@ -479,16 +646,15 @@ async function loadDatabase() {
       PRODUCTS = {};
       let loaded = 0;
       for (const ch of manifest.chapters) {
-        status.textContent = 'Loading chapter ' + (++loaded) + ' / ' + manifest.chapters.length + '…';
+        status.textContent = 'Chapter ' + (++loaded) + ' / ' + manifest.chapters.length;
         const chunkRes = await fetch(ch.file);
         if (!chunkRes.ok) throw new Error('Failed: ' + ch.file);
         Object.assign(PRODUCTS, await chunkRes.json());
       }
     }
-    buildWeightIndex();
     const count = Object.keys(PRODUCTS).length;
-    document.getElementById('db-info').textContent = count.toLocaleString() + ' UK tariff codes loaded';
-    status.textContent = count.toLocaleString() + ' codes ready';
+    document.getElementById('db-info').textContent = count.toLocaleString() + ' codes';
+    status.textContent = 'Ready';
   } catch (e) {
     status.textContent = 'Error: ' + e.message;
     throw e;
@@ -498,10 +664,11 @@ async function loadDatabase() {
 }
 
 async function init() {
+  bindInputs();
   await loadDatabase();
   const { weight, dims } = getInputs();
   updateInfoBar(weight, dims);
-  search();
+  runSearch();
 }
 
 window.onload = init;
