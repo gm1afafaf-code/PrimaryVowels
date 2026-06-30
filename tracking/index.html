@@ -109,6 +109,8 @@
       background: #22c55e;
       box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
     }
+    .flag { font-size: 9px; padding: 1px 5px; border: 1px solid #e5e7eb; border-radius: 3px; margin-right: 3px; }
+    .flag-ok { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
   </style>
 </head>
 <body>
@@ -125,14 +127,14 @@
           <h1 class="text-2xl font-semibold tracking-tight">UK TRACKER</h1>
         </div>
         <p class="text-sm text-slate-500 max-w-xl">
-          Enter gross weight and box dimensions. We score every UK HS code at <em>your</em> shipment profile and return the lowest-risk matches first.
+          Enter gross weight and pick a box. We score every UK HS code at <em>your</em> shipment and rank by ideal-box match, then clearance risk.
         </p>
       </div>
       <div class="chip mono" id="db-info">—</div>
     </header>
 
     <form id="search-form" class="panel p-5 mb-5" onsubmit="event.preventDefault(); runSearch();">
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 items-end">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <div>
           <div class="label">Gross weight</div>
           <div class="relative">
@@ -140,34 +142,34 @@
             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">lbs</span>
           </div>
         </div>
-        <div>
-          <div class="label">Length</div>
-          <div class="relative">
-            <input type="text" inputmode="decimal" id="dim-l" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
-          </div>
-        </div>
-        <div>
-          <div class="label">Width</div>
-          <div class="relative">
-            <input type="text" inputmode="decimal" id="dim-w" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
-          </div>
-        </div>
-        <div>
-          <div class="label">Height</div>
-          <div class="relative">
-            <input type="text" inputmode="decimal" id="dim-h" class="field mono pr-8" value="18" autocomplete="off" spellcheck="false">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
-          </div>
+        <div class="sm:col-span-2">
+          <div class="label">Box <span id="box-auto-tag" class="normal-case font-normal text-violet-600"></span></div>
+          <select id="box-select" class="field mono text-sm"></select>
+          <div id="box-note" class="text-[11px] text-slate-500 mt-1"></div>
         </div>
         <div>
           <div class="label">UK HS / FedEx code</div>
           <input type="text" id="hs-code" class="field mono" placeholder="6203425900" autocomplete="off" spellcheck="false">
         </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 items-end">
         <div>
           <div class="label">Keyword filter</div>
           <input type="text" id="filter" class="field" placeholder="chapter, keyword…" autocomplete="off">
+        </div>
+        <div class="flex flex-wrap gap-3 items-center pb-1">
+          <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="fits-only" class="rounded border-slate-300 text-violet-700 focus:ring-violet-500" checked>
+            Native dims fit box
+          </label>
+          <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="ideal-match" class="rounded border-slate-300 text-violet-700 focus:ring-violet-500">
+            Ideal box match only
+          </label>
+          <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="show-all" class="rounded border-slate-300 text-violet-700 focus:ring-violet-500">
+            All weights (no ref filter)
+          </label>
         </div>
       </div>
 
@@ -177,13 +179,7 @@
           <span class="chip">Billable <strong id="info-billable" class="mono">—</strong></span>
           <span class="chip"><span class="risk-low">&lt;28</span> low · <span class="risk-med">28–51</span> med · <span class="risk-high">52+</span> high</span>
         </div>
-        <div class="flex items-center gap-3">
-          <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
-            <input type="checkbox" id="show-all" class="rounded border-slate-300 text-violet-700 focus:ring-violet-500">
-            Include poor weight matches
-          </label>
-          <button type="submit" id="search-btn" class="btn">Search</button>
-        </div>
+        <button type="submit" id="search-btn" class="btn">Search</button>
       </div>
     </form>
 
@@ -205,11 +201,12 @@
                 <th>Classification</th>
                 <th>HS Code</th>
                 <th>Duty</th>
-                <th>WT Δ</th>
+                <th>REF WT</th>
+                <th>BOX</th>
               </tr>
             </thead>
             <tbody id="results">
-              <tr><td colspan="6" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>
+              <tr><td colspan="7" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>
             </tbody>
           </table>
         </div>
@@ -236,6 +233,10 @@
           <div class="detail-block">
             <div class="label">Commercial description</div>
             <div id="detail-desc" class="text-xs text-slate-700 leading-relaxed mt-1"></div>
+          </div>
+          <div class="detail-block">
+            <div class="label">Ideal box for this product</div>
+            <div id="detail-ideal-box" class="text-xs text-slate-700 mt-1 mono"></div>
           </div>
           <div class="detail-block">
             <div class="label">Packing list line</div>
@@ -267,13 +268,34 @@ const RESTRICTION_WEIGHTS = {
 const CHAPTER_BASE = { 12: 9, 18: 6, 21: 6, 22: 10, 33: 4, 38: 6, 39: 5, 63: 7, 71: 8, 88: 7, 97: 6 };
 const CATCH_ALL_HEADINGS = ['630790', '210690', '392690', '847330'];
 
+const BOX_PRESETS = [
+  { id: 'env-a', label: '6 × 4 × 4 in (FedEx small envelope)', dims: [6, 4, 4], maxWt: 1 },
+  { id: 'pak',   label: '12 × 9 × 1 in (FedEx pak)',           dims: [12, 9, 1], maxWt: 2 },
+  { id: 'xs',    label: '10 × 8 × 6 in (extra small)',         dims: [10, 8, 6], maxWt: 3 },
+  { id: 'sm',    label: '12 × 10 × 8 in (small)',              dims: [12, 10, 8], maxWt: 8 },
+  { id: 'med',   label: '16 × 13 × 7 in (medium)',             dims: [16, 13, 7], maxWt: 12 },
+  { id: 'app',   label: '18 × 14 × 6 in (apparel flat)',       dims: [18, 14, 6], maxWt: 10 },
+  { id: '18cube',label: '18 × 18 × 18 in (standard cube)',     dims: [18, 18, 18], maxWt: 45 },
+  { id: 'lg',    label: '20 × 16 × 12 in (large)',             dims: [20, 16, 12], maxWt: 30 },
+  { id: 'mdl',   label: '24 × 18 × 12 in (medium-large)',      dims: [24, 18, 12], maxWt: 35 },
+  { id: 'cube',  label: '24 × 24 × 24 in (large cube)',        dims: [24, 24, 24], maxWt: 85 },
+  { id: 'srv',   label: '30 × 22 × 14 in (machinery)',         dims: [30, 22, 14], maxWt: 95 },
+  { id: 'xl',    label: '28 × 28 × 16 in (oversize)',          dims: [28, 28, 16], maxWt: 55 },
+  { id: 'bike',  label: '48 × 10 × 30 in (bike flat-pack)',    dims: [48, 10, 30], maxWt: 35 },
+  { id: 'plt',   label: '48 × 40 × 24 in (pallet carton)',     dims: [48, 40, 24], maxWt: 150 },
+  { id: 'lcl',   label: '48 × 40 × 48 in (LCL pallet)',        dims: [48, 40, 48], maxWt: 800 },
+  { id: 'fcl',   label: '96 × 96 × 96 in (FCL volume)',        dims: [96, 96, 96], maxWt: 2000 },
+];
+
 let PRODUCTS = {};
 let HS_INDEX = {};
+let productIndex = null;
 let rankedResults = [];
 let selectedId = null;
 let searchGen = 0;
 let hasSearched = false;
 let lastSearchMode = 'weight';
+let boxManual = false;
 
 function parseNum(id, fallback) {
   const raw = (document.getElementById(id).value || '').trim().replace(/,/g, '');
@@ -285,7 +307,98 @@ function parseNum(id, fallback) {
 function isUserTyping() {
   const el = document.activeElement;
   if (!el) return false;
-  return el.id === 'weight' || el.id === 'dim-l' || el.id === 'dim-w' || el.id === 'dim-h' || el.id === 'filter' || el.id === 'hs-code';
+  return el.id === 'weight' || el.id === 'filter' || el.id === 'hs-code' || el.id === 'box-select';
+}
+
+function dimDelta(a, b) {
+  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);
+}
+
+function populateBoxSelect() {
+  const sel = document.getElementById('box-select');
+  sel.innerHTML = '';
+  BOX_PRESETS.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.textContent = b.label;
+    sel.appendChild(opt);
+  });
+}
+
+function getSelectedBox() {
+  const id = document.getElementById('box-select').value;
+  return BOX_PRESETS.find(b => b.id === id) || BOX_PRESETS.find(b => b.id === '18cube') || BOX_PRESETS[0];
+}
+
+function nearestPresetForDims(dims) {
+  let best = BOX_PRESETS[0], bestDiff = Infinity;
+  BOX_PRESETS.forEach(b => {
+    const d = dimDelta(b.dims, dims);
+    if (d < bestDiff) { bestDiff = d; best = b; }
+  });
+  return best;
+}
+
+function boxVolume(dims) {
+  return dims[0] * dims[1] * dims[2];
+}
+
+function idealBoxForProduct(product) {
+  const dims = product.dims || [12, 10, 8];
+  const wt = product.weight || 24;
+  const fitting = BOX_PRESETS.filter(b => fitsInBox(dims, b.dims) && wt <= b.maxWt * 1.05);
+  if (fitting.length) {
+    fitting.sort((a, b) => boxVolume(a.dims) - boxVolume(b.dims));
+    return fitting[0];
+  }
+  return nearestPresetForDims(dims);
+}
+
+function autoSuggestBox(weight) {
+  const cube18 = BOX_PRESETS.find(b => b.id === '18cube');
+  if (cube18 && weight >= 10 && weight <= cube18.maxWt) return cube18;
+  let best = BOX_PRESETS[0], bestGap = Infinity;
+  BOX_PRESETS.forEach(b => {
+    if (weight > b.maxWt * 1.05) return;
+    const dimWt = boxVolume(b.dims) / DIM_DIVISOR;
+    const gap = Math.abs(weight - dimWt);
+    if (gap < bestGap) { bestGap = gap; best = b; }
+  });
+  return best;
+}
+
+function syncBoxUI(weight) {
+  const box = getSelectedBox();
+  const dimWt = (box.dims[0] * box.dims[1] * box.dims[2]) / DIM_DIVISOR;
+  const tag = document.getElementById('box-auto-tag');
+  const note = document.getElementById('box-note');
+  if (tag) tag.textContent = boxManual ? '' : '· auto-suggested';
+  if (note) {
+    note.textContent = box.dims.join(' × ') + ' in · dim ' + dimWt.toFixed(1) + ' lb · max ' + box.maxWt + ' lb';
+  }
+  return box;
+}
+
+function buildWeightIndex() {
+  const buckets = {};
+  for (const [id, p] of Object.entries(PRODUCTS)) {
+    const b = Math.round(p.weight * 2);
+    (buckets[b] ||= []).push(id);
+  }
+  productIndex = buckets;
+}
+
+function getCandidates(weight, showAll) {
+  if (showAll || !productIndex) return Object.entries(PRODUCTS);
+  const out = [];
+  const b = Math.round(weight * 2);
+  const span = Math.round(WEIGHT_MATCH_CUTOFF * 2);
+  for (let d = 0; d <= span; d++) {
+    for (const bb of [b - d, b + d]) {
+      for (const id of productIndex[bb] || []) out.push([id, PRODUCTS[id]]);
+    }
+  }
+  return out.length ? out : Object.entries(PRODUCTS);
 }
 
 function getHsQuery() {
@@ -346,10 +459,9 @@ async function fetchCommodityFromApi(code) {
 }
 
 function getInputs() {
-  return {
-    weight: parseNum('weight', NaN),
-    dims: [parseNum('dim-l', 18), parseNum('dim-w', 18), parseNum('dim-h', 18)],
-  };
+  const weight = parseNum('weight', NaN);
+  const box = getSelectedBox();
+  return { weight, dims: [...box.dims], box };
 }
 
 function updateInfoBar(weight, dims) {
@@ -373,9 +485,6 @@ function fmtHs(hs) {
 function hsValid(hs) {
   const n = normHs(hs);
   return n.length === 10 && /^\d{10}$/.test(n);
-}
-function dimDelta(a, b) {
-  return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]) + Math.abs(a[2]-b[2]);
 }
 function fitsInBox(productDims, boxDims) {
   const pd = [...productDims].sort((a,b)=>b-a);
@@ -519,9 +628,20 @@ function physicalCoherence(product, inputWeight, inputDims) {
 }
 
 function scoreOption(product, inputWeight, inputDims, opts = {}) {
+  const refProduct = opts.sourceProduct || product;
   const profile = opts.atShipment ? adaptProductToShipment(product, inputWeight, inputDims) : product;
   const phys = physicalCoherence(profile, inputWeight, inputDims);
+  const nativeDims = refProduct.dims || [12, 10, 8];
+  const nativeFits = fitsInBox(nativeDims, inputDims);
+  const nativeDimDiff = dimDelta(nativeDims, inputDims);
+  const idealBox = idealBoxForProduct(refProduct);
+  const selectedBox = opts.selectedBox || null;
+  const boxMatch = !!(selectedBox && idealBox.id === selectedBox.id);
+
   const breakdown = { ...phys.breakdown };
+  if (!nativeFits) breakdown.dims = Math.max(breakdown.dims || 0, 18);
+  else if (nativeDimDiff > 8 && !boxMatch) breakdown.dims = Math.max(breakdown.dims || 0, 4);
+
   const dq = descQualityScore(profile);
   breakdown.desc = dq >= 8 ? 0 : dq >= 6 ? 3 : dq >= 4 ? 8 : 16;
   breakdown.hs = classificationRisk(profile);
@@ -530,41 +650,62 @@ function scoreOption(product, inputWeight, inputDims, opts = {}) {
   breakdown.used = profile.used ? (/used|pre-owned|refurb/i.test(profile.desc || '') ? 3 : 15) : 0;
   breakdown.valuation = valuationRisk(profile, phys.wtDelta);
   breakdown.duty = profile.duty > 14 ? 6 : profile.duty > 8 ? 4 : profile.duty > 3 ? 2 : 0;
-  breakdown.volumeFill = volumeFillRisk(profile, inputDims);
+  breakdown.volumeFill = nativeFits ? volumeFillRisk({ ...refProduct, dims: nativeDims }, inputDims) : 0;
   breakdown.billable = billableCoherenceRisk(profile, inputWeight, inputDims);
 
   let risk = 5 + Object.values(breakdown).reduce((a, b) => a + b, 0);
-  const physOk = phys.wtDelta <= 2 && phys.dimDiff <= 6 && phys.shipGap <= 5;
+  const physOk = phys.wtDelta <= 2 && nativeDimDiff <= 6 && phys.shipGap <= 5;
   const clean = (profile.conf || 0) >= 0.93 && !profile.restrictions?.length;
-  if (physOk && clean && phys.fits && breakdown.volumeFill === 0) risk -= 8;
-  else if (phys.wtDelta <= 4 && phys.dimDiff <= 10 && clean) risk -= 4;
+  if (physOk && clean && nativeFits && boxMatch && breakdown.volumeFill === 0) risk -= 10;
+  else if (physOk && clean && nativeFits) risk -= 6;
+  else if (phys.wtDelta <= 4 && nativeDimDiff <= 10 && clean) risk -= 3;
 
   const score = Math.max(4, Math.min(96, Math.round(risk)));
   return {
     score,
     breakdown,
     ...phys,
+    fits: nativeFits,
+    nativeFits,
+    nativeDimDiff,
+    boxMatch,
     product: profile,
-    refWtDelta: opts.atShipment ? 0 : Math.abs(product.weight - inputWeight),
-    hsLookup: !!opts.atShipment,
+    sourceProduct: refProduct,
+    refWtDelta: Math.abs(refProduct.weight - inputWeight),
+    idealBox,
+    hsLookup: !!opts.hsLookup,
   };
 }
 
-function sortResults(rows) {
-  return rows.sort((a, b) =>
+function compareResults(a, b) {
+  return (
+    (b.boxMatch === a.boxMatch ? 0 : b.boxMatch ? 1 : -1) ||
+    (b.nativeFits === a.nativeFits ? 0 : b.nativeFits ? 1 : -1) ||
     a.score - b.score ||
-    a.wtDelta - b.wtDelta ||
+    a.refWtDelta - b.refWtDelta ||
     (b.product.conf || 0) - (a.product.conf || 0)
   );
 }
 
+function sortResults(rows) {
+  return rows.sort(compareResults);
+}
+
+function applyResultFilters(rows, { fitsOnly, idealOnly }) {
+  let out = rows;
+  if (idealOnly) out = out.filter(r => r.boxMatch);
+  if (fitsOnly) out = out.filter(r => r.nativeFits);
+  return out;
+}
+
 async function runSearch() {
-  const { weight, dims } = getInputs();
+  const { weight, dims, box } = getInputs();
   if (!Number.isFinite(weight) || weight <= 0) {
     document.getElementById('result-count').textContent = 'Enter a valid weight';
     return;
   }
 
+  syncBoxUI(weight);
   updateInfoBar(weight, dims);
   hasSearched = true;
 
@@ -574,6 +715,8 @@ async function runSearch() {
 
   const gen = ++searchGen;
   const showAll = document.getElementById('show-all').checked;
+  const fitsOnly = document.getElementById('fits-only').checked;
+  const idealOnly = document.getElementById('ideal-match').checked;
   const hsQuery = getHsQuery();
   const hsMode = isHsQuery(hsQuery);
   lastSearchMode = hsMode ? 'hs' : 'weight';
@@ -581,12 +724,12 @@ async function runSearch() {
   const subtitle = document.getElementById('results-subtitle');
   if (subtitle) {
     subtitle.textContent = hsMode
-      ? 'FedEx/HS lookup — scored at your weight & box (not filtered by reference weight)'
-      : 'Sorted by clearance risk at your weight, then weight proximity';
+      ? 'FedEx/HS lookup at your weight · ' + box.label
+      : 'Lowest risk at ' + weight + ' lb in ' + box.label + ' · ideal-box matches ranked first';
   }
 
-  let entries;
   let allRanked = [];
+  const scoreOpts = { atShipment: true, selectedBox: box };
 
   if (hsMode) {
     document.getElementById('result-count').textContent = 'Looking up ' + hsQuery + '…';
@@ -602,30 +745,29 @@ async function runSearch() {
       }
     }
     const pool = [...exact, ...prefix.filter(([id]) => !exact.some(([eid]) => eid === id))];
-    entries = pool.length ? pool : [];
-    for (const [id, p] of entries) {
-      const scored = scoreOption(p, weight, dims, { atShipment: true });
+    for (const [id, p] of pool) {
+      const scored = scoreOption(p, weight, dims, { ...scoreOpts, sourceProduct: p, hsLookup: true });
       allRanked.push({ id, ...scored });
     }
     allRanked.sort((a, b) => {
-      const aExact = normHs(a.product.hs) === hsQuery || a.id === hsQuery ? 0 : 1;
-      const bExact = normHs(b.product.hs) === hsQuery || b.id === hsQuery ? 0 : 1;
-      return aExact - bExact || a.score - b.score || a.wtDelta - b.wtDelta;
+      const aExact = normHs(a.sourceProduct.hs) === hsQuery || a.id === hsQuery ? 0 : 1;
+      const bExact = normHs(b.sourceProduct.hs) === hsQuery || b.id === hsQuery ? 0 : 1;
+      return aExact - bExact || compareResults(a, b);
     });
-    rankedResults = allRanked;
+    rankedResults = applyResultFilters(allRanked, { fitsOnly, idealOnly });
     if (!rankedResults.length) {
-      document.getElementById('result-count').textContent = 'Code ' + hsQuery + ' not in database — check 10-digit UK commodity code';
+      document.getElementById('result-count').textContent = 'Code ' + hsQuery + ' not found or no box match';
     }
   } else {
-    entries = filterByKeyword(Object.entries(PRODUCTS));
+    let entries = filterByKeyword(getCandidates(weight, showAll));
     const chunk = 2000;
     document.getElementById('result-count').textContent = 'Scoring 0 / ' + entries.length + '…';
 
     for (let i = 0; i < entries.length; i += chunk) {
       if (gen !== searchGen) return;
       for (const [id, p] of entries.slice(i, i + chunk)) {
-        const scored = scoreOption(p, weight, dims);
-        allRanked.push({ id, product: p, ...scored });
+        const scored = scoreOption(p, weight, dims, { ...scoreOpts, sourceProduct: p });
+        allRanked.push({ id, ...scored });
       }
       document.getElementById('result-count').textContent =
         'Scoring ' + Math.min(i + chunk, entries.length).toLocaleString() + ' / ' + entries.length.toLocaleString() + '…';
@@ -635,11 +777,19 @@ async function runSearch() {
 
     sortResults(allRanked);
 
+    let pool = allRanked;
     if (!showAll) {
-      const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
-      rankedResults = matched.length ? matched : allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF * 2).slice(0, 50);
-    } else {
-      rankedResults = allRanked;
+      const matched = pool.filter(r => r.refWtDelta <= WEIGHT_MATCH_CUTOFF);
+      pool = matched.length ? matched : pool.slice(0, 200);
+    }
+    rankedResults = applyResultFilters(pool, { fitsOnly, idealOnly });
+    if (!rankedResults.length && allRanked.length) {
+      rankedResults = applyResultFilters(allRanked, { fitsOnly: false, idealOnly });
+      if (rankedResults.length && subtitle) {
+        subtitle.textContent += idealOnly
+          ? ' · no ideal-box matches — showing closest fits'
+          : ' · nothing fits this box — showing closest by risk';
+      }
     }
   }
 
@@ -657,13 +807,13 @@ function renderResults() {
   body.innerHTML = '';
 
   if (!hasSearched) {
-    body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="text-center text-slate-400 py-10">Enter weight &amp; box, then press Search</td></tr>';
     document.getElementById('result-count').textContent = '—';
     return;
   }
 
   if (!rankedResults.length) {
-    body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-10">No matches at this weight. Try “Include poor weight matches”.</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="text-center text-slate-400 py-10">No matches — try a larger box, uncheck filters, or enable “All weights”.</td></tr>';
     document.getElementById('result-count').textContent = '0 matches';
     return;
   }
@@ -676,16 +826,20 @@ function renderResults() {
     const tr = document.createElement('tr');
     tr.className = 'row' + (r.id === selectedId ? ' selected' : '');
     tr.onclick = () => selectRow(r.id, true);
-    const wtShow = r.hsLookup ? '0.0' : r.wtDelta.toFixed(1);
-    const wtClass = r.hsLookup || r.wtDelta <= 3 ? 'text-emerald-600 font-medium' : r.wtDelta > 10 ? 'text-amber-600' : '';
-    const hsTag = r.hsLookup ? '<span class="flag flag-ok">HS</span>' : '';
+    const refWt = (r.sourceProduct?.weight ?? r.product.weight).toFixed(1);
+    const wtClass = r.refWtDelta <= 3 ? 'text-emerald-600 font-medium' : r.refWtDelta > 15 ? 'text-amber-600' : '';
+    const fitTag = r.nativeFits ? '' : '<span class="text-amber-600" title="Native product dims do not fit selected box">⚠</span> ';
+    const ideal = r.idealBox ? r.idealBox.dims.join('×') : '—';
+    const boxClass = r.boxMatch ? 'text-emerald-700 font-semibold' : r.nativeFits ? 'text-slate-600' : 'text-amber-600';
+    const boxTag = r.boxMatch ? '✓ ' : r.nativeFits ? '~ ' : '';
     tr.innerHTML =
       '<td class="text-slate-400 mono text-xs">' + (i + 1) + '</td>' +
       '<td class="' + riskClass(r.score) + ' mono">' + r.score + '</td>' +
-      '<td class="max-w-[240px]"><div class="truncate font-medium" title="' + esc(r.product.name) + '">' + hsTag + esc(r.product.name) + '</div></td>' +
-      '<td class="mono text-xs text-slate-700">' + fmtHs(r.product.hs) + '</td>' +
-      '<td class="mono text-xs">' + r.product.duty + '%</td>' +
-      '<td class="mono text-xs ' + wtClass + '">' + wtShow + '</td>';
+      '<td class="max-w-[200px]"><div class="truncate font-medium" title="' + esc(r.sourceProduct?.name || r.product.name) + '">' + fitTag + esc(r.sourceProduct?.name || r.product.name) + '</div></td>' +
+      '<td class="mono text-xs text-slate-700">' + fmtHs(r.sourceProduct?.hs || r.product.hs) + '</td>' +
+      '<td class="mono text-xs">' + (r.sourceProduct?.duty ?? r.product.duty) + '%</td>' +
+      '<td class="mono text-xs ' + wtClass + '" title="DB reference weight">' + refWt + '</td>' +
+      '<td class="mono text-[10px] ' + boxClass + '" title="' + esc((r.boxMatch ? 'Ideal box match · ' : r.nativeFits ? 'Fits but smaller ideal · ' : 'Too large for box · ') + (r.idealBox?.label || '')) + '">' + boxTag + ideal + '</td>';
     body.appendChild(tr);
   });
 }
@@ -704,17 +858,23 @@ function selectRow(id, rerender) {
   document.getElementById('detail-empty').classList.add('hidden');
   document.getElementById('detail').classList.remove('hidden');
 
-  const p = r.product;
+  const p = r.sourceProduct || r.product;
   document.getElementById('detail-name').textContent = p.name;
   document.getElementById('detail-risk').textContent = r.score;
   document.getElementById('detail-risk').className = 'text-4xl font-bold mono ' + riskClass(r.score);
-  const wtNote = r.hsLookup
-    ? 'scored at your shipment weight'
-    : r.wtDelta.toFixed(1) + ' lb from your weight';
   document.getElementById('detail-risk-label').textContent =
-    riskLabel(r.score) + ' clearance risk · ' + wtNote;
+    riskLabel(r.score) + ' · scored at your ' + getInputs().weight + ' lb shipment · ref wt ' + p.weight + ' lb';
   document.getElementById('detail-hs').textContent =
     fmtHs(p.hs) + ' · Chapter ' + p.chapter + ' · ' + p.duty + '% duty';
+  const ideal = r.idealBox || idealBoxForProduct(p);
+  const selected = getSelectedBox();
+  let boxNote = r.boxMatch
+    ? 'matches your selected ' + selected.label
+    : r.nativeFits
+      ? 'fits your box; ideal is smaller (' + ideal.label + ')'
+      : 'needs ' + ideal.label + ' or larger — your box is too small';
+  document.getElementById('detail-ideal-box').textContent =
+    ideal.label + ' (' + ideal.dims.join(' × ') + ' in) · ' + boxNote;
   const n = normHs(p.hs);
   const link = document.getElementById('detail-hs-link');
   link.href = 'https://www.trade-tariff.service.gov.uk/commodities/' + n + '?country=US';
@@ -738,15 +898,25 @@ function selectRow(id, rerender) {
 }
 
 function bindInputs() {
-  const ids = ['weight', 'dim-l', 'dim-w', 'dim-h'];
-  ids.forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-      const { weight, dims } = getInputs();
-      updateInfoBar(weight, dims);
-    });
+  document.getElementById('weight').addEventListener('input', () => {
+    const weight = parseNum('weight', NaN);
+    if (!boxManual && Number.isFinite(weight) && weight > 0) {
+      document.getElementById('box-select').value = autoSuggestBox(weight).id;
+    }
+    const { weight: w, dims } = getInputs();
+    syncBoxUI(w);
+    updateInfoBar(w, dims);
   });
-  document.getElementById('show-all').addEventListener('change', () => {
-    if (hasSearched) runSearch();
+  document.getElementById('box-select').addEventListener('change', () => {
+    boxManual = true;
+    const { weight, dims } = getInputs();
+    syncBoxUI(weight);
+    updateInfoBar(weight, dims);
+  });
+  ['show-all', 'fits-only', 'ideal-match'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      if (hasSearched) runSearch();
+    });
   });
 }
 
@@ -772,6 +942,7 @@ async function loadDatabase() {
       }
     }
     buildHsIndex();
+    buildWeightIndex();
     const count = Object.keys(PRODUCTS).length;
     document.getElementById('db-info').textContent = count.toLocaleString() + ' UK codes';
     status.textContent = 'Ready';
@@ -784,9 +955,14 @@ async function loadDatabase() {
 }
 
 async function init() {
+  populateBoxSelect();
   bindInputs();
   await loadDatabase();
-  const { weight, dims } = getInputs();
+  const weight = parseNum('weight', 24);
+  document.getElementById('box-select').value = autoSuggestBox(weight).id;
+  boxManual = false;
+  const { dims } = getInputs();
+  syncBoxUI(weight);
   updateInfoBar(weight, dims);
   runSearch();
 }
