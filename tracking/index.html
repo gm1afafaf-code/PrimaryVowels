@@ -132,7 +132,7 @@
     </header>
 
     <form id="search-form" class="panel p-5 mb-5" onsubmit="event.preventDefault(); runSearch();">
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 items-end">
         <div>
           <div class="label">Gross weight</div>
           <div class="relative">
@@ -161,9 +161,13 @@
             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">in</span>
           </div>
         </div>
-        <div class="sm:col-span-2 lg:col-span-2">
-          <div class="label">Filter <span class="normal-case font-normal text-slate-400">(optional)</span></div>
-          <input type="text" id="filter" class="field" placeholder="HS code, chapter, keyword…" autocomplete="off">
+        <div>
+          <div class="label">UK HS / FedEx code</div>
+          <input type="text" id="hs-code" class="field mono" placeholder="6203425900" autocomplete="off" spellcheck="false">
+        </div>
+        <div>
+          <div class="label">Keyword filter</div>
+          <input type="text" id="filter" class="field" placeholder="chapter, keyword…" autocomplete="off">
         </div>
       </div>
 
@@ -188,7 +192,7 @@
         <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <div>
             <div class="font-semibold">Lowest risk first</div>
-            <div class="text-xs text-slate-500 mt-0.5">Sorted by clearance risk at your weight, then weight proximity</div>
+            <div class="text-xs text-slate-500 mt-0.5" id="results-subtitle">Sorted by clearance risk at your weight, then weight proximity</div>
           </div>
           <span id="result-count" class="text-xs text-slate-500 mono">—</span>
         </div>
@@ -254,6 +258,7 @@
 const DIM_DIVISOR = 139;
 const WEIGHT_MATCH_CUTOFF = 15;
 const DISPLAY_LIMIT = 500;
+const COMMODITY_API = 'https://primaryvowels-support.vercel.app/api/commodity';
 
 const RESTRICTION_WEIGHTS = {
   EXCISE: 24, PHYTO: 26, SPS: 18, REACH: 14, DUAL_USE: 17, MHRA: 10,
@@ -263,10 +268,12 @@ const CHAPTER_BASE = { 12: 9, 18: 6, 21: 6, 22: 10, 33: 4, 38: 6, 39: 5, 63: 7, 
 const CATCH_ALL_HEADINGS = ['630790', '210690', '392690', '847330'];
 
 let PRODUCTS = {};
+let HS_INDEX = {};
 let rankedResults = [];
 let selectedId = null;
 let searchGen = 0;
 let hasSearched = false;
+let lastSearchMode = 'weight';
 
 function parseNum(id, fallback) {
   const raw = (document.getElementById(id).value || '').trim().replace(/,/g, '');
@@ -278,7 +285,64 @@ function parseNum(id, fallback) {
 function isUserTyping() {
   const el = document.activeElement;
   if (!el) return false;
-  return el.id === 'weight' || el.id === 'dim-l' || el.id === 'dim-w' || el.id === 'dim-h' || el.id === 'filter';
+  return el.id === 'weight' || el.id === 'dim-l' || el.id === 'dim-w' || el.id === 'dim-h' || el.id === 'filter' || el.id === 'hs-code';
+}
+
+function getHsQuery() {
+  return normHs((document.getElementById('hs-code').value || '').trim());
+}
+
+function isHsQuery(q) {
+  const n = normHs(q);
+  return /^\d{4,10}$/.test(n);
+}
+
+function buildHsIndex() {
+  HS_INDEX = {};
+  for (const [id, p] of Object.entries(PRODUCTS)) {
+    HS_INDEX[id] = id;
+    const n = normHs(p.hs);
+    if (n) HS_INDEX[n] = id;
+  }
+}
+
+function findEntriesByHs(qHs) {
+  const exact = [];
+  const prefix = [];
+  const seen = new Set();
+  if (PRODUCTS[qHs]) {
+    exact.push([qHs, PRODUCTS[qHs]]);
+    seen.add(qHs);
+  }
+  const id = HS_INDEX[qHs];
+  if (id && !seen.has(id)) {
+    exact.push([id, PRODUCTS[id]]);
+    seen.add(id);
+  }
+  for (const [id, p] of Object.entries(PRODUCTS)) {
+    if (seen.has(id)) continue;
+    const n = normHs(p.hs);
+    if (n.startsWith(qHs) || id.startsWith(qHs)) prefix.push([id, p]);
+  }
+  return { exact, prefix };
+}
+
+function adaptProductToShipment(product, weight, dims) {
+  return {
+    ...product,
+    weight,
+    net: Math.round(weight * 0.92 * 10) / 10,
+    dims: [...dims],
+    packing: `Carton ${dims.join('×')} in, gross ${weight} lb — match invoice`,
+  };
+}
+
+async function fetchCommodityFromApi(code) {
+  const res = await fetch(`${COMMODITY_API}?code=${encodeURIComponent(code)}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data?.product) return null;
+  return { id: data.id || code, product: data.product };
 }
 
 function getInputs() {
@@ -332,6 +396,7 @@ function filterByKeyword(entries) {
   const qCh = q.replace(/^ch\s*/i, '').replace(/^0+/, '');
   return entries.filter(([id, p]) => {
     const n = normHs(p.hs);
+    if (id.includes(qHs) && qHs.length >= 4) return true;
     if (qHs.length >= 2 && n.includes(qHs)) return true;
     if (/^\d{1,2}$/.test(qCh) && String(p.chapter) === qCh) return true;
     if (/^\d{4}$/.test(qHs) && n.startsWith(qHs)) return true;
@@ -453,28 +518,36 @@ function physicalCoherence(product, inputWeight, inputDims) {
   return { breakdown, wtDelta, dimDiff, dimWt, shipGap, fits };
 }
 
-function scoreOption(product, inputWeight, inputDims) {
-  const phys = physicalCoherence(product, inputWeight, inputDims);
+function scoreOption(product, inputWeight, inputDims, opts = {}) {
+  const profile = opts.atShipment ? adaptProductToShipment(product, inputWeight, inputDims) : product;
+  const phys = physicalCoherence(profile, inputWeight, inputDims);
   const breakdown = { ...phys.breakdown };
-  const dq = descQualityScore(product);
+  const dq = descQualityScore(profile);
   breakdown.desc = dq >= 8 ? 0 : dq >= 6 ? 3 : dq >= 4 ? 8 : 16;
-  breakdown.hs = classificationRisk(product);
-  breakdown.restricted = restrictionRisk(product);
-  breakdown.flags = flagRisk(product);
-  breakdown.used = product.used ? (/used|pre-owned|refurb/i.test(product.desc || '') ? 3 : 15) : 0;
-  breakdown.valuation = valuationRisk(product, phys.wtDelta);
-  breakdown.duty = product.duty > 14 ? 6 : product.duty > 8 ? 4 : product.duty > 3 ? 2 : 0;
-  breakdown.volumeFill = volumeFillRisk(product, inputDims);
-  breakdown.billable = billableCoherenceRisk(product, inputWeight, inputDims);
+  breakdown.hs = classificationRisk(profile);
+  breakdown.restricted = restrictionRisk(profile);
+  breakdown.flags = flagRisk(profile);
+  breakdown.used = profile.used ? (/used|pre-owned|refurb/i.test(profile.desc || '') ? 3 : 15) : 0;
+  breakdown.valuation = valuationRisk(profile, phys.wtDelta);
+  breakdown.duty = profile.duty > 14 ? 6 : profile.duty > 8 ? 4 : profile.duty > 3 ? 2 : 0;
+  breakdown.volumeFill = volumeFillRisk(profile, inputDims);
+  breakdown.billable = billableCoherenceRisk(profile, inputWeight, inputDims);
 
   let risk = 5 + Object.values(breakdown).reduce((a, b) => a + b, 0);
   const physOk = phys.wtDelta <= 2 && phys.dimDiff <= 6 && phys.shipGap <= 5;
-  const clean = (product.conf || 0) >= 0.93 && !product.restrictions?.length;
+  const clean = (profile.conf || 0) >= 0.93 && !profile.restrictions?.length;
   if (physOk && clean && phys.fits && breakdown.volumeFill === 0) risk -= 8;
   else if (phys.wtDelta <= 4 && phys.dimDiff <= 10 && clean) risk -= 4;
 
   const score = Math.max(4, Math.min(96, Math.round(risk)));
-  return { score, breakdown, ...phys };
+  return {
+    score,
+    breakdown,
+    ...phys,
+    product: profile,
+    refWtDelta: opts.atShipment ? 0 : Math.abs(product.weight - inputWeight),
+    hsLookup: !!opts.atShipment,
+  };
 }
 
 function sortResults(rows) {
@@ -501,32 +574,73 @@ async function runSearch() {
 
   const gen = ++searchGen;
   const showAll = document.getElementById('show-all').checked;
-  const entries = filterByKeyword(Object.entries(PRODUCTS));
-  const allRanked = [];
-  const chunk = 2000;
+  const hsQuery = getHsQuery();
+  const hsMode = isHsQuery(hsQuery);
+  lastSearchMode = hsMode ? 'hs' : 'weight';
 
-  document.getElementById('result-count').textContent = 'Scoring 0 / ' + entries.length + '…';
-
-  for (let i = 0; i < entries.length; i += chunk) {
-    if (gen !== searchGen) return;
-    for (const [id, p] of entries.slice(i, i + chunk)) {
-      const scored = scoreOption(p, weight, dims);
-      allRanked.push({ id, product: p, ...scored });
-    }
-    document.getElementById('result-count').textContent =
-      'Scoring ' + Math.min(i + chunk, entries.length).toLocaleString() + ' / ' + entries.length.toLocaleString() + '…';
-    await new Promise(r => setTimeout(r, 0));
+  const subtitle = document.getElementById('results-subtitle');
+  if (subtitle) {
+    subtitle.textContent = hsMode
+      ? 'FedEx/HS lookup — scored at your weight & box (not filtered by reference weight)'
+      : 'Sorted by clearance risk at your weight, then weight proximity';
   }
 
-  if (gen !== searchGen) return;
+  let entries;
+  let allRanked = [];
 
-  sortResults(allRanked);
-
-  if (!showAll) {
-    const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
-    rankedResults = matched.length ? matched : allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF * 2).slice(0, 50);
-  } else {
+  if (hsMode) {
+    document.getElementById('result-count').textContent = 'Looking up ' + hsQuery + '…';
+    let { exact, prefix } = findEntriesByHs(hsQuery);
+    if (!exact.length && !prefix.length) {
+      const fetched = await fetchCommodityFromApi(hsQuery);
+      if (gen !== searchGen) return;
+      if (fetched) {
+        PRODUCTS[fetched.id] = fetched.product;
+        HS_INDEX[fetched.id] = fetched.id;
+        HS_INDEX[normHs(fetched.product.hs)] = fetched.id;
+        exact = [[fetched.id, fetched.product]];
+      }
+    }
+    const pool = [...exact, ...prefix.filter(([id]) => !exact.some(([eid]) => eid === id))];
+    entries = pool.length ? pool : [];
+    for (const [id, p] of entries) {
+      const scored = scoreOption(p, weight, dims, { atShipment: true });
+      allRanked.push({ id, ...scored });
+    }
+    allRanked.sort((a, b) => {
+      const aExact = normHs(a.product.hs) === hsQuery || a.id === hsQuery ? 0 : 1;
+      const bExact = normHs(b.product.hs) === hsQuery || b.id === hsQuery ? 0 : 1;
+      return aExact - bExact || a.score - b.score || a.wtDelta - b.wtDelta;
+    });
     rankedResults = allRanked;
+    if (!rankedResults.length) {
+      document.getElementById('result-count').textContent = 'Code ' + hsQuery + ' not in database — check 10-digit UK commodity code';
+    }
+  } else {
+    entries = filterByKeyword(Object.entries(PRODUCTS));
+    const chunk = 2000;
+    document.getElementById('result-count').textContent = 'Scoring 0 / ' + entries.length + '…';
+
+    for (let i = 0; i < entries.length; i += chunk) {
+      if (gen !== searchGen) return;
+      for (const [id, p] of entries.slice(i, i + chunk)) {
+        const scored = scoreOption(p, weight, dims);
+        allRanked.push({ id, product: p, ...scored });
+      }
+      document.getElementById('result-count').textContent =
+        'Scoring ' + Math.min(i + chunk, entries.length).toLocaleString() + ' / ' + entries.length.toLocaleString() + '…';
+      await new Promise(r => setTimeout(r, 0));
+    }
+    if (gen !== searchGen) return;
+
+    sortResults(allRanked);
+
+    if (!showAll) {
+      const matched = allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF);
+      rankedResults = matched.length ? matched : allRanked.filter(r => r.wtDelta <= WEIGHT_MATCH_CUTOFF * 2).slice(0, 50);
+    } else {
+      rankedResults = allRanked;
+    }
   }
 
   btn.disabled = false;
@@ -562,14 +676,16 @@ function renderResults() {
     const tr = document.createElement('tr');
     tr.className = 'row' + (r.id === selectedId ? ' selected' : '');
     tr.onclick = () => selectRow(r.id, true);
-    const wtClass = r.wtDelta <= 3 ? 'text-emerald-600 font-medium' : r.wtDelta > 10 ? 'text-amber-600' : '';
+    const wtShow = r.hsLookup ? '0.0' : r.wtDelta.toFixed(1);
+    const wtClass = r.hsLookup || r.wtDelta <= 3 ? 'text-emerald-600 font-medium' : r.wtDelta > 10 ? 'text-amber-600' : '';
+    const hsTag = r.hsLookup ? '<span class="flag flag-ok">HS</span>' : '';
     tr.innerHTML =
       '<td class="text-slate-400 mono text-xs">' + (i + 1) + '</td>' +
       '<td class="' + riskClass(r.score) + ' mono">' + r.score + '</td>' +
-      '<td class="max-w-[240px]"><div class="truncate font-medium" title="' + esc(r.product.name) + '">' + esc(r.product.name) + '</div></td>' +
+      '<td class="max-w-[240px]"><div class="truncate font-medium" title="' + esc(r.product.name) + '">' + hsTag + esc(r.product.name) + '</div></td>' +
       '<td class="mono text-xs text-slate-700">' + fmtHs(r.product.hs) + '</td>' +
       '<td class="mono text-xs">' + r.product.duty + '%</td>' +
-      '<td class="mono text-xs ' + wtClass + '">' + r.wtDelta.toFixed(1) + '</td>';
+      '<td class="mono text-xs ' + wtClass + '">' + wtShow + '</td>';
     body.appendChild(tr);
   });
 }
@@ -592,8 +708,11 @@ function selectRow(id, rerender) {
   document.getElementById('detail-name').textContent = p.name;
   document.getElementById('detail-risk').textContent = r.score;
   document.getElementById('detail-risk').className = 'text-4xl font-bold mono ' + riskClass(r.score);
+  const wtNote = r.hsLookup
+    ? 'scored at your shipment weight'
+    : r.wtDelta.toFixed(1) + ' lb from your weight';
   document.getElementById('detail-risk-label').textContent =
-    riskLabel(r.score) + ' clearance risk · ' + r.wtDelta.toFixed(1) + ' lb from your weight';
+    riskLabel(r.score) + ' clearance risk · ' + wtNote;
   document.getElementById('detail-hs').textContent =
     fmtHs(p.hs) + ' · Chapter ' + p.chapter + ' · ' + p.duty + '% duty';
   const n = normHs(p.hs);
@@ -652,8 +771,9 @@ async function loadDatabase() {
         Object.assign(PRODUCTS, await chunkRes.json());
       }
     }
+    buildHsIndex();
     const count = Object.keys(PRODUCTS).length;
-    document.getElementById('db-info').textContent = count.toLocaleString() + ' codes';
+    document.getElementById('db-info').textContent = count.toLocaleString() + ' UK codes';
     status.textContent = 'Ready';
   } catch (e) {
     status.textContent = 'Error: ' + e.message;
