@@ -6,6 +6,18 @@ const HISTORY_MAX = 30;
 
 const $ = (sel) => document.querySelector(sel);
 
+async function safeJson(res) {
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) {
+    const text = await res.text().catch(() => '');
+    if (res.status === 401 || /authentication required|www-authenticate/i.test(text)) {
+      throw new Error('AUTH_HTML');
+    }
+    throw new Error('Carrier lookup is not available on this host yet.');
+  }
+  return res.json();
+}
+
 const API_SECTIONS = [
   ['Tracking Number Info', 'trackingNumberInfo'],
   ['Latest Status', 'latestStatusDetail'],
@@ -294,7 +306,7 @@ function renderResult(data) {
   $('#all-sections').innerHTML = sections + `
     <div class="panel api-section raw-section">
       <details>
-        <summary style="cursor:pointer; color:#a78bfa; font-weight:600;">Complete FedEx API Response (raw JSON)</summary>
+        <summary style="cursor:pointer; color:var(--accent-2); font-weight:600;">Complete carrier response (raw JSON)</summary>
         <p class="section-hint">Unmodified JSON returned by FedEx Track API for this lookup. For advanced debugging.</p>
         <pre class="raw-json">${escapeHtml(JSON.stringify(data.raw, null, 2))}</pre>
       </details>
@@ -325,7 +337,22 @@ async function checkApi() {
   const text = $('#server-status-text');
   try {
     const res = await fetch(apiUrl('/api/health'), { signal: AbortSignal.timeout(5000) });
-    const data = await res.json();
+    let data;
+    try {
+      data = await safeJson(res);
+    } catch (e) {
+      if (e.message === 'AUTH_HTML') {
+        dot.className = 'server-dot offline';
+        text.textContent = 'Sign-in required — reload and authenticate when prompted';
+        return false;
+      }
+      throw e;
+    }
+    if (data.error && data.error.includes('Authentication')) {
+      dot.className = 'server-dot offline';
+      text.textContent = 'Sign-in required';
+      return false;
+    }
     if (res.ok && data.fedexApi) {
       dot.className = data.liveData ? 'server-dot online' : 'server-dot sandbox';
       text.textContent = data.liveData
@@ -338,11 +365,15 @@ async function checkApi() {
     text.textContent = 'FedEx API reachable but credentials not set on server';
     showEnvBanner(null);
     return false;
-  } catch {
+  } catch (err) {
     dot.className = 'server-dot offline';
-    text.textContent = FEDEX_API_BASE
-      ? 'Cannot reach FedEx API server'
-      : 'Tracker UI is live — API server not deployed yet (see note below)';
+    if (err.message === 'AUTH_HTML' || (err.message || '').includes('Authentication')) {
+      text.textContent = 'Sign-in required — authenticate when prompted';
+    } else {
+      text.textContent = FEDEX_API_BASE
+        ? 'Cannot reach FedEx API server'
+        : 'Tracker is live — carrier API is not connected on this host';
+    }
     showEnvBanner(null);
     return false;
   }
@@ -355,7 +386,21 @@ async function runTrack(tracking) {
 
   try {
     const res = await fetch(apiUrl(`/api/track?trackingNumber=${tracking}`));
-    const data = await res.json();
+    let data;
+    try {
+      data = await safeJson(res);
+    } catch (e) {
+      if (e.message === 'AUTH_HTML') {
+        showError('Sign-in required. Reload the page and authenticate when prompted.');
+        return;
+      }
+      throw e;
+    }
+
+    if (data.error && data.error.includes('Authentication')) {
+      showError('This tracker is protected. Authenticate when prompted, then try again.');
+      return;
+    }
     if (!res.ok) {
       upsertHistory({ tracking, status: 'Lookup failed', statusCode: '' });
       throw new Error(data.error || 'Lookup failed');
@@ -367,7 +412,7 @@ async function runTrack(tracking) {
     });
     renderResult(data);
   } catch (err) {
-    showError(err.message);
+    showError(err.message || 'Failed to get tracking data (check auth or server)');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Track';

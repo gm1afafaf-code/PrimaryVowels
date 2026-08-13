@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UK TRACKER — Classification Risk</title>
+  <title>Classification desk — PrimaryVowels</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
@@ -111,9 +112,33 @@
     }
     .flag { font-size: 9px; padding: 1px 5px; border: 1px solid #e5e7eb; border-radius: 3px; margin-right: 3px; }
     .flag-ok { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+    .pv-header { background:#0a0b0d; color:#ece7dc; padding: 14px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .pv-header a { color:#9b9488; text-decoration:none; font-size:13px; }
+    .pv-header a:hover, .pv-header a.is-active { color:#ece7dc; }
+    .pv-brand { display:flex; align-items:center; gap:10px; color:#ece7dc; text-decoration:none; font-weight:600; letter-spacing:.14em; text-transform:uppercase; font-size:12px; }
+    .pv-brand em { font-style:normal; color:#c4a36a; }
+    .pv-nav { display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
   </style>
 </head>
 <body>
+  <header class="pv-header">
+    <a href="/" class="pv-brand">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#16181e"/>
+        <circle cx="7" cy="18" r="1.7" fill="#c4a36a"/>
+        <circle cx="12.5" cy="13.5" r="1.7" fill="#c4a36a"/>
+        <circle cx="18.5" cy="12" r="1.7" fill="#ece7dc"/>
+        <circle cx="24.5" cy="15" r="1.7" fill="#c4a36a"/>
+      </svg>
+      Primary<em>Vowels</em>
+    </a>
+    <nav class="pv-nav">
+      <a href="/">Home</a>
+      <a href="/#gpus">GPUs</a>
+      <a href="/support/">Track a shipment</a>
+      <a href="/tracking/" class="is-active">Classification</a>
+    </nav>
+  </header>
   <div id="db-loading" class="fixed inset-0 bg-white/95 z-50 flex flex-col items-center justify-center gap-3" style="display:none">
     <div class="text-sm font-semibold text-slate-800">Loading UK tariff database…</div>
     <div id="db-loading-status" class="text-xs text-slate-500 mono">—</div>
@@ -124,7 +149,7 @@
       <div>
         <div class="flex items-center gap-2 mb-1">
           <span class="status-dot"></span>
-          <h1 class="text-2xl font-semibold tracking-tight">UK TRACKER</h1>
+          <h1 class="text-2xl font-semibold tracking-tight">Classification desk</h1>
         </div>
         <p class="text-sm text-slate-500 max-w-xl">
           Enter gross weight and pick a box. We score every UK HS code at <em>your</em> shipment and rank by ideal-box match, then clearance risk.
@@ -844,8 +869,15 @@ function renderResults() {
   });
 }
 
+function plain(s) {
+  return String(s || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return plain(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 }
 
 function selectRow(id, rerender) {
@@ -859,7 +891,7 @@ function selectRow(id, rerender) {
   document.getElementById('detail').classList.remove('hidden');
 
   const p = r.sourceProduct || r.product;
-  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-name').textContent = plain(p.name);
   document.getElementById('detail-risk').textContent = r.score;
   document.getElementById('detail-risk').className = 'text-4xl font-bold mono ' + riskClass(r.score);
   document.getElementById('detail-risk-label').textContent =
@@ -879,8 +911,8 @@ function selectRow(id, rerender) {
   const link = document.getElementById('detail-hs-link');
   link.href = 'https://www.trade-tariff.service.gov.uk/commodities/' + n + '?country=US';
   link.textContent = 'Open in UK Trade Tariff →';
-  document.getElementById('detail-desc').textContent = p.desc || '—';
-  document.getElementById('detail-packing').textContent = p.packing || '—';
+  document.getElementById('detail-desc').textContent = plain(p.desc) || '—';
+  document.getElementById('detail-packing').textContent = plain(p.packing) || '—';
 
   const bd = r.breakdown;
   const rows = [

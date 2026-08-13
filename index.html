@@ -3,87 +3,428 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrimaryVowels — Pre-Owned NVIDIA GPUs & AI Rigs</title>
-  <link rel="stylesheet" href="style.css">
+  <title>PrimaryVowels — Tested NVIDIA GPUs &amp; AI Rigs</title>
+  <meta name="description" content="A specialist desk for pre-owned NVIDIA GPUs and turnkey AI rigs. Every card is load-tested. Thirty-day functional warranty. US and international shipping with complete customs documents.">
+  <meta property="og:title" content="PrimaryVowels — Tested NVIDIA GPUs &amp; AI Rigs">
+  <meta property="og:description" content="Pre-owned NVIDIA compute, prepared properly. Load-tested cards, turnkey multi-GPU rigs, and export paperwork that clears.">
+  <meta property="og:image" content="https://www.primaryvowels.com/images/og.jpg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.primaryvowels.com/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0a0b0d">
+  <link rel="canonical" href="https://www.primaryvowels.com/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav>
-    <a href="/" class="logo">
-      <svg class="logo-mark" width="32" height="32" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="14" stroke="#a78bfa" stroke-width="2"/>
-        <text x="16" y="21" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">PV</text>
-      </svg>
-      <span class="logo-text">PRIMARYVOWELS</span>
-    </a>
-    <ul>
-      <li><a href="#gpus">GPUs</a></li>
-      <li><a href="#rigs">Rigs</a></li>
-      <li><a href="/tracking/">Tracking</a></li>
-      <li><a href="/support/">Support</a></li>
-    </ul>
-  </nav>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <section class="hero">
-    <div class="hero-content">
-      <span class="formula-badge">AI Hardware Reseller</span>
-      <h1 class="formula-display">
-        <span class="vowel-p">P</span><span class="vowel-r">r</span><span class="vowel-i">i</span><span class="vowel-m">m</span><span class="vowel-a">a</span><span class="vowel-r">r</span><span class="vowel-y">y</span>
-        <span class="vowel-v">V</span><span class="vowel-o">o</span><span class="vowel-w">w</span><span class="vowel-e">e</span><span class="vowel-l">l</span><span class="vowel-s">s</span>
-      </h1>
-      <p class="tagline">Pre-owned <span class="accent">NVIDIA GPUs</span> & turnkey AI rigs</p>
-      <p class="hero-sub">Load-tested hardware for home labs and small business inference. 30-day functional warranty. US & international shipping with customs documentation.</p>
-      <div class="hero-actions">
-        <a href="#gpus" class="btn">Browse GPUs</a>
-        <a href="/support/" class="btn btn-outline">Package Support</a>
-      </div>
+  <header class="site-header" data-header>
+    <div class="wrap">
+      <a href="/" class="logo" aria-label="PrimaryVowels home">
+        <svg class="logo-mark" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#16181e"/>
+          <circle cx="7" cy="18" r="1.7" fill="#c4a36a"/>
+          <circle cx="12.5" cy="13.5" r="1.7" fill="#c4a36a"/>
+          <circle cx="18.5" cy="12" r="1.7" fill="#ece7dc"/>
+          <circle cx="24.5" cy="15" r="1.7" fill="#c4a36a"/>
+          <path d="M7 22.5h18" stroke="#c4a36a" stroke-width="1.2" stroke-linecap="round" opacity=".55"/>
+        </svg>
+        <span class="logo-text">Primary<em>Vowels</em></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Open menu">
+        <span></span>
+      </button>
+      <nav class="nav" data-nav>
+        <a href="#gpus">GPUs</a>
+        <a href="#rigs">Rigs</a>
+        <a href="#process">Process</a>
+        <a href="#shipping">Shipping</a>
+        <a href="/support/">Track a shipment</a>
+        <a href="/tracking/">Classification</a>
+        <a href="#inquire" class="btn btn-sm">Request a quote</a>
+      </nav>
     </div>
-    <div class="hero-visual">
-      <div class="orb"></div>
-      <img src="images/gpus.jpg" alt="NVIDIA GPU collection" class="hero-logo-svg" style="border-radius:16px;object-fit:cover;width:300px;height:300px;">
-    </div>
-  </section>
+  </header>
 
-  <section id="gpus" class="section">
-    <h2>Pre-Owned GPUs</h2>
-    <p>Tested RTX 3060 Ti through 3090 and 4060 series cards. Affordable market pricing for inference workloads.</p>
-    <div class="grid">
-      <div class="card">
-        <img src="images/3070.jpg" alt="RTX 3070" style="width:100%;border-radius:8px;margin-bottom:1rem;">
-        <h3>RTX 3070</h3>
-        <p>8 GB GDDR6 — solid mid-tier inference card for 7B–13B models.</p>
+  <main id="main">
+    <section class="hero">
+      <div class="wrap">
+        <p class="hero-kicker">Specialist NVIDIA reseller</p>
+        <h1>The fundamentals of <em>compute.</em></h1>
+        <p class="hero-lede">
+          Pre-owned NVIDIA GPUs and turnkey inference rigs, prepared the way a lab would prepare them:
+          inspected, load-tested, warranted, and packed with the documents international freight actually requires.
+        </p>
+        <div class="hero-actions">
+          <a href="#gpus" class="btn">See available cards</a>
+          <a href="#inquire" class="btn btn-ghost">Talk to the desk</a>
+        </div>
       </div>
-      <div class="card">
-        <img src="images/3080.jpg" alt="RTX 3080" style="width:100%;border-radius:8px;margin-bottom:1rem;">
-        <h3>RTX 3080</h3>
-        <p>10 GB GDDR6X — higher throughput for batch inference and fine-tuning.</p>
+      <div class="wrap-wide">
+        <figure class="hero-photo">
+          <img src="/images/hero.jpg" alt="Studio photograph of three pre-owned NVIDIA Founders Edition graphics cards on a charcoal surface">
+          <figcaption class="hero-caption">Photographed, tested, and graded before it is listed</figcaption>
+        </figure>
       </div>
-      <div class="card">
-        <img src="images/3090.jpg" alt="RTX 3090" style="width:100%;border-radius:8px;margin-bottom:1rem;">
-        <h3>RTX 3090</h3>
-        <p>24 GB GDDR6X — the workhorse for large-model inference at home.</p>
+      <div class="wrap">
+        <div class="trust">
+          <article>
+            <h3>Load-tested</h3>
+            <p>Sustained workload, thermal logs, and a clean error pass before anything ships.</p>
+          </article>
+          <article>
+            <h3>30-day warranty</h3>
+            <p>Functional coverage from delivery. Dead-on-arrival cards are replaced, not argued.</p>
+          </article>
+          <article>
+            <h3>US &amp; export</h3>
+            <p>Domestic ground plus international air, with commercial invoices and packing lists.</p>
+          </article>
+          <article>
+            <h3>Honest grade</h3>
+            <p>Used hardware, described plainly. No “as-is lottery,” no silent mining damage.</p>
+          </article>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="rigs" class="section alt">
-    <h2>Turnkey AI Rigs</h2>
-    <p>Pre-built multi-GPU configurations ready to train and serve. Custom rig building available on request.</p>
-    <div class="grid">
-      <div class="card">
-        <img src="images/rig-4x.jpg" alt="4x GPU rig" style="width:100%;border-radius:8px;margin-bottom:1rem;">
-        <h3>4× GPU Rig</h3>
-        <p>Compact inference server for small teams and production pilots.</p>
-      </div>
-      <div class="card">
-        <img src="images/rig-6x.jpg" alt="6x GPU rig" style="width:100%;border-radius:8px;margin-bottom:1rem;">
-        <h3>6× GPU Rig</h3>
-        <p>High-density training and serving platform with redundant cooling.</p>
-      </div>
-    </div>
-  </section>
+    <section id="gpus" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Inventory</p>
+            <h2>Pre-owned NVIDIA GPUs</h2>
+          </div>
+          <p class="section-lead">
+            Ampere and Ada cards chosen for inference, fine-tuning, and small production — not leftover mining boards
+            with the fans already dying. Quotes follow the live market. Stock turns quickly.
+          </p>
+        </div>
 
-  <footer>
-    <p>PrimaryVowels — primaryvowels.com · All hardware load-tested · 30-day functional warranty</p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="card-media">
+              <img src="/images/3070.jpg" alt="RTX 3070 Founders Edition style card, dual-fan, studio photograph">
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="pill">8 GB GDDR6</span>
+                <span class="pill">220 W</span>
+                <span class="pill">Ampere</span>
+              </div>
+              <h3>GeForce RTX 3070</h3>
+              <p>A compact inference card for 7B–13B models and lighter fine-tunes. Easy to place, easy to cool, still useful in 2026.</p>
+              <div class="card-foot">
+                <span class="price-note">Quoted to current market</span>
+                <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="RTX 3070" data-qty="1">Inquire</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <img src="/images/3080.jpg" alt="RTX 3080 Founders Edition style card, studio photograph">
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="pill">10 GB GDDR6X</span>
+                <span class="pill">320 W</span>
+                <span class="pill">Ampere</span>
+              </div>
+              <h3>GeForce RTX 3080</h3>
+              <p>More bandwidth for batch inference and concurrent sessions. The step up when 8 GB starts clipping context or queue depth.</p>
+              <div class="card-foot">
+                <span class="price-note">10 GB and 12 GB when found</span>
+                <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="RTX 3080" data-qty="1">Inquire</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <img src="/images/3090.jpg" alt="RTX 3090 Founders Edition style card, larger triple-slot cooler, studio photograph">
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="pill">24 GB GDDR6X</span>
+                <span class="pill">350 W</span>
+                <span class="pill">Ampere</span>
+              </div>
+              <h3>GeForce RTX 3090</h3>
+              <p>The local-AI standard. Enough memory for 30B-class models, longer context, or pairing into a multi-GPU rig.</p>
+              <div class="card-foot">
+                <span class="price-note">Most requested card</span>
+                <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="RTX 3090" data-qty="1">Inquire</a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="also">
+          <p>
+            <strong>Also sourced on request.</strong>
+            RTX 3060 Ti, 4060 / 4060 Ti 16 GB, and occasional 3090 Ti. Tell us the VRAM floor and we will answer with what is actually on the bench.
+          </p>
+          <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="Other NVIDIA GPU" data-qty="">Ask for a card</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="rigs" class="section" style="padding-top: 0;">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Systems</p>
+            <h2>Turnkey AI rigs</h2>
+          </div>
+          <p class="section-lead">
+            Multi-GPU machines assembled, burned in, and shipped as a unit. Power, cooling, and cable dress are part of the job —
+            not an afterthought you inherit.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <div class="card-media">
+              <img src="/images/rig-4x.jpg" alt="Open-frame 4-GPU workstation on a workbench, tidy sleeved cables">
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="pill">4× GPU</span>
+                <span class="pill">Inference</span>
+                <span class="pill">Burned in</span>
+              </div>
+              <h3>Four-card workstation</h3>
+              <p>A compact inference server for a small team or a production pilot. Sized PSU, open frame or short chassis, documented thermals.</p>
+              <div class="card-foot">
+                <span class="price-note">Typical build: 4× 3090 or mixed</span>
+                <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="4× GPU rig" data-qty="4-GPU">Configure</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <img src="/images/rig-6x.jpg" alt="High-density 6-GPU open server chassis with dressed power cables">
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="pill">6× GPU</span>
+                <span class="pill">Training / serve</span>
+                <span class="pill">High density</span>
+              </div>
+              <h3>Six-card server</h3>
+              <p>High-density training and serving. Redundant cooling, dual PSU when the load wants it, and a packing plan that survives freight.</p>
+              <div class="card-foot">
+                <span class="price-note">8× and 10× built to spec</span>
+                <a href="#inquire" class="btn btn-ghost btn-sm" data-inquire="6× GPU rig" data-qty="6-GPU">Configure</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="process" class="section process">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">How we work</p>
+            <h2>Prepared before it leaves the bench</h2>
+          </div>
+          <p class="section-lead">
+            Used compute is only a bargain if someone has already done the unglamorous work. That is the whole business.
+          </p>
+        </div>
+        <div class="process-grid">
+          <div class="process-steps">
+            <article class="step">
+              <div class="step-num">01</div>
+              <div>
+                <h3>Intake</h3>
+                <p>Physical inspection, cooler and pad condition, VBIOS, power delivery, and a written note on prior use when we know it.</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="step-num">02</div>
+              <div>
+                <h3>Load-test</h3>
+                <p>Sustained workload on a test bench. We keep thermal and error logs. Cards that throttle oddly or throw ECC noise do not ship.</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="step-num">03</div>
+              <div>
+                <h3>Grade</h3>
+                <p>Condition described in plain language — cosmetic marks, cooler type, warranty start. You buy a known card, not a photograph.</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="step-num">04</div>
+              <div>
+                <h3>Pack and clear</h3>
+                <p>Foam, anti-static, commercial invoice, packing list, and an HS classification that matches the box. Then a tracking number.</p>
+              </div>
+            </article>
+          </div>
+          <div class="process-photos">
+            <figure>
+              <img src="/images/testing.jpg" alt="Graphics card on an open test bench with a thermal graph on a small monitor">
+              <figcaption>Burn-in on the bench</figcaption>
+            </figure>
+            <figure>
+              <img src="/images/packing.jpg" alt="GPU packed in custom foam inside an export carton with a packing slip">
+              <figcaption>Packed for freight</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shipping" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">After the sale</p>
+            <h2>Warranty, freight, and paper</h2>
+          </div>
+          <p class="section-lead">
+            Hardware that cannot be replaced quickly is not a good deal. Neither is a box that dies in customs.
+          </p>
+        </div>
+        <div class="split">
+          <article class="panel">
+            <p class="section-kicker">Coverage</p>
+            <h3>Thirty-day functional warranty</h3>
+            <p>If the card or rig fails to perform as described, we replace it or make it right. Cosmetic wear on used metal is disclosed, not warrantied away.</p>
+            <ul>
+              <li>Dead-on-arrival replacement, not store credit games</li>
+              <li>Rigs covered as a system, not as a pile of parts</li>
+              <li>We do not sell untested “as-is” lots on this desk</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <p class="section-kicker">Dispatch</p>
+            <h3>Shipped as if it has to clear</h3>
+            <p>Domestic US plus international. We prepare the commercial invoice, packing list, and classification. Track the carton after it leaves.</p>
+            <ul>
+              <li>FedEx tracking once the label is live</li>
+              <li>UK / EU paper prepared for the lane you are actually using</li>
+              <li>Dimensional weight and box called out before you pay freight</li>
+            </ul>
+            <p style="margin-top:1.1rem;">
+              <a href="/support/">Open shipment tracking</a>
+              &nbsp;·&nbsp;
+              <a href="/tracking/">Classification desk</a>
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Questions</p>
+            <h2>Straight answers</h2>
+          </div>
+        </div>
+        <div class="faq">
+          <article class="faq-item" data-accordion>
+            <button type="button" aria-expanded="false">Are these new cards?<span>+</span></button>
+            <div data-accordion-panel>No. They are pre-owned, inspected, and load-tested. We describe cooler type, cosmetic grade, and anything that affects thermals or fit. If a card is effectively unused, we will say so — we will not dress used metal as retail-new.</div>
+          </article>
+          <article class="faq-item" data-accordion>
+            <button type="button" aria-expanded="false">Do you list live prices?<span>+</span></button>
+            <div data-accordion-panel>Used 30-series moves with the week. A frozen number on a homepage goes stale and starts lying. Ask for a quote; we answer against current inventory and the market that day, not a page from last quarter.</div>
+          </article>
+          <article class="faq-item" data-accordion>
+            <button type="button" aria-expanded="false">Can you ship outside the United States?<span>+</span></button>
+            <div data-accordion-panel>Yes. We regularly prepare export cartons with a commercial invoice, packing list, and HS classification. Tell us the destination and whether you want DAP or to handle the import yourself.</div>
+          </article>
+          <article class="faq-item" data-accordion>
+            <button type="button" aria-expanded="false">Will a 3090 still matter next to newer cards?<span>+</span></button>
+            <div data-accordion-panel>For local inference, 24 GB of GDDR6X is still the value argument in 2026. Newer cards are faster per watt; they are rarely cheaper per gigabyte. If your constraint is VRAM, this generation remains the honest buy.</div>
+          </article>
+          <article class="faq-item" data-accordion>
+            <button type="button" aria-expanded="false">Can you build a custom 8× or 10×?<span>+</span></button>
+            <div data-accordion-panel>Yes, on request. We will not force six cards into a chassis that cannot cool them. Send the workload, the room’s power, and any board preference — we will answer with a build that can actually run.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="inquire" class="section" style="padding-top:0;">
+      <div class="wrap inquire-layout">
+        <div>
+          <p class="section-kicker">The desk</p>
+          <h2>Request a quote</h2>
+          <p class="section-lead" style="margin-top:1rem;">
+            Tell us the card or the rig, how many, and where it needs to land. We reply with what is on the bench,
+            a market-aligned number, and a freight sketch — not a newsletter.
+          </p>
+          <p class="section-lead" style="margin-top:1rem;">
+            Prefer mail directly? <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a>
+          </p>
+        </div>
+        <form class="form" data-inquire-form>
+          <div class="form-row">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="interest">What do you need</label>
+              <select id="interest" name="interest" required>
+                <option value="RTX 3070">RTX 3070</option>
+                <option value="RTX 3080">RTX 3080</option>
+                <option value="RTX 3090" selected>RTX 3090</option>
+                <option value="Other NVIDIA GPU">Other NVIDIA GPU</option>
+                <option value="4× GPU rig">4× GPU rig</option>
+                <option value="6× GPU rig">6× GPU rig</option>
+                <option value="Custom 8–10× rig">Custom 8–10× rig</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="quantity">Quantity / config</label>
+              <input id="quantity" name="quantity" type="text" placeholder="e.g. 2 cards, or 4× 3090">
+            </div>
+          </div>
+          <div class="field">
+            <label for="message">Notes — destination, timeline, workload</label>
+            <textarea id="message" name="message" placeholder="Ship to, power constraints, model size, anything that changes the build."></textarea>
+          </div>
+          <button class="btn" type="submit">Draft the inquiry</button>
+          <p class="form-note" data-form-note hidden></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div>
+        <p>PrimaryVowels · Tested NVIDIA compute</p>
+        <p>© <span data-year>2026</span> · Load-tested · 30-day functional warranty</p>
+      </div>
+      <nav>
+        <a href="#gpus">GPUs</a>
+        <a href="#rigs">Rigs</a>
+        <a href="/support/">Shipment tracking</a>
+        <a href="/tracking/">Classification</a>
+        <a href="mailto:hello@primaryvowels.com">hello@primaryvowels.com</a>
+      </nav>
+    </div>
   </footer>
+
+  <script src="/site.js"></script>
 </body>
 </html>

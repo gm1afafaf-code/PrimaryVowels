@@ -30,6 +30,19 @@ export default function middleware(request) {
   }
 
   // No valid credentials — require authentication
+  const path = request.nextUrl.pathname;
+  const isApi = path.startsWith('/api') || path.startsWith('/support/api') || path.includes('/api/');
+
+  if (isApi) {
+    return new Response(JSON.stringify({ error: 'Authentication required.' }), {
+      status: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'WWW-Authenticate': 'Basic realm="PrimaryVowels"',
+      },
+    });
+  }
+
   return new Response('Authentication required', {
     status: 401,
     headers: {
